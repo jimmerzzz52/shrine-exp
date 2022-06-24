@@ -47,15 +47,21 @@ function isAllUpperCase(str){
 }
 
 console.log(proverbs);
+
 let dict = {};
 proverbs.forEach(function(prov){
-  dict[prov] = {};
+  
+  // console.log(prov);
+  
+  if(prov != undefined)
+    dict[prov.toLowerCase()] = {};
+
 });
-fs.writeFile('./dictionary.json', JSON.stringify(dict), err => {
+
+fs.writeFile('./dist/proverbsDictionary.js', "var proverbs = " + JSON.stringify(dict), err => {
   if (err) {
     console.error(err)
     return
   }
   console.log("file written.");
 })
-// console.log(isAProverb, proverbLine[0])

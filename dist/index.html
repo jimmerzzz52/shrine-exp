@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- saved from url=(0055)https://www.google.com/intl/en/chrome/demos/speech.html -->
 <html class="js consumer build-stable chrome win64-incapable mac twisty-js" lang="en" id="mac"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+    <script data-main="scripts/main" src="scripts/require.js"></script>
     <script src="./exampleSpeechrecog_files/cb=gapi.loaded_0" nonce="" async=""></script><script type="text/javascript" async="" src="./exampleSpeechrecog_files/plusone.js" gapi_processed="true"></script><script type="text/javascript" async="" src="./exampleSpeechrecog_files/ga.js"></script><script nonce="">
 (function(e, p){
     var m = location.href.match(/platform=(win8|win|mac|linux|cros)/);
@@ -22,6 +22,8 @@
     <link href="./exampleSpeechrecog_files/chrome.min.css" rel="stylesheet" nonce="">
     <script src="./exampleSpeechrecog_files/autotrack.js" nonce="">
 </script>
+    <script src="./proverbsDictionary.js" nonce="">
+    </script>
     <script nonce="">
 new gweb.analytics.AutoTrack({
           profile: 'UA-26908291-1'
@@ -44,6 +46,13 @@ new gweb.analytics.AutoTrack({
     padding: 15px;
     text-align: left;
     min-height: 150px;
+    }
+    #found_proverb_parent {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px;
+    text-align: left;
+    min-height: 20;
     }
     #start_button {
     border: 0;
@@ -129,6 +138,9 @@ a.c1 {font-weight: normal;}
         </div>
         <div id="results">
           <span class="final" id="final_span"></span> <span class="interim" id="interim_span"></span>
+        </div>
+        <div id="found_proverb_parent">
+          <span class="final" id="final_span"></span> <span id="found_proverb"></span>
         </div>
         <div id="copy">
           <button class="button" id="copy_button" onclick="copyButton()">Copy and Paste</button>
@@ -315,15 +327,28 @@ var final_transcript = '';
 var recognizing = false;
 var ignore_onend;
 var start_timestamp;
+
+let maxWordLengthOfProverbs = 0;
+Object.keys(proverbs).forEach(
+  function(key){
+    maxWordLengthOfProverbs = Math.max(maxWordLengthOfProverbs, key.split(" ").length);
+  }
+)
+// let proverbs = require('/proverbsDictionary.json');
+
 if (!('webkitSpeechRecognition' in window)) {
   upgrade();
 } else {
+  
+
   start_button.style.display = 'inline-block';
   var recognition = new webkitSpeechRecognition();
   recognition.continuous = true;
   recognition.interimResults = true;
 
   recognition.onstart = function() {
+
+    
     recognizing = true;
     showInfo('info_speak_now');
     start_img.src = '/intl/en/chrome/assets/common/images/content/mic-animate.gif';
@@ -372,27 +397,87 @@ if (!('webkitSpeechRecognition' in window)) {
       createEmail();
     }
   };
+  
+  let currentProverb = '';
 
   recognition.onresult = function(event) {
     var interim_transcript = '';
-    if (typeof(event.results) == 'undefined') {
-      recognition.onend = null;
-      recognition.stop();
-      upgrade();
-      return;
-    }
+    var interim_transcript_words = [];
+
+    // if (typeof(event.results) == 'undefined') {
+    //   // recognition.onend = null;
+    //   // recognition.stop();
+    //   upgrade();
+    //   return;
+    // }
     for (var i = event.resultIndex; i < event.results.length; ++i) {
+
       if (event.results[i].isFinal) {
         final_transcript += event.results[i][0].transcript;
       } else {
+
         console.log(event.results[i][0].transcript);
         console.log(event.results[i][0]);
+        
+        let tWords = event.results[i][0].transcript.split(" ");
+        tWords.forEach(function(el){
+          if(el != '')
+            interim_transcript_words.unshift(el)
+        })
+        
         interim_transcript += event.results[i][0].transcript;
+        
+        // Loop through each new word.
+        // TODO: Consider refactoring to one loop to make it cleaner.
+        
+
+        // BUG: Not searching rest of text. Only new text... May be ok.
+        // Remove Grammer from proverbs...
+        let foundProverb;
+
+        for(var start = 0; start < tWords.length; start++){
+          
+          let searchAr = [];
+          let counter = 0;
+
+          while(counter < maxWordLengthOfProverbs && ( interim_transcript_words.length - counter - start - 1 ) >= 0 ){
+            let cur = interim_transcript_words.length - counter - start - 1;
+            console.log(interim_transcript_words[cur]);
+            
+            if( interim_transcript_words[cur] == '')
+              break;
+            searchAr.unshift(interim_transcript_words[cur]);
+
+            let searchString = searchAr.join(' ').toLowerCase();
+            
+            console.log(maxWordLengthOfProverbs);
+            console.log("searching", interim_transcript_words, searchString, searchAr, proverbs[searchString]);
+            
+            // found a proverb in text. Break out of loops.
+            if(proverbs[searchString] !== undefined){
+              foundProverb = searchString;
+              currentProverb = foundProverb;
+              console.log("Found One!!!", currentProverb);
+              break;
+            }
+
+            counter++;
+          }
+
+          if(foundProverb != undefined)
+            break;
+        }
       }
     }
     final_transcript = capitalize(final_transcript);
     final_span.innerHTML = linebreak(final_transcript);
     interim_span.innerHTML = linebreak(interim_transcript);
+    
+    // TODO: Do some cooler stuff. Like give the history behind the proverb.
+    // TODO: expand the use of our dictionary too. Maybe do a google search on the data?
+    // TODO: make run indefinitely. Right now this only works for continuous speech.
+    found_proverb.innerHTML = "We found a proverb! " + currentProverb.charAt(0).toUpperCase() + currentProverb.slice(1);
+    
     if (final_transcript || interim_transcript) {
       showButtons('inline-block');
     }
