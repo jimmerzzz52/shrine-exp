@@ -28,11 +28,11 @@
       recognition.onend = reset;
 
       recognition.onresult = function (event) {
+        
         var final = "";
         var interim = "";
         var interim_transcript_words = [];
         
-
         let maxWordLengthOfProverbs = 0;
         Object.keys(proverbs).forEach(
           function(key){
@@ -50,8 +50,10 @@
 
           if (event.results[i].isFinal) {
             final += event.results[i][0].transcript;
+            final_words.push(event.results[i][0].transcript.split(" "));
           } else {
             interim += event.results[i][0].transcript;
+            interim_transcript_words
           }
           console.log("Event", event.results[i]);
         }
@@ -89,7 +91,6 @@
 
             let searchString = searchAr.join(' ').toLowerCase();
             
-            console.log(maxWordLengthOfProverbs);
             console.log("searching", interim_transcript_words, searchString, searchAr, proverbs[searchString]);
             
             // found a proverb in text. Break out of loops.
