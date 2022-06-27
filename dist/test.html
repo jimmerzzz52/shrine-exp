@@ -403,6 +403,9 @@ if (!('webkitSpeechRecognition' in window)) {
       createEmail();
     }
   };
+  recognition.addEventListener('end', () => {
+    recognition.start();
+  });
   
   let currentProverb = '';
 
