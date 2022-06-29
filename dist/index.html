@@ -66,6 +66,9 @@
           quotes_span.innerHTML += "We found a proverb! " + foundProverb.charAt(0).toUpperCase() + foundProverb.slice(1) + "<br />";
       }
 
+
+
+      // Start the speech recognition after it has stalled.
       recognition.addEventListener('end', () => {
         recognition.start();
       });

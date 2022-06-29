@@ -438,10 +438,10 @@ if (!('webkitSpeechRecognition' in window)) {
         
         // Loop through each new word.
         // TODO: Consider refactoring to one loop to make it cleaner.
-        
+        // TODO: refactor to use prefix tree instead of proverb dictionary.
 
         // BUG: Not searching rest of text. Only new text... May be ok.
-        // Remove Grammer from proverbs...
+        // TODO: try to correct grammer.
         let foundProverb;
 
         for(var start = 0; start < tWords.length; start++){
@@ -458,15 +458,12 @@ if (!('webkitSpeechRecognition' in window)) {
             searchAr.unshift(interim_transcript_words[cur]);
 
             let searchString = searchAr.join(' ').toLowerCase();
-            
-            console.log(maxWordLengthOfProverbs);
             console.log("searching", interim_transcript_words, searchString, searchAr, proverbs[searchString]);
             
             // found a proverb in text. Break out of loops.
             if(proverbs[searchString] !== undefined){
               foundProverb = searchString;
               currentProverb = foundProverb;
-              console.log("Found One!!!", currentProverb);
               break;
             }
 
@@ -484,26 +481,29 @@ if (!('webkitSpeechRecognition' in window)) {
     
     // TODO: Do some cooler stuff. Like give the history behind the proverb.
     // TODO: expand the use of our dictionary too. Maybe do a google search on the data?
-    // TODO: make run indefinitely. Right now this only works for continuous speech.
-    if(currentProverb != '')
-      found_proverb.innerHTML = "We found a proverb! " + currentProverb.charAt(0).toUpperCase() + currentProverb.slice(1);
+    if(currentProverb != ''){
+      found_proverb.innerHTML += "We found a proverb! " + currentProverb.charAt(0).toUpperCase() + currentProverb.slice(1);
+    }
+    // TODO: order the response to the UI... Right now it's dependent on the response time from the backend.
+    
+    grammerCorrect(interim_transcript, function(res){
+      console.log(interim_transcript)
+      found_proverb.innerHTML += "Trying to correct grammer: " + res;
+    })
+    
     
     if (final_transcript || interim_transcript) {
       showButtons('inline-block');
     }
   };
-
-
-
-
-
-  navigator.mediaDevices.getUserMedia({video: false, audio: true}).then( stream => {
-        window.localStream = stream; // A
-        window.localAudio.srcObject = stream; // B
-        window.localAudio.autoplay = true; // C
-    }).catch( err => {
-        console.log("u got an error:" + err)
-    });
+  
+  // navigator.mediaDevices.getUserMedia({video: false, audio: true}).then( stream => {
+  //       window.localStream = stream; // A
+  //       window.localAudio.srcObject = stream; // B
+  //       window.localAudio.autoplay = true; // C
+  //   }).catch( err => {
+  //       console.log("u got an error:" + err)
+  //   });
 }
 
 function upgrade() {
@@ -596,6 +596,36 @@ function showButtons(style) {
   copy_info.style.display = 'none';
   email_info.style.display = 'none';
 }
+
+function grammerCorrect(sentence, callback){
+  
+  const encodedParams = new URLSearchParams();
+  encodedParams.append("text", sentence);
+  encodedParams.append("language", "en-US");
+
+  const options = {
+  method: 'POST',
+  headers: {
+    'content-type': 'application/x-www-form-urlencoded',
+    'X-RapidAPI-Key': 'a5c1acd831msh0c1b18dab77ec4fp14f11djsn2fb63fbdbe6e',
+    'X-RapidAPI-Host': 'grammarbot.p.rapidapi.com'
+  },
+  body: encodedParams
+  };
+
+  return fetch('https://grammarbot.p.rapidapi.com/check', options)
+  .then(response => response.json())
+  .then(response => callback(response))
+  .catch(err => console.error(err));
+
+}
+
+
+
+
+
+
+
     </script>
   
 

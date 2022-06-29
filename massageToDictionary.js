@@ -1,3 +1,4 @@
+// TODO: refactor to use prefix tree instead of proverb dictionary.
 let fs = require('fs');
 
 
@@ -46,19 +47,45 @@ function isAllUpperCase(str){
   return str.toUpperCase() === str && str !== str.toLowerCase();
 }
 
-console.log(proverbs);
-
+let prefixTree = {};
 let dict = {};
+
 proverbs.forEach(function(prov){
   
-  // console.log(prov);
   
-  if(prov != undefined)
+  if(prov != undefined){
+
     dict[prov.toLowerCase()] = {};
+
+    let words = prov.split(' ')
+
+    let curPrefixBranch = prefixTree;
+    
+    for(var i = 0; i < words.length; i++){
+      
+      let curWord = words[i];
+      if(curPrefixBranch[curWord] == undefined)
+        curPrefixBranch[curWord] = {};
+
+      if(i == words.length - 1)
+        curPrefixBranch[curWord].end = true;
+      
+      curPrefixBranch = curPrefixBranch[curWord];
+    }
+  }
 
 });
 
+
 fs.writeFile('./dist/proverbsDictionary.js', "var proverbs = " + JSON.stringify(dict), err => {
+  if (err) {
+    console.error(err)
+    return
+  }
+  console.log("file written.");
+})
+
+fs.writeFile('./dist/proverbsPrefixTree.js', "var proverbPrefixTree = " + JSON.stringify(prefixTree), err => {
   if (err) {
     console.error(err)
     return
