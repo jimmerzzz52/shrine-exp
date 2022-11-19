@@ -92,7 +92,7 @@ new gweb.analytics.AutoTrack({
 a.c1 {font-weight: normal;}
     </style>
   </head>
-  <body class="" id="grid" data-new-gr-c-s-check-loaded="14.1063.0" data-gr-ext-installed="">
+  <div style="width:50%; float: left;" class="" id="grid" data-new-gr-c-s-check-loaded="14.1063.0" data-gr-ext-installed="">
     <div class="browser-landing" id="main">
       <div class="compact marquee-stacked" id="marquee">
         <div class="marquee-copy">
@@ -140,7 +140,7 @@ a.c1 {font-weight: normal;}
           <span class="final" id="final_span"></span> <span class="interim" id="interim_span"></span>
         </div>
         <div id="found_proverb_parent">
-          <span class="final" id="final_span"></span> <span id="found_proverb"></span>
+          <span class="final" id="final_span_2"></span> <span id="found_proverb"></span>
         </div>
         <div id="copy">
           <button class="button" id="copy_button" onclick="copyButton()">Copy and Paste</button>
@@ -422,7 +422,7 @@ if (!('webkitSpeechRecognition' in window)) {
     for (var i = event.resultIndex; i < event.results.length; ++i) {
 
       if (event.results[i].isFinal) {
-        final_transcript += event.results[i][0].transcript;
+        final_transcript += "<p>" + event.results[i][0].transcript + "</p>";
       } else {
 
         console.log(event.results[i][0].transcript);
@@ -476,6 +476,11 @@ if (!('webkitSpeechRecognition' in window)) {
       }
     }
     final_transcript = capitalize(final_transcript);
+
+    // I need to figure out how to display grammer stats, display sentiment.
+    // I need to find  
+    output.innerHTML = linebreak(final_transcript);
+
     final_span.innerHTML = linebreak(final_transcript);
     interim_span.innerHTML = linebreak(capitalize(interim_transcript));
     
@@ -488,7 +493,8 @@ if (!('webkitSpeechRecognition' in window)) {
     
     grammerCorrect(interim_transcript, function(res){
       console.log(interim_transcript)
-      found_proverb.innerHTML += "Trying to correct grammer: " + res;
+      console.log(res)
+      //found_proverb.innerHTML += "Trying to correct grammer: " + res;
     })
     
     
@@ -628,5 +634,14 @@ function grammerCorrect(sentence, callback){
 
     </script>
   
+    <grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+  </div>
+  <div style="width:50%; float: left;" id="output">
 
-</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
+
+
+  </div>
+
+
+
+</html>

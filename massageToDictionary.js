@@ -63,6 +63,7 @@ proverbs.forEach(function(prov){
     
     for(var i = 0; i < words.length; i++){
       
+      // TODO: Remove Grammer, Split on space. B/C of extra stuff oxford throws in there...
       let curWord = words[i];
       if(curPrefixBranch[curWord] == undefined)
         curPrefixBranch[curWord] = {};
@@ -75,6 +76,8 @@ proverbs.forEach(function(prov){
   }
 
 });
+
+
 
 
 fs.writeFile('./dist/proverbsDictionary.js', "var proverbs = " + JSON.stringify(dict), err => {
