@@ -142,8 +142,8 @@ function animatedLine(startx, starty, colorStr){
 			default:
 				console.log("We have a problem");
 		}
-		this.init();
 	}
+	this.init();
 
 	// Helper function to set variables for animation. 
 	// TODO refactor to get rid of some of these variables.
@@ -160,7 +160,6 @@ function animatedLine(startx, starty, colorStr){
 			this.endpointy = newPointY;			
 		}
 		else {
-			// This is bugging out for some reason we are running the full programatic stack.
 			this.drawLine();
 		}
 	}
