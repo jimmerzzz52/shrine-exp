@@ -6,10 +6,19 @@ SOUTH = 5;
 SOUTHWEST = 6; 
 WEST = 7;
 NORTHWEST = 8;
+var mouseX = 0;
+var mouseY = 0;
+
+
 
 $(document).ready(function(){
 	document.getElementById('bg').height = $(document).height();
 	document.getElementById('bg').width = $(document).width();
+  
+  onmousemove = function(e){
+    mouseX = e.clientX;
+    mouseY = e.clientY
+  }
 
 	// ranomize the spot.
 
@@ -96,7 +105,8 @@ function animatedLine(startx, starty, colorStr){
     // Gravitate towards the middle... 
     // This will be imporant for interaction... 
     // We want to gravitate towards things.
-    if( Math.floor(Math.random() * 7) < 1 ){
+    if( Math.floor(Math.random() * 4) < 1 ){
+    // if(true){
       
       let here = {}
       here.x = this.endpointx;
@@ -105,8 +115,11 @@ function animatedLine(startx, starty, colorStr){
       let middle = {}
       middle.x = Math.floor($(document).height() / 2)
       middle.y = Math.floor($(document).width() / 2)
+      middle.x = mouseX;
+      middle.y = mouseY;
 
-      here.x = this.endpointx;
+      // console.log(middle);
+
       // set the direction towards the middle.
       direction = getDirectionOf(here, middle);
     }
@@ -190,9 +203,6 @@ function getDirectionOf(pointA, pointB){
     direction = EAST
   else
     direction = Math.floor(Math.random() * 8) + 1
-    
 
-  if( direction == EAST )
-    console.log("Going east!")
-  return direction
+  return direction;
 }

@@ -6,6 +6,49 @@
   src="https://code.jquery.com/jquery-3.6.1.slim.min.js"
   integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA="
   crossorigin="anonymous"></script>
+	<!-- Load the handtrackjs model. -->
+	<script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"> </script>
+
+	<!-- Replace this with your image. Make sure CORS settings allow reading the image! -->
+	<!-- <img id="img" src="hand.jpg"/>  -->
+	<!-- <canvas id="canvas" class="border"></canvas> -->
+	<!-- <video autoplay="true" id="videoElement"></video> -->
+
+<!-- Place your code in the script tag below. You can also use an external .js file -->
+<script>
+  // Notice there is no 'import' statement. 'handTrack' and 'tf' is
+  // available on the index-page because of the script tag above.
+
+  const img = document.getElementById('img'); 
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+
+
+	var video = document.querySelector("#videoElement");
+	handTrack.load().then(model => {
+    // detect objects in the image.
+    video.onloadeddata = function() {
+			model.detect(video).then(predictions => {
+				console.log('Predictions: ', predictions); 
+			});
+		};
+  
+		if (navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices.getUserMedia({ video: true })
+				.then(function (stream) {
+					video.srcObject = stream;
+				})
+				.catch(function (err0r) {
+					console.log("Something went wrong!");
+				});
+				
+		}
+	});
+  // Load the model.
+  
+
+	
+</script>
 	<script src="./scripts/squiggles.js"></script>
 
 <title>Interactive Art - Squiggles</title>
