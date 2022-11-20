@@ -52,7 +52,8 @@ function animatedLine(startx, starty, colorStr){
 	this.myinterval = {};
 
 	this.init = function() {
-	   	this.myinterval = setInterval( function() { self.animate(self.endpointx,self.endpointy);}, 10);
+	   	// this.myinterval = setInterval( function() { self.animate(self.endpointx,self.endpointy);}, 1);
+      window.requestAnimationFrame(self.animate(self.endpointx,self.endpointy))
 	}
 
 	this.animate = function(endpointx, endpointy) {
@@ -99,51 +100,52 @@ function animatedLine(startx, starty, colorStr){
 		var direction = Math.floor(Math.random() * 8) + 1;
 		var distance = Math.floor(Math.random() * 10) + 1;
 
+
+    // I want to converge to a point... Randomly add a convergence "nudge"
+    // The nudge will happen 3/4 of the time.
+    if( Math.floor(Math.random() * 4) > 1 ){
+      
+      move()
+    }
+    else
+      move(direction)
+
 		var newPointY, newPointX;
 
-		switch(direction){
-			case this.NORTH:
+		function move(direction){
+			if( direction == this.NORTH){
 				newPointX = this.endpointx;
 				newPointY = this.endpointy - distance;
-				this.setAnimationVariables(newPointX, newPointY);
-				break; 
-			case this.NORTHEAST:
+      }
+			else if( direction == this.NORTHEAST){
 				newPointX = this.endpointx + distance;
 				newPointY = this.endpointy - distance;
-				this.setAnimationVariables(newPointX, newPointY);
-				break;
-			case this.EAST:
+      }
+			else if( direction == this.EAST){
 				newPointX = this.endpointx + distance;
 				newPointY = this.endpointy;
-				this.setAnimationVariables(newPointX, newPointY);
-				break; 
-			case this.SOUTHEAST: 
+      }
+			else if( direction == this.SOUTHEAST){
 				newPointX = this.endpointx + distance;
 				newPointY = this.endpointy + distance;
-				this.setAnimationVariables(newPointX, newPointY);
-				break;
-			case this.SOUTH:
+      }
+			else if( direction == this.SOUTH){
 				newPointX = this.endpointx;
 				newPointY = this.endpointy + distance;
-				this.setAnimationVariables(newPointX, newPointY);
-				break;
-			case this.SOUTHWEST:
+      }
+			else if( direction == this.SOUTHWEST){
 				newPointX =  this.endpointx - distance;
-				newPointY = this.endpointy + distance;
-				this.setAnimationVariables(newPointX, newPointY);				
-				break;
-			case this.WEST:
+				newPointY = this.endpointy + distance;				
+      }
+			else if( direction == this.WEST){
 				newPointX = this.endpointx - distance;
 				newPointY = this.endpointy;
-				this.setAnimationVariables(newPointX, newPointY);
-				break;
-			case this.NORTHWEST:
+      }
+			else if( direction == this.NORTHWEST){
 				newPointX = this.endpointx - distance;
 				newPointY = this.endpointy - distance;
-				this.setAnimationVariables(newPointX, newPointY);
-				break;
-			default:
-				console.log("We have a problem");
+      }
+      this.setAnimationVariables(newPointX, newPointY);
 		}
 	}
 	this.init();
@@ -160,7 +162,7 @@ function animatedLine(startx, starty, colorStr){
 			this.curpointX = this.endpointx;
 			this.curpointY = this.endpointy;
 			this.endpointx = newPointX;
-			this.endpointy = newPointY;			
+			this.endpointy = newPointY;
 		}
 		else {
 			this.drawLine();
