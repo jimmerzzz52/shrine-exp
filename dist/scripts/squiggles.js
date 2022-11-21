@@ -112,16 +112,16 @@ function animatedLine(startx, starty, colorStr){
       here.x = this.endpointx;
       here.y = this.endpointy;
       
-      let middle = {}
-      middle.x = Math.floor($(document).height() / 2)
-      middle.y = Math.floor($(document).width() / 2)
-      middle.x = mouseX;
-      middle.y = mouseY;
+      let pointOfInterest = {}
+      pointOfInterest.x = Math.floor($(document).height() / 2)
+      pointOfInterest.y = Math.floor($(document).width() / 2)
+      pointOfInterest.x = mouseX;
+      pointOfInterest.y = mouseY;
 
-      // console.log(middle);
+      // console.log(pointOfInterest);
 
-      // set the direction towards the middle.
-      direction = getDirectionOf(here, middle);
+      // set the direction towards the pointOfInterest.
+      direction = getDirectionOf(here, pointOfInterest);
     }
 
 		switch(direction){
