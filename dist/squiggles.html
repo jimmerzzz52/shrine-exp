@@ -8,6 +8,7 @@
   <!-- <meta property="og:image"         content="https://jscray/art/squiggles.jpg" /> -->
 	<title>Interactive Art - Squiggles</title>
 
+	<!-- Lustria Transparent background -->
 	<link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="./favicon_io/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="./favicon_io/favicon-16x16.png">
@@ -19,11 +20,14 @@
 		crossorigin="anonymous"></script>
 	<!-- Load the handtrackjs model. -->
 	<script src="./scripts/squiggles.js"></script>
-
+	
 </head>
 
 <body>
+	<div id="fb-root"></div>
+	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v15.0" nonce="4jizLqHW"></script>
 	<canvas id="bg">
+		<div class="fb-like" data-href="https://jscray.art/squiggles" data-width="" data-layout="standard" data-action="like" data-size="small" data-share="true"></div>
 		<!-- animation stuff. -->
 	</canvas>
 </body>
