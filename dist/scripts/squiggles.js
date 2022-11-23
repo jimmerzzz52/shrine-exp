@@ -62,6 +62,7 @@ $(document).ready(function(){
 		xCord = ( i % 2 == 0 ? Math.floor($(document).width() / 3) : Math.floor($(document).width() * 2 / 3) ) ;
 		
     animation = new animatedLine(xCord, yCord, "#0F5791");
+		console.log("init")
 		animation.init();
 	}
 
