@@ -20,12 +20,38 @@ $(document).ready(function(){
     mouseY = e.clientY
   }
 
+	const src = document.getElementById("bg");
+	// let mouseX;
+	// let clientY;
+
+	src.addEventListener('touchstart', (e) => {
+		// Cache the client X/Y coordinates
+		mouseX = e.touches[0].clientX;
+		mouseY = e.touches[0].clientY;
+	}, false);
+
+	src.addEventListener('touchend', (e) => {
+		let deltaX;
+		let deltaY;
+
+		// Compute the change in X and Y coordinates.
+		// The first touch point in the changedTouches
+		// list is the touch point that was just removed from the surface.
+		deltaX = e.changedTouches[0].clientX - mouseX;
+		deltaY = e.changedTouches[0].clientY - mouseY;
+		
+		deltaX = e.touches[0].clientX;
+		deltaY = e.touches[0].clientY;
+
+		// Process the data…
+	}, false);
+
 	// ranomize the spot.
 
 
-	for(var i = 0; i < 12; i++){
+	for(var i = 0; i < 24; i++){
 		
-    yCord = Math.floor($(document).height() / 12) * i;
+    yCord = Math.floor($(document).height() / 24) * i;
 		xCord = ( i % 2 == 0 ? Math.floor($(document).width() / 3) : Math.floor($(document).width() * 2 / 3) ) ;
 		
     animation = new animatedLine(xCord, yCord, "#0F5791");
