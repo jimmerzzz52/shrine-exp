@@ -9,6 +9,9 @@ NORTHWEST = 8;
 var mouseX = 0;
 var mouseY = 0;
 
+var points = [];
+
+
 $(document).ready(function(){
 	document.getElementById('bg').height = $(document).height();
 	document.getElementById('bg').width = $(document).width();
@@ -56,23 +59,25 @@ $(document).ready(function(){
 	}
 
 
-	for(var i = 0; i < 100; i++){
+	for(var i = 0; i < 20; i++){
 		
-    yCord = Math.floor($(document).height() / 100) * i;
-		xCord = ( i % 2 == 0 ? Math.floor($(document).width() / 3) : Math.floor($(document).width() * 2 / 3) ) ;
-		
-    animation = new animatedLine(xCord, yCord, "#0F5791");
-		console.log("init")
+    let yCord = Math.floor($(document).height() / 20) * i;
+		let xCord = ( i % 2 == 0 ? Math.floor($(document).width() / 3) : Math.floor($(document).width() * 2 / 3) ) ;
+		points.push([xCord, yCord]);
+
+    animation = new animatedLine(xCord, yCord, "#0F5791", i);
 		animation.init();
+
 	}
 
 });
 
-function animatedLine(startx, starty, colorStr){
+function animatedLine(startx, starty, colorStr, id){
 	// these should be passed into the object.
 	this.curpointX = startx,
 	this.curpointY = starty,
 	this.colorHex = colorStr;
+	this.id = id;
 
 	var self = this;
 	// Lets get rid of one of these position variables.
@@ -147,13 +152,14 @@ function animatedLine(startx, starty, colorStr){
       here.y = this.endpointy;
       
       let pointOfInterest = {}
-      pointOfInterest.x = Math.floor($(document).height() / 2)
-      pointOfInterest.y = Math.floor($(document).width() / 2)
-      pointOfInterest.x = mouseX;
-      pointOfInterest.y = mouseY;
-
-      // console.log(pointOfInterest);
-
+      // pointOfInterest.x = Math.floor($(document).height() / 2)
+      // pointOfInterest.y = Math.floor($(document).width() / 2)
+      // pointOfInterest.x = mouseX;
+      // pointOfInterest.y = mouseY;
+			pointOfInterest.x = points[this.id][0];
+			pointOfInterest.y = points[this.id][1];
+      
+			// console.log(pointOfInterest);
       // set the direction towards the pointOfInterest.
       direction = getDirectionOf(here, pointOfInterest);
     }

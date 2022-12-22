@@ -11,7 +11,8 @@
 <body>
   <div class="container">
     <video style="display: none" class="input_video"></video>
-    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    <!-- <canvas class="output_canvas" width="1280px" height="720px"></canvas> -->
+    <canvas class="output_canvas" style="display: none" width="1280px" height="720px"></canvas>
   </div>
 </body>
 <script type="module">
@@ -21,15 +22,22 @@
   const canvasCtx = canvasElement.getContext('2d');
   
   function onResults(results) {
+    console.log(results);
+    
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     canvasCtx.drawImage(
         results.image, 0, 0, canvasElement.width, canvasElement.height);
     if (results.multiHandLandmarks) {
+      
+      // TODO: We have twenty points. We have to create a mapping.
       for (const landmarks of results.multiHandLandmarks) {
         drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
                        {color: '#00FF00', lineWidth: 5});
         drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+
+        // Change to coordinates so we can create gravity....
+        // Create a few more for each point on our hand.
       }
     }
     canvasCtx.restore();
@@ -54,5 +62,6 @@
     height: 720
   });
   camera.start();
+
   </script>
 </html>
