@@ -11,8 +11,8 @@
 <body>
   <div class="container">
     <video style="display: none" class="input_video"></video>
-    <!-- <canvas class="output_canvas" width="1280px" height="720px"></canvas> -->
-    <canvas class="output_canvas" style="display: none" width="1280px" height="720px"></canvas>
+    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    <!-- <canvas class="output_canvas" style="display: none" width="1280px" height="720px"></canvas> -->
   </div>
 </body>
 <script type="module">
@@ -22,7 +22,6 @@
   const canvasCtx = canvasElement.getContext('2d');
   
   function onResults(results) {
-    console.log(results);
     
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);

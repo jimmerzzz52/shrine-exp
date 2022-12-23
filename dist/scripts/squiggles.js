@@ -9,7 +9,7 @@ NORTHWEST = 8;
 var mouseX = 0;
 var mouseY = 0;
 
-var points = [];
+points = [];
 
 
 $(document).ready(function(){
@@ -97,6 +97,8 @@ function animatedLine(startx, starty, colorStr, id){
 		// TODO: Document.
     this.startpointy = this.curposy;
 		this.startpointx = this.curposx;
+		this.pointsYLast = this.curposy;
+		this.pointsXLast = this.curposx;
 		if (this.curposx == endpointx && this.curposy == endpointy){
 			this.drawLine();
 			return false;
@@ -154,10 +156,22 @@ function animatedLine(startx, starty, colorStr, id){
       let pointOfInterest = {}
       // pointOfInterest.x = Math.floor($(document).height() / 2)
       // pointOfInterest.y = Math.floor($(document).width() / 2)
-      // pointOfInterest.x = mouseX;
-      // pointOfInterest.y = mouseY;
-			pointOfInterest.x = points[this.id][0];
-			pointOfInterest.y = points[this.id][1];
+      pointOfInterest.x = mouseX;
+      pointOfInterest.y = mouseY;
+			
+			
+			// If the points obj has changed.
+
+			// if( this.pointsXLast != points[this.id][0] ){
+			// 	pointOfInterest.x = points[this.id][0];
+			// }
+			// if( this.pointsYLast != points[this.id][1] ){
+			// 	pointOfInterest.y = points[this.id][1];	
+			// }
+			// this.pointsXLast = points[this.id][0]
+			// this.pointsYLast = points[this.id][1]
+			
+			// console.log(points);
       
 			// console.log(pointOfInterest);
       // set the direction towards the pointOfInterest.
