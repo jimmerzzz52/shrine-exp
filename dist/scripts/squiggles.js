@@ -8,6 +8,7 @@ WEST = 7;
 NORTHWEST = 8;
 var mouseX = 0;
 var mouseY = 0;
+var handPoint = undefined;
 
 points = [];
 
@@ -30,39 +31,20 @@ $(document).ready(function(){
 		}
 	}
 	else{
-
 		const src = document.getElementById("bg");
-		// let mouseX;
-		// let clientY;
-
-		src.addEventListener('touchstart', (e) => {
-			// Cache the client X/Y coordinates
-			mouseX = e.touches[0].clientX;
-			mouseY = e.touches[0].clientY;
-		}, false);
-
-		src.addEventListener('touchend', (e) => {
-			let deltaX;
-			let deltaY;
-
-			// Compute the change in X and Y coordinates.
-			// The first touch point in the changedTouches
-			// list is the touch point that was just removed from the surface.
-			deltaX = e.changedTouches[0].clientX - mouseX;
-			deltaY = e.changedTouches[0].clientY - mouseY;
-			
-			deltaX = e.touches[0].clientX;
-			deltaY = e.touches[0].clientY;
-
-			// Process the data…
-		}, false);
+		const canvas = document.getElementById("canvas");	
 	}
 
-
+	
 	for(var i = 0; i < 20; i++){
 		
     let yCord = Math.floor($(document).height() / 20) * i;
 		let xCord = ( i % 2 == 0 ? Math.floor($(document).width() / 3) : Math.floor($(document).width() * 2 / 3) ) ;
+
+
+		// We have to round each coord before we draw anything.
+
+
 		points.push([xCord, yCord]);
 
     animation = new animatedLine(xCord, yCord, "#0F5791", i);
@@ -90,64 +72,110 @@ function animatedLine(startx, starty, colorStr, id){
 	this.myinterval = {};
 
 	this.init = function() {
-	   	this.myinterval = setInterval( function() { self.animate(self.endpointx,self.endpointy);}, 1);
+		console.log("Here starting the thing to move.");
+		window.requestAnimationFrame(step);
 	}
 
-	this.animate = function(endpointx, endpointy) {
-		// TODO: Document.
+	this.start = undefined;
+	this.previousTimeStamp = undefined;
+
+	function step(timestamp) {
+
+		console.log("Stepping")
+		if (this.start === undefined) {
+			start = timestamp;
+		}
+
+		if (this.previousTimeStamp !== timestamp) {
+			self.animate();
+			window.requestAnimationFrame(step);
+			previousTimeStamp = timestamp;
+		}
+	}
+
+	this.animate = function() {
+
+		endpointx = this.endpointx;
+		endpointy = this.endpointy;
+
     this.startpointy = this.curposy;
 		this.startpointx = this.curposx;
-		this.pointsYLast = this.curposy;
-		this.pointsXLast = this.curposx;
-		if (this.curposx == endpointx && this.curposy == endpointy){
-			this.drawLine();
-			return false;
-		}
-		else if(endpointx != this.curposx && endpointy != this.curposy){
-			// this will screw up if we have half pixel somewhere. ( will always be diagnol)
-			this.curposy += (endpointy > this.curposy ? 1 : -1);			
+		
+		// What is going on here?
+		if(endpointx != this.curposx){
 			this.curposx += (endpointx > this.curposx ? 1 : -1);
 		}
-		else if(endpointx != this.curposx){
-			this.curposx += (endpointx > this.curposx ? 1 : -1);
-		}
-		else if(endpointy != this.curposy){
+		if(endpointy != this.curposy){
 			this.curposy += (endpointy > this.curposy ? 1 : -1);
 		}
-		else{
-			console.log("We have a problem");
+		
+		if (this.curposx == endpointx && this.curposy == endpointy){
+			let res = this.getXY();
+			this.setAnimationVariables(res.x, res.y);
+			return false;
 		}
-	    this.drawShape(this.curposx, this.curposy, this.colorHex);
+
+	  this.drawShape(this.curposx, this.curposy, this.colorHex);
+
 	}
 
-	this.drawShape = function(tendpointx, tendpointy, clor){
-	    var canvas = document.getElementById('bg');
-	    var ctx = canvas.getContext('2d');
+	this.drawShape = function(tendpointx, tendpointy, color){
+	    let canvas = document.getElementById('bg');
+	    let ctx = canvas.getContext("2d");
+			// drawShape
 
-	    ctx.strokeStyle = clor;
+	    ctx.strokeStyle = color;
 	    ctx.globalAlpha = 0.2;
-	    ctx.beginPath();
-	    ctx.moveTo(this.startpointx ,this.startpointy );
-	    ctx.lineTo(tendpointx,tendpointy);
+			
+	    // TODO: This needs to be batched somehow...
+			// TODO: We need to do multiple moveTos if the fps is off....
+			ctx.beginPath();
+			n = Date.now()
+			
+			if(this.timestamp == undefined)
+				this.timestamp = Date.now();
+			
+			let i = 0;
+			let iterations = 0;
+
+			if((n - this.timestamp) < 10)
+				iterations = 1;
+			else
+				iterations = Math.ceil((n - this.timestamp) / 10);
+
+			while(i < iterations){
+				ctx.moveTo(this.startpointx ,this.startpointy);
+				ctx.lineTo(tendpointx, tendpointy);
+				this.startpointx = tendpointx;
+				this.startpointy = tendpointy;
+				let newPoint = this.getXY();
+
+				this.setAnimationVariables(newPoint.x, newPoint.y);
+				
+				// reset the point if the point is the same as a prev point.
+				tendpointx = newPoint.x;
+				tendpointy = newPoint.y;
+				i++;
+			}
+	    
+			
+			// TODO: create a function to grab a new point.
 	    ctx.stroke();
+			this.timestamp = Date.now();
 	} 
 
-	this.drawLine = function(flagDirection){
+	this.getXY = function(){
 		
-		clearInterval(this.myinterval);
-
 		// calculate the next point with direction and distance.
 		var direction = Math.floor(Math.random() * 8) + 1;
 		var distance = Math.floor(Math.random() * 10) + 1;
 
 		var newPointY, newPointX;
-
-
-    // Gravitate towards the middle... 
+    
+		// Gravitate towards the middle...
     // This will be imporant for interaction... 
     // We want to gravitate towards things.
     if( Math.floor(Math.random() * 4) < 1 ){
-    // if(true){
       
       let here = {}
       here.x = this.endpointx;
@@ -158,24 +186,15 @@ function animatedLine(startx, starty, colorStr, id){
       // pointOfInterest.y = Math.floor($(document).width() / 2)
       pointOfInterest.x = mouseX;
       pointOfInterest.y = mouseY;
-			
-			
-			// If the points obj has changed.
 
-			// if( this.pointsXLast != points[this.id][0] ){
-			// 	pointOfInterest.x = points[this.id][0];
-			// }
-			// if( this.pointsYLast != points[this.id][1] ){
-			// 	pointOfInterest.y = points[this.id][1];	
-			// }
-			// this.pointsXLast = points[this.id][0]
-			// this.pointsYLast = points[this.id][1]
+			if(handPoint != undefined){
+				pointOfInterest.x = handPoint.x;
+				pointOfInterest.y = handPoint.y;
+				// console.log(handPoint);
+			}
 			
-			// console.log(points);
-      
-			// console.log(pointOfInterest);
-      // set the direction towards the pointOfInterest.
-      direction = getDirectionOf(here, pointOfInterest);
+			// set the direction towards the pointOfInterest.
+      direction = this.getDirectionOf(here, pointOfInterest);
     }
 
 		switch(direction){
@@ -212,7 +231,14 @@ function animatedLine(startx, starty, colorStr, id){
 				newPointY = this.endpointy - distance;
 				break;
 		}
-    this.setAnimationVariables(newPointX, newPointY);
+		
+		newPointX = Math.floor(newPointX);
+		newPointY = Math.floor(newPointY);
+
+		return {
+			x: newPointX,
+			y: newPointY
+		}
 	}
 	this.init();
 
@@ -222,40 +248,45 @@ function animatedLine(startx, starty, colorStr, id){
 
 		// we can check this inside of here. 
 		// check the newpoints. Verify its inside the canvas.
+		// TODO: verify the new points are not the same as previous points.
 		if(newPointY > 0 && newPointX > 0 && newPointY < $(document).height() && newPointX < $(document).width()){
 			this.startpointx = this.endpointx;
 			this.startpointy = this.endpointy;
 			this.curpointX = this.endpointx;
 			this.curpointY = this.endpointy;
 			this.endpointx = newPointX;
-			this.endpointy = newPointY;			
+			this.endpointy = newPointY;
 		}
 		else {
-			this.drawLine();
+			res = this.getXY();
+			this.setAnimationVariables(res.x, res.y);
 		}
 	}
+
+
+	this.getDirectionOf = function(pointA, pointB){
+		let direction
+		if( pointA.x > pointB.x && pointA.y > pointB.y)
+			direction = NORTHWEST
+		else if(pointA.x < pointB.x && pointA.y > pointB.y)
+			direction = NORTHEAST
+		else if(pointA.x > pointB.x && pointA.y < pointB.y)
+			direction = SOUTHWEST
+		else if(pointA.x < pointB.x && pointA.y < pointB.y)
+			direction = SOUTHEAST
+		else if(pointA.x == pointB.x && pointA.y > pointB.y)
+			direction = SOUTH
+		else if(pointA.x == pointB.x && pointA.y < pointB.y)
+			direction = NORTH
+		else if(pointA.x > pointB.x && pointA.y == pointB.y)
+			direction = WEST
+		else if(pointA.x < pointB.x && pointA.y == pointB.y)
+			direction = EAST
+		else
+			direction = Math.floor(Math.random() * 8) + 1
+	
+		return direction;
+	}
+
 }
 
-function getDirectionOf(pointA, pointB){
-  let direction
-  if( pointA.x > pointB.x && pointA.y > pointB.y)
-    direction = NORTHWEST
-  else if(pointA.x < pointB.x && pointA.y > pointB.y)
-    direction = NORTHEAST
-  else if(pointA.x > pointB.x && pointA.y < pointB.y)
-    direction = SOUTHWEST
-  else if(pointA.x < pointB.x && pointA.y < pointB.y)
-    direction = SOUTHEAST
-  else if(pointA.x == pointB.x && pointA.y > pointB.y)
-    direction = SOUTH
-  else if(pointA.x == pointB.x && pointA.y < pointB.y)
-    direction = NORTH
-  else if(pointA.x > pointB.x && pointA.y == pointB.y)
-    direction = WEST
-  else if(pointA.x < pointB.x && pointA.y == pointB.y)
-    direction = EAST
-  else
-    direction = Math.floor(Math.random() * 8) + 1
-
-  return direction;
-}
