@@ -19,44 +19,23 @@ function onResults(results) {
     //  results.image, 0, 0, canvasElement.width, canvasElement.height);
   if (results.multiHandLandmarks) {
     
-    // TODO: We have twenty points. We have to create a mapping.
-    // var pi = 0;
-
     for (const landmarks of results.multiHandLandmarks) {
       
-      // console.log(landmarks);
-      // Should we do an average of the landmarks??
-      // Should we randomly go to each section? That would be kind of cool, and most visually appealing.
-      for(var i = 0; i < landmarks.length; i++){
-        // points[i][0] = landmarks[i].x * document.width;
-        // points[i][1] = landmarks[i].y * document.height;
-        
-        if(i == 0){
-          
-          
-          
-          // This is bad... Idk
-          // if(landmarks[i].y > 1)
-          //   landmarks[i].y = landmarks[i].y - .4
-          
+      // Goes directly to pointer finger... Have to choose one.
+      pointerFinger = landmarks[8]
 
-          x = parseFloat(landmarks[i].x.toPrecision(8));
-          y = parseFloat(landmarks[i].y.toPrecision(8));
+      x = parseFloat(pointerFinger.x.toPrecision(8));
+      y = parseFloat(pointerFinger.y.toPrecision(8));
 
-          handPoint = {
-            x: Math.floor((1 - x) * viewportWidth),
-            y: Math.floor((y) * viewportHeight)
-          };
+      handPoint = {
+        x: Math.floor((1 - x) * viewportWidth),
+        y: Math.floor((y) * viewportHeight)
+      };
 
-          console.log(landmarks[i]);
-          // console.log(parseFloat(landmarks[i].x.toPrecision(8)), parseFloat(landmarks[i].y.toPrecision(8)));
-          console.log((1 - x), (1 - y), viewportHeight, viewportWidth);
-          console.log(handPoint);
-          // console.log(iHandPoint, handPoint, viewportWidth, x, y);
-        }
-      }
-
-      // Get the middle of all of the points...
+      // console.log(pointerFinger);
+      // console.log(parseFloat(pointerFinger.x.toPrecision(8)), parseFloat(pointerFinger.y.toPrecision(8)));
+      // console.log((1 - x), (1 - y), viewportHeight, viewportWidth);
+      // console.log(handPoint);
       
     }
   }

@@ -120,14 +120,17 @@ function animatedLine(startx, starty, colorStr, id){
 	this.drawShape = function(tendpointx, tendpointy, color){
 	    let canvas = document.getElementById('bg');
 	    let ctx = canvas.getContext("2d");
-			// drawShape
-
-	    ctx.strokeStyle = color;
+			
+			ctx.strokeStyle = '#FF0000';
+			if(handPoint != undefined){
+				ctx.beginPath();
+				ctx.arc(handPoint.x, handPoint.y, 5, 0, 2 * Math.PI);
+				ctx.stroke();
+			}
+			
+			ctx.strokeStyle = color;
 	    ctx.globalAlpha = 0.2;
 			
-	    // TODO: This needs to be batched somehow...
-			// TODO: We need to do multiple moveTos if the fps is off....
-			ctx.beginPath();
 			n = Date.now()
 			
 			if(this.timestamp == undefined)
@@ -141,9 +144,13 @@ function animatedLine(startx, starty, colorStr, id){
 			else
 				iterations = Math.ceil((n - this.timestamp) / 10);
 
+			// start drawing.
+			// TODO: something is off with the randomness direction
+			ctx.beginPath();
 			while(i < iterations){
 				ctx.moveTo(this.startpointx ,this.startpointy);
 				ctx.lineTo(tendpointx, tendpointy);
+				
 				this.startpointx = tendpointx;
 				this.startpointy = tendpointy;
 				let newPoint = this.getXY();
