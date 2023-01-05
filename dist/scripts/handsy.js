@@ -6,7 +6,11 @@
 const videoElement = document.getElementsByClassName('input_video')[0];
   //const canvasElement = document.getElementsByClassName('output_canvas')[0];
   //const canvasCtx = canvasElement.getContext('2d');
-  
+var viewerWidth = document.width;
+
+let viewportWidth = parseFloat(window.innerWidth);
+let viewportHeight = parseFloat(window.innerHeight);
+
 function onResults(results) {
   
   //canvasCtx.save();
@@ -28,15 +32,27 @@ function onResults(results) {
         // points[i][1] = landmarks[i].y * document.height;
         
         if(i == 0){
-          console.log(landmarks[i]);
-          console.log(landmarks[i].x.toPrecision(4), landmarks[i].y);
-          if(landmarks[i].y > 1)
-            landmarks[i].y = landmarks[i].y - .4
+          
+          
+          
+          // This is bad... Idk
+          // if(landmarks[i].y > 1)
+          //   landmarks[i].y = landmarks[i].y - .4
+          
+
+          x = parseFloat(landmarks[i].x.toPrecision(8));
+          y = parseFloat(landmarks[i].y.toPrecision(8));
+
           handPoint = {
-            x: Math.floor(landmarks[i].x.toPrecision(4) * document.width),
-            y: Math.floor(landmarks[i].y.toPrecision(4) * document.height)
+            x: Math.floor((1 - x) * viewportWidth),
+            y: Math.floor((y) * viewportHeight)
           };
+
+          console.log(landmarks[i]);
+          // console.log(parseFloat(landmarks[i].x.toPrecision(8)), parseFloat(landmarks[i].y.toPrecision(8)));
+          console.log((1 - x), (1 - y), viewportHeight, viewportWidth);
           console.log(handPoint);
+          // console.log(iHandPoint, handPoint, viewportWidth, x, y);
         }
       }
 

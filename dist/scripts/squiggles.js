@@ -43,8 +43,6 @@ $(document).ready(function(){
 
 
 		// We have to round each coord before we draw anything.
-
-
 		points.push([xCord, yCord]);
 
     animation = new animatedLine(xCord, yCord, "#0F5791", i);
@@ -190,7 +188,6 @@ function animatedLine(startx, starty, colorStr, id){
 			if(handPoint != undefined){
 				pointOfInterest.x = handPoint.x;
 				pointOfInterest.y = handPoint.y;
-				// console.log(handPoint);
 			}
 			
 			// set the direction towards the pointOfInterest.
