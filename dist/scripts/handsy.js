@@ -16,7 +16,7 @@ function onResults(results) {
   //canvasCtx.save();
   //canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
   //canvasCtx.drawImage(
-    //  results.image, 0, 0, canvasElement.width, canvasElement.height);
+  //  results.image, 0, 0, canvasElement.width, canvasElement.height);
   console.log(results);
   if (results.multiHandLandmarks) {
     
