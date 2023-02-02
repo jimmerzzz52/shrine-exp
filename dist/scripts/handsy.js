@@ -17,7 +17,8 @@ function onResults(results) {
   //canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
   //canvasCtx.drawImage(
   //  results.image, 0, 0, canvasElement.width, canvasElement.height);
-  console.log(results);
+  // console.log(results);
+  // console.log(results.gestures)
   if (results.multiHandLandmarks) {
     
     for (const landmarks of results.multiHandLandmarks) {
@@ -34,6 +35,10 @@ function onResults(results) {
         y: Math.floor((y) * viewportHeight)
       };
 
+
+      // Gestures!
+      // console.log(results.gestures)
+
       // console.log(pointerFinger);
       // console.log(parseFloat(pointerFinger.x.toPrecision(8)), parseFloat(pointerFinger.y.toPrecision(8)));
       // console.log((1 - x), (1 - y), viewportHeight, viewportWidth);
@@ -48,9 +53,9 @@ const hands = new Hands({locateFile: (file) => {
   return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
 }});
 hands.setOptions({
-  staticImageMode: 1,
+  staticImageMode: 0,
   maxNumHands: 1,
-  modelComplexity: 0,
+  modelComplexity: 1,
   minDetectionConfidence: 0.5,
   canned_gestures_classifier_options: ['Pointing_Up', 'Closed_Fist'],
   minTrackingConfidence: 0.5

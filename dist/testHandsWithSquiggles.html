@@ -31,7 +31,11 @@
 
 <body>
   
-  <canvas id="bg"></canvas>
+  <div id="display">
+    
+    <!-- Canvas Elements Will be populated here. -->
+  </div>
+  
 
   <div class="container">
     <video class="input_video" style="display: none"></video>
@@ -40,7 +44,12 @@
 
 <script src="./scripts/squiggles.js"></script>
 <script src="./scripts/handsy.js"></script>
+
+
+<!-- This will be outdated soon... -->
 <script>
+
+  
   $(document).ready(function(){
     setInterval(function() {
       let canvas = document.getElementById('bg');
