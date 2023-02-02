@@ -1,23 +1,37 @@
 // For some reason. This fails right when we start this.... I dont know why. 
 // Something in the other file is not playing nice with this system.
-
-
-
 const videoElement = document.getElementsByClassName('input_video')[0];
-  //const canvasElement = document.getElementsByClassName('output_canvas')[0];
-  //const canvasCtx = canvasElement.getContext('2d');
+const canvasElement = document.getElementsByClassName('output_canvas')[0];
+const canvasCtx = canvasElement.getContext('2d');
+
 var viewerWidth = document.width;
 
 let viewportWidth = parseFloat(window.innerWidth);
 let viewportHeight = parseFloat(window.innerHeight);
 
+let vision
+async function runDemo() {
+  const vision = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.1.0-alpha-2/wasm"
+  );
+  gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath:
+        "https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/gesture_recognizer.task"
+    },
+    runningMode: runningMode
+    // numHands: 2
+  });
+}
+runDemo();
+
 function onResults(results) {
-  
-  //canvasCtx.save();
-  //canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-  //canvasCtx.drawImage(
-    //  results.image, 0, 0, canvasElement.width, canvasElement.height);
-  console.log(results);
+  console.log(vision)
+  canvasCtx.save();
+  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+  canvasCtx.drawImage(
+     results.image, 0, 0, canvasElement.width, canvasElement.height);
+  // console.log(results);
   if (results.multiHandLandmarks) {
     
     for (const landmarks of results.multiHandLandmarks) {
@@ -28,9 +42,8 @@ function onResults(results) {
       x = parseFloat(pointerFinger.x.toPrecision(8));
       y = parseFloat(pointerFinger.y.toPrecision(8));
 
-      // x: Math.floor((1 - x) * viewportWidth),
       handPoint = {
-        x: Math.floor((x) * viewportWidth),
+        x: Math.floor((1 - x) * viewportWidth),
         y: Math.floor((y) * viewportHeight)
       };
 
@@ -56,10 +69,11 @@ hands.setOptions({
   minTrackingConfidence: 0.5
 });
 hands.onResults(onResults);
-
-// TODO: Work on mobile...
+// TODO: Play around with these values of width and height.
+// TODO: Browser compatibility.
 const camera = new Camera(videoElement, {
   onFrame: async () => {
+    // console.log("Here.");
     await hands.send({image: videoElement});
   },
   width: 1280,

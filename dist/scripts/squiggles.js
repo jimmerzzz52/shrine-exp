@@ -79,7 +79,6 @@ function animatedLine(startx, starty, colorStr, id){
 
 	function step(timestamp) {
 
-		console.log("Stepping")
 		if (this.start === undefined) {
 			start = timestamp;
 		}
@@ -166,6 +165,10 @@ function animatedLine(startx, starty, colorStr, id){
 			
 			// TODO: create a function to grab a new point.
 	    ctx.stroke();
+			
+			// TODO: We have to figure out how to optimize or dedicate a cpu to this operation.
+			// TODO: Also another option is to put the hands detection on another device.
+			fps = Date.now() - this.timestamp / 1000
 			this.timestamp = Date.now();
 	} 
 
