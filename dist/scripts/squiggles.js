@@ -16,6 +16,11 @@ var canvasPointer = 0;
 var animatedLines = [];
 points = [];
 
+onmousemove = function(e){
+	mouseX = e.clientX;
+	mouseY = e.clientY;
+	// console.log("mouse location:", e.clientX, e.clientY)
+}
 
 $(document).ready(function(){
 	
@@ -37,8 +42,6 @@ $(document).ready(function(){
 		canvasElement.width = docWidth;
 		disp.appendChild(canvasElement);
 	}
-	
-
 	
 	for(var i = 0; i < 20; i++){
 		
