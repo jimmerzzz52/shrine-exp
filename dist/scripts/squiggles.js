@@ -14,6 +14,7 @@ var handPoint = undefined;
 var canvasPointer = 0;
 
 var animatedLines = [];
+
 points = [];
 
 onmousemove = function(e){
@@ -25,37 +26,31 @@ onmousemove = function(e){
 $(document).ready(function(){
 	
 	// We need to create a bunch of canvas elements to cycle through.
-	const disp = document.getElementById('display');
+	
 	const docHeight = $(document).height();
 	const docWidth = $(document).width();
+	const disp = document.getElementById('display');
 
+	// TODO: handle resize of page.
 	document.getElementById('display').height = docHeight;
 	document.getElementById('display').width = docWidth;
 	document.getElementById('display').position = 'relative';
 	
-
-	for(var i = 0; i < CANVAS_COUNT; i++){
-		const canvasElement = document.createElement("canvas");
-		canvasElement.id = 'canvas_' + i;
-		canvasElement.style.position = 'absolute';
-		canvasElement.height = docHeight;
-		canvasElement.width = docWidth;
-		disp.appendChild(canvasElement);
-	}
 	
 	for(var i = 0; i < 20; i++){
+	// i = 0;
 		
     let yCord = Math.floor(docHeight / 20 * i);
 		let xCord = Math.floor( i % 2 == 0 ? docWidth / 3 : docWidth * 2 / 3 );
 
 		points.push([xCord, yCord]);
-
-    animation = new animatedLine(xCord, yCord, "#0F5791", i);
+		
+    animation = new animatedLine(xCord, yCord, "#0F5791", uuidv4());
 		animation.init();
 		animatedLines.push(animation);
 
 	}
-	console.log(animatedLines);
+	// console.log(animatedLines);
 
 });
 
@@ -67,6 +62,7 @@ function animatedLine(startx, starty, colorStr, id){
 	this.id = id;
 
 	var self = this;
+	this.canvasPointer = 0;
 	this.startpointx = this.curpointX;
 	this.startpointy = this.curpointY;
 	this.curposx = this.curpointX;
@@ -76,25 +72,26 @@ function animatedLine(startx, starty, colorStr, id){
 	this.myinterval = {};
 
 	this.init = function() {
-		window.requestAnimationFrame(step);
-		setInterval(function () {self.animate();}, 10);
+		// window.requestAnimationFrame(step);
+		const docHeight = $(document).height();
+		const docWidth = $(document).width();
+		const disp = document.getElementById('display');
+
+		// create the canvas elements.
+		for(var i = 0; i < CANVAS_COUNT; i++){
+			const canvasElement = document.createElement("canvas");
+			canvasElement.id = 'canvas_'+ this.id + '-' + i;
+			canvasElement.style.position = 'absolute';
+			canvasElement.height = docHeight;
+			canvasElement.width = docWidth;
+			disp.appendChild(canvasElement);
+		}
+
+		setInterval(function () {self.animate();}, 100);
 	}
 
 	this.start = undefined;
 	this.previousTimeStamp = undefined;
-
-	function step(timestamp) {
-		console.log(self.id);
-		if (this.start === undefined) {
-			start = timestamp;
-		}
-
-		if (this.previousTimeStamp !== timestamp) {
-			self.animate();
-			window.requestAnimationFrame(step);
-			previousTimeStamp = timestamp;
-		}
-	}
 
 	this.animate = function() {
 
@@ -124,10 +121,10 @@ function animatedLine(startx, starty, colorStr, id){
 
 	this.drawShape = function(tendpointx, tendpointy, color){
 	    
-			canvasPointer = ( canvasPointer + 1 ) % CANVAS_COUNT;
+			this.canvasPointer = ( this.canvasPointer + 1 ) % CANVAS_COUNT;
 			
 			// clear the old canvas as we cycle through.
-			let canvas = document.getElementById('canvas_' + canvasPointer);
+			let canvas = document.getElementById('canvas_' + this.id + '-' + canvasPointer);
 	    let ctx = canvas.getContext("2d");
 
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -259,7 +256,8 @@ function animatedLine(startx, starty, colorStr, id){
 			y: newPointY
 		}
 	}
-	this.init();
+	// Why am I initializing this on every run??
+	// this.init();
 
 	// Helper function to set variables for animation. 
 	// TODO refactor to get rid of some of these variables.
@@ -309,3 +307,8 @@ function animatedLine(startx, starty, colorStr, id){
 
 }
 
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
