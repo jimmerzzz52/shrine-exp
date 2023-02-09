@@ -6,12 +6,11 @@ const SOUTH = 5;
 const SOUTHWEST = 6; 
 const WEST = 7;
 const NORTHWEST = 8;
-const CANVAS_COUNT = 100;
+const CANVAS_COUNT = 10;
 
 var mouseX = 0;
 var mouseY = 0;
 var handPoint = undefined;
-var canvasPointer = 0;
 
 var animatedLines = [];
 
@@ -36,10 +35,8 @@ $(document).ready(function(){
 	document.getElementById('display').width = docWidth;
 	document.getElementById('display').position = 'relative';
 	
-	
-	for(var i = 0; i < 20; i++){
-	// i = 0;
-		
+	for(var i = 0; i < 10; i++){
+
     let yCord = Math.floor(docHeight / 20 * i);
 		let xCord = Math.floor( i % 2 == 0 ? docWidth / 3 : docWidth * 2 / 3 );
 
@@ -50,7 +47,6 @@ $(document).ready(function(){
 		animatedLines.push(animation);
 
 	}
-	// console.log(animatedLines);
 
 });
 
@@ -61,15 +57,12 @@ function animatedLine(startx, starty, colorStr, id){
 	this.colorHex = colorStr;
 	this.id = id;
 
-	var self = this;
+	let self = this;
 	this.canvasPointer = 0;
-	this.startpointx = this.curpointX;
-	this.startpointy = this.curpointY;
-	this.curposx = this.curpointX;
-	this.curposy = this.curpointY;
+
 	this.endpointx = this.curpointX;
 	this.endpointy = this.curpointY;
-	this.myinterval = {};
+
 
 	this.init = function() {
 		// window.requestAnimationFrame(step);
@@ -87,7 +80,7 @@ function animatedLine(startx, starty, colorStr, id){
 			disp.appendChild(canvasElement);
 		}
 
-		setInterval(function () {self.animate();}, 100);
+		setInterval(function () {self.animate();}, 20);
 	}
 
 	this.start = undefined;
@@ -95,51 +88,48 @@ function animatedLine(startx, starty, colorStr, id){
 
 	this.animate = function() {
 
-		endpointx = this.endpointx;
-		endpointy = this.endpointy;
+		let res = this.getRandomNextPoint();
+		this.setPointInBounds(res.x, res.y);
 
-    this.startpointy = this.curposy;
-		this.startpointx = this.curposx;
-		
-		// What is going on here?
-		if(endpointx != this.curposx){
-			this.curposx += (endpointx > this.curposx ? 1 : -1);
+		// In case it's the same point...
+		if(this.endpointx != this.curpointX){
+			this.curpointX += (this.endpointx > this.curpointX ? 1 : -1);
 		}
-		if(endpointy != this.curposy){
-			this.curposy += (endpointy > this.curposy ? 1 : -1);
+		if(this.endpointy != this.curpointY){
+			this.curpointY += (this.endpointy > this.curpointY ? 1 : -1);
 		}
 		
-		if (this.curposx == endpointx && this.curposy == endpointy){
-			let res = this.getXY();
-			this.setAnimationVariables(res.x, res.y);
+		if (this.curpointX == this.endpointx && this.curpointY == this.endpointy){
+			let res = this.getRandomNextPoint();
+			this.setPointInBounds(res.x, res.y);
 			return false;
 		}
 
-	  this.drawShape(this.curposx, this.curposy, this.colorHex);
+	  this.drawShape();
 
 	}
 
-	this.drawShape = function(tendpointx, tendpointy, color){
+	this.drawShape = function(){
 	    
 			this.canvasPointer = ( this.canvasPointer + 1 ) % CANVAS_COUNT;
 			
 			// clear the old canvas as we cycle through.
-			let canvas = document.getElementById('canvas_' + this.id + '-' + canvasPointer);
+			let canvas = document.getElementById('canvas_' + this.id + '-' + this.canvasPointer);
 	    let ctx = canvas.getContext("2d");
 
+			ctx.strokeStyle = '#FF0000';
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			
-			ctx.strokeStyle = '#FF0000';
 			if(handPoint != undefined){
 				ctx.beginPath();
 				ctx.arc(handPoint.x, handPoint.y, 5, 0, 2 * Math.PI);
 				ctx.stroke();
 			}
 			
-			ctx.strokeStyle = color;
-	    ctx.globalAlpha = 0.2;
+			ctx.strokeStyle = this.colorHex;
+	    ctx.globalAlpha = 1;
 			
-			n = Date.now()
+			n = Date.now();
 			
 			if(this.timestamp == undefined)
 				this.timestamp = Date.now();
@@ -147,32 +137,31 @@ function animatedLine(startx, starty, colorStr, id){
 			let i = 0;
 			let iterations = 0;
 
-			if((n - this.timestamp) < 10)
-				iterations = 1;
-			else
-				iterations = Math.ceil((n - this.timestamp) / 10);
+			// if((n - this.timestamp) < 10)
+			iterations = 1;
+			// else
+			// 	iterations = Math.ceil((n - this.timestamp) / 10);
 
 			// start drawing.
 			// TODO: something is off with the randomness direction
 			ctx.beginPath();
-			while(i < iterations){
-				ctx.moveTo(this.startpointx ,this.startpointy);
-				ctx.lineTo(tendpointx, tendpointy);
-				
-				this.startpointx = tendpointx;
-				this.startpointy = tendpointy;
-				let newPoint = this.getXY();
 
-				this.setAnimationVariables(newPoint.x, newPoint.y);
+			while(i < iterations){
 				
-				// reset the point if the point is the same as a prev point.
-				tendpointx = newPoint.x;
-				tendpointy = newPoint.y;
+				ctx.moveTo(this.curpointX ,this.curpointY);
+				
+				let newPoint = this.getRandomNextPoint();
+				this.endpointx = newPoint.x;
+				this.endpointy = newPoint.y;
+				this.setPointInBounds(newPoint.x, newPoint.y);
+				ctx.lineTo(this.endpointx, this.endpointy);
+				
 				i++;
+
 			}
-	    
 			
 			// TODO: create a function to grab a new point.
+			
 	    ctx.stroke();
 			
 			// TODO: We have to figure out how to optimize or dedicate a cpu to this operation.
@@ -181,7 +170,7 @@ function animatedLine(startx, starty, colorStr, id){
 			this.timestamp = Date.now();
 	} 
 
-	this.getXY = function(){
+	this.getRandomNextPoint = function(){
 		
 		// calculate the next point with direction and distance.
 		var direction = Math.floor(Math.random() * 8) + 1;
@@ -261,22 +250,20 @@ function animatedLine(startx, starty, colorStr, id){
 
 	// Helper function to set variables for animation. 
 	// TODO refactor to get rid of some of these variables.
-	this.setAnimationVariables = function(newPointX, newPointY){
+	this.setPointInBounds = function(newPointX, newPointY){
 
 		// we can check this inside of here. 
 		// check the newpoints. Verify its inside the canvas.
 		// TODO: verify the new points are not the same as previous points.
 		if(newPointY > 0 && newPointX > 0 && newPointY < $(document).height() && newPointX < $(document).width()){
-			this.startpointx = this.endpointx;
-			this.startpointy = this.endpointy;
 			this.curpointX = this.endpointx;
 			this.curpointY = this.endpointy;
 			this.endpointx = newPointX;
 			this.endpointy = newPointY;
 		}
 		else {
-			res = this.getXY();
-			this.setAnimationVariables(res.x, res.y);
+			point = this.getRandomNextPoint();
+			this.setPointInBounds(point.x, point.y);
 		}
 	}
 
