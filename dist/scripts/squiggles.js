@@ -119,8 +119,24 @@ function animatedLine(startx, starty, colorStr, id){
 
 			ctx.strokeStyle = '#FF0000';
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// This needs work...
+			this.handPoint = handPoint;
+
+			// if(handPoint != undefined && this.handPoint.x == handPoint.x && this.handPoint.y == handPoint.y){
+			// 	// console.log("test");
+			// 	if(this.handPointReptitionCounter == undefined)
+			// 		this.handPointReptitionCounter = 0;
+			// 	else
+			// 		this.handPointReptitionCounter++;
+			// }
+			// else{
+			// 	this.handPointReptitionCounter = 0;
+			// }
 			
-			if(handPoint != undefined){
+			// console.log(this.handPointReptitionCounter);
+
+			if(handPoint != undefined ){
 				ctx.beginPath();
 				ctx.arc(handPoint.x, handPoint.y, 5, 0, 2 * Math.PI);
 				ctx.stroke();
