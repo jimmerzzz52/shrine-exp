@@ -11,16 +11,27 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. -->
+<script
+		src="./jquery-3.6.1.slim.min.js"
+		integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA="
+		crossorigin="anonymous"></script>
 
 <link href="./assets/gesturesStyles.css" rel="stylesheet">
-<link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
-<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<link href="./material-components-web.min.css" rel="stylesheet">
 
-<h1>Recognize hand gestures using the MediaPipe HandGestureRecognizer task</h1>
+<script src="./material-components-web.min.js"></script>
+<script src="./drawing_utils.js" crossorigin="anonymous"></script>
+<script src="./hands.js" crossorigin="anonymous"></script>
+<script src="./scripts/squiggles.js"></script>
+<!-- <script src="./tasks-vision.js" crossorigin="anonymous"></script> -->
 
-<section id="demos" class="invisible">
+<!-- <h1>Recognize hand gestures using the MediaPipe HandGestureRecognizer task</h1> -->
+<div id="display">
+  <!-- Canvas Elements Will be populated here. -->
+</div>
+
+<section id="demos" class="invisible" style="display: none">
+<!-- <section id="demos" class="invisible"> -->
   <h2>Demo: Recognize gestures</h2>
   <p><em>Click on an image below</em> to identify the gestures in the image.</p>
 
@@ -77,23 +88,34 @@ import vision from "https://cdn.skypack.dev/@mediapipe/tasks-vision@latest";
 const { GestureRecognizer, FilesetResolver } = vision;
 const demosSection = document.getElementById("demos");
 let gestureRecognizer;
-let runningMode = "IMAGE";
+let runningMode = "VIDEO";
 let enableWebcamButton;
-let webcamRunning = false;
+let webcamRunning = true;
 const videoHeight = "360px";
 const videoWidth = "480px";
+//const webcamRunning = true;
 // Before we can use HandLandmarker class we must wait for it to finish
 // loading. Machine Learning models can be large and take a moment to
 // get everything needed to run.
 async function runDemo() {
-    const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm");
+    const vision = await FilesetResolver.forVisionTasks("./wasm");
     gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
         baseOptions: {
-            modelAssetPath: "https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/gesture_recognizer.task"
+            modelAssetPath: "./gesture_recognizer.task"
         },
         runningMode: runningMode
     });
     demosSection.classList.remove("invisible");
+    const constraints = {
+      video: true
+    };
+    navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+      video.srcObject = stream;
+      video.addEventListener("loadeddata", predictWebcam);
+      //window.requestAnimationFrame(predictWebcam);
+    });
+    webcamRunning = true;
+    //enableCam()
 }
 runDemo();
 /********************************************************************
@@ -105,73 +127,12 @@ runDemo();
 // this class.
 const imageContainers = document.getElementsByClassName("detectOnClick");
 // Now let's go through all of these and add a click event listener.
-for (let i = 0; i < imageContainers.length; i++) {
+//for (let i = 0; i < imageContainers.length; i++) {
     // Add event listener to the child element whichis the img element.
-    imageContainers[i].children[0].addEventListener("click", handleClick);
-}
+  //  imageContainers[i].children[0].addEventListener("click", handleClick);
+//}
 // When an image is clicked, let's detect it and display results!
-async function handleClick(event) {
-    if (!gestureRecognizer) {
-        alert("Please wait for gestureRecognizer to load");
-        return;
-    }
-    if (runningMode === "VIDEO") {
-        runningMode = "IMAGE";
-        await gestureRecognizer.setOptions({ runningMode: runningMode });
-    }
-    // Remove all landmarks drawed before
-    const allCanvas = event.target.parentNode.getElementsByClassName("canvas");
-    for (var i = allCanvas.length - 1; i >= 0; i--) {
-        const n = allCanvas[i];
-        n.parentNode.removeChild(n);
-    }
-    // We can call handLandmarker.detect as many times as we like with
-    // different image data each time. This returns a promise
-    // which we wait to complete and then call a function to
-    // print out the results of the prediction.
-    const results = gestureRecognizer.recognize(event.target);
-    console.log(results);
-    if (results.gestures.length > 0) {
-        const p = event.target.parentNode.childNodes[3];
-        p.setAttribute("class", "info");
-        p.innerText =
-            "GestureRecognizer: " +
-                results.gestures[0][0].categoryName +
-                "\n Confidence: " +
-                Math.round(parseFloat(results.gestures[0][0].score) * 100) +
-                "%";
-        p.style =
-            "left: 0px;" +
-                "top: " +
-                event.target.height +
-                "px; " +
-                "width: " +
-                (event.target.width - 10) +
-                "px;";
-        const canvas = document.createElement("canvas");
-        canvas.setAttribute("class", "canvas");
-        canvas.setAttribute("width", event.target.naturalWidth + "px");
-        canvas.setAttribute("height", event.target.naturalHeight + "px");
-        canvas.style =
-            "left: 0px;" +
-                "top: 0px;" +
-                "width: " +
-                event.target.width +
-                "px;" +
-                "height: " +
-                event.target.height +
-                "px;";
-        event.target.parentNode.appendChild(canvas);
-        const cxt = canvas.getContext("2d");
-        for (const landmarks of results.landmarks) {
-            drawConnectors(cxt, landmarks, HAND_CONNECTIONS, {
-                color: "#00FF00",
-                lineWidth: 5
-            });
-            drawLandmarks(cxt, landmarks, { color: "#FF0000", lineWidth: 1 });
-        }
-    }
-}
+
 /********************************************************************
 // Demo 2: Continuously grab image from webcam stream and detect it.
 ********************************************************************/
@@ -185,44 +146,16 @@ function hasGetUserMedia() {
 }
 // If webcam supported, add event listener to button for when user
 // wants to activate it.
-if (hasGetUserMedia()) {
-    enableWebcamButton = document.getElementById("webcamButton");
-    enableWebcamButton.addEventListener("click", enableCam);
-}
-else {
-    console.warn("getUserMedia() is not supported by your browser");
-}
+
 // Enable the live webcam view and start detection.
-function enableCam(event) {
-    if (!gestureRecognizer) {
-        alert("Please wait for gestureRecognizer to load");
-        return;
-    }
-    if (webcamRunning === true) {
-        webcamRunning = false;
-        enableWebcamButton.innerText = "ENABLE PREDICTIONS";
-    }
-    else {
-        webcamRunning = true;
-        enableWebcamButton.innerText = "DISABLE PREDICITONS";
-    }
-    // getUsermedia parameters.
-    const constraints = {
-        video: true
-    };
-    // Activate the webcam stream.
-    navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
-        video.srcObject = stream;
-        video.addEventListener("loadeddata", predictWebcam);
-    });
-}
 async function predictWebcam() {
     const webcamElement = document.getElementById("webcam");
     // Now let's start detecting the stream.
-    if (runningMode === "IMAGE") {
-        runningMode = "VIDEO";
-        await gestureRecognizer.setOptions({ runningMode: runningMode });
-    }
+    // await gestureRecognizer.setOptions({ runningMode: runningMode });
+    //if (runningMode === "IMAGE") {
+    //    runningMode = "VIDEO";
+    //    await gestureRecognizer.setOptions({ runningMode: runningMode });
+    //}
     let nowInMs = Date.now();
     const results = await gestureRecognizer.recognizeForVideo(video, nowInMs);
     canvasCtx.save();
@@ -231,25 +164,46 @@ async function predictWebcam() {
     webcamElement.style.height = videoHeight;
     canvasElement.style.width = videoWidth;
     webcamElement.style.width = videoWidth;
+    //console.log(results);
     if (results.landmarks) {
         for (const landmarks of results.landmarks) {
-            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
-                color: "#00FF00",
-                lineWidth: 5
-            });
-            drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
+
+            // Goes directly to pointer finger... Have to choose one.
+            let pointerFinger = landmarks[8]
+            let viewportWidth = parseFloat(window.innerWidth);
+            let viewportHeight = parseFloat(window.innerHeight);
+
+            let x = parseFloat(pointerFinger.x.toPrecision(8));
+            let y = parseFloat(pointerFinger.y.toPrecision(8));
+
+            // x: Math.floor((1 - x) * viewportWidth),
+            window.handPoint = {
+              x: Math.floor((x) * viewportWidth),
+              y: Math.floor((y) * viewportHeight)
+            };
+            //drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
+                //color: "#00FF00",
+                //lineWidth: 5
+            //});
+            //drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
         }
     }
     canvasCtx.restore();
     if (results.gestures.length > 0) {
+        //g_color = 
+        console.log("Found a gesture");
+        console.log(results.gestures[0][0].categoryName);
         gestureOutput.style.display = "block";
         gestureOutput.style.width = videoWidth;
+        
         gestureOutput.innerText =
             "GestureRecognizer: " +
                 results.gestures[0][0].categoryName +
                 "\n Confidence: " +
                 Math.round(parseFloat(results.gestures[0][0].score) * 100) +
                 "%";
+        
+        window.g_color = Math.floor(Math.random()*16777215).toString(16);
     }
     else {
         gestureOutput.style.display = "none";

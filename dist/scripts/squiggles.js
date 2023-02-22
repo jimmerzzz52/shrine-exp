@@ -7,10 +7,11 @@ const SOUTHWEST = 6;
 const WEST = 7;
 const NORTHWEST = 8;
 const CANVAS_COUNT = 10;
+const g_color = "#0F5791";
+window.g_color = "#0F5791";
 
 var mouseX = 0;
 var mouseY = 0;
-var handPoint = undefined;
 
 var animatedLines = [];
 
@@ -42,7 +43,7 @@ $(document).ready(function(){
 
 		points.push([xCord, yCord]);
 		
-    animation = new animatedLine(xCord, yCord, "#0F5791", uuidv4());
+    animation = new animatedLine(xCord, yCord, g_color, uuidv4());
 		animation.init();
 		animatedLines.push(animation);
 
@@ -121,28 +122,30 @@ function animatedLine(startx, starty, colorStr, id){
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 			// This needs work...
-			this.handPoint = handPoint;
 
-			// if(handPoint != undefined && this.handPoint.x == handPoint.x && this.handPoint.y == handPoint.y){
+			// if(window.handPoint != undefined && this.window.handPoint.x == window.handPoint.x && this.window.handPoint.y == window.handPoint.y){
 			// 	// console.log("test");
-			// 	if(this.handPointReptitionCounter == undefined)
-			// 		this.handPointReptitionCounter = 0;
+			// 	if(this.window.handPointReptitionCounter == undefined)
+			// 		this.window.handPointReptitionCounter = 0;
 			// 	else
-			// 		this.handPointReptitionCounter++;
+			// 		this.window.handPointReptitionCounter++;
 			// }
 			// else{
-			// 	this.handPointReptitionCounter = 0;
+			// 	this.window.handPointReptitionCounter = 0;
 			// }
 			
-			// console.log(this.handPointReptitionCounter);
+			// console.log(this.window.handPointReptitionCounter);
 
-			if(handPoint != undefined ){
+			if(window.handPoint != undefined ){
 				ctx.beginPath();
-				ctx.arc(handPoint.x, handPoint.y, 5, 0, 2 * Math.PI);
+				ctx.arc(window.handPoint.x, window.handPoint.y, 5, 0, 2 * Math.PI);
 				ctx.stroke();
 			}
 			
-			ctx.strokeStyle = this.colorHex;
+			if(window.g_color != undefined)
+				ctx.strokeStyle = window.g_color;
+			else
+				ctx.strokeStyle = g_color;
 	    ctx.globalAlpha = 1;
 			
 			n = Date.now();
@@ -209,9 +212,9 @@ function animatedLine(startx, starty, colorStr, id){
       pointOfInterest.x = mouseX;
       pointOfInterest.y = mouseY;
 
-			if(handPoint != undefined){
-				pointOfInterest.x = handPoint.x;
-				pointOfInterest.y = handPoint.y;
+			if(window.handPoint != undefined){
+				pointOfInterest.x = window.handPoint.x;
+				pointOfInterest.y = window.handPoint.y;
 			}
 			
 			// set the direction towards the pointOfInterest.

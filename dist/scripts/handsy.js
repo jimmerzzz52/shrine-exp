@@ -30,7 +30,7 @@ function onResults(results) {
       y = parseFloat(pointerFinger.y.toPrecision(8));
 
       // x: Math.floor((1 - x) * viewportWidth),
-      handPoint = {
+      window.handPoint = {
         x: Math.floor((x) * viewportWidth),
         y: Math.floor((y) * viewportHeight)
       };
