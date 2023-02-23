@@ -203,7 +203,7 @@ async function predictWebcam() {
                 Math.round(parseFloat(results.gestures[0][0].score) * 100) +
                 "%";
         
-        window.g_color = Math.floor(Math.random()*16777215).toString(16);
+        window.g_color = "#" + Math.floor(Math.random()*16777215).toString(16);
     }
     else {
         gestureOutput.style.display = "none";
