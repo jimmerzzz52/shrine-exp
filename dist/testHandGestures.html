@@ -106,7 +106,7 @@ async function runDemo() {
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
       video.srcObject = stream;
       video.addEventListener("loadeddata", predictWebcam);
-      setInterval(function () {predictWebcam();}, 20);
+      //setInterval(function () {predictWebcam();}, 20);
       //window.requestAnimationFrame(predictWebcam);
     });
 
@@ -158,17 +158,17 @@ async function predictWebcam() {
         window.g_color = "#" + Math.floor(Math.random()*16777215).toString(16);
       else if(gesture == 'Closed_Fist'){
         if(window.gravity >= 1 )
-          window.gravity = window.gravity - 1;
+          window.gravity = window.gravity + 1;
         console.log(window.gravity);
       }
       else if(gesture == 'Open_Palm'){
         if(window.gravity <= 100 )
-          window.gravity = window.gravity + 1;
+          window.gravity = window.gravity - 1;
         console.log(window.gravity);
       }
     }
     // Call this function again to keep predicting when the browser is ready.
-    //window.requestAnimationFrame(predictWebcam);
+    window.requestAnimationFrame(predictWebcam);
 }
 
 
