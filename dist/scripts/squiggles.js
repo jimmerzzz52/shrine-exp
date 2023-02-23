@@ -9,6 +9,7 @@ const NORTHWEST = 8;
 const CANVAS_COUNT = 10;
 const g_color = "#0F5791";
 window.g_color = "#0F5791";
+window.gravity = 40;
 
 var mouseX = 0;
 var mouseY = 0;
@@ -200,7 +201,8 @@ function animatedLine(startx, starty, colorStr, id){
 		// Gravitate towards the middle...
     // This will be imporant for interaction... 
     // We want to gravitate towards things.
-    if( Math.floor(Math.random() * 4) < 1 ){
+
+    if( Math.floor(Math.random() * 100) < window.gravity ){
       
       let here = {}
       here.x = this.endpointx;

@@ -84,16 +84,11 @@ limitations under the License. -->
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+window.gravity = 1;
+
 import vision from "https://cdn.skypack.dev/@mediapipe/tasks-vision@latest";
 const { GestureRecognizer, FilesetResolver } = vision;
-const demosSection = document.getElementById("demos");
 let gestureRecognizer;
-let runningMode = "VIDEO";
-let enableWebcamButton;
-let webcamRunning = true;
-const videoHeight = "360px";
-const videoWidth = "480px";
-//const webcamRunning = true;
 // Before we can use HandLandmarker class we must wait for it to finish
 // loading. Machine Learning models can be large and take a moment to
 // get everything needed to run.
@@ -103,68 +98,36 @@ async function runDemo() {
         baseOptions: {
             modelAssetPath: "./gesture_recognizer.task"
         },
-        runningMode: runningMode
+        runningMode: "VIDEO"
     });
-    demosSection.classList.remove("invisible");
     const constraints = {
       video: true
     };
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
       video.srcObject = stream;
       video.addEventListener("loadeddata", predictWebcam);
+      setInterval(function () {predictWebcam();}, 20);
       //window.requestAnimationFrame(predictWebcam);
     });
-    webcamRunning = true;
-    //enableCam()
+
 }
 runDemo();
-/********************************************************************
-// Demo 1: Grab a bunch of images from the page and detection them
-// upon click.
-********************************************************************/
-// In this demo, we have put all our clickable images in divs with the
-// CSS class 'detectionOnClick'. Lets get all the elements that have
-// this class.
-const imageContainers = document.getElementsByClassName("detectOnClick");
-// Now let's go through all of these and add a click event listener.
-//for (let i = 0; i < imageContainers.length; i++) {
-    // Add event listener to the child element whichis the img element.
-  //  imageContainers[i].children[0].addEventListener("click", handleClick);
-//}
-// When an image is clicked, let's detect it and display results!
-
 /********************************************************************
 // Demo 2: Continuously grab image from webcam stream and detect it.
 ********************************************************************/
 const video = document.getElementById("webcam");
-const canvasElement = document.getElementById("output_canvas");
-const canvasCtx = canvasElement.getContext("2d");
-const gestureOutput = document.getElementById("gesture_output");
+
 // Check if webcam access is supported.
 function hasGetUserMedia() {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 }
-// If webcam supported, add event listener to button for when user
-// wants to activate it.
 
 // Enable the live webcam view and start detection.
 async function predictWebcam() {
-    const webcamElement = document.getElementById("webcam");
-    // Now let's start detecting the stream.
-    // await gestureRecognizer.setOptions({ runningMode: runningMode });
-    //if (runningMode === "IMAGE") {
-    //    runningMode = "VIDEO";
-    //    await gestureRecognizer.setOptions({ runningMode: runningMode });
-    //}
+    
     let nowInMs = Date.now();
     const results = await gestureRecognizer.recognizeForVideo(video, nowInMs);
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    canvasElement.style.height = videoHeight;
-    webcamElement.style.height = videoHeight;
-    canvasElement.style.width = videoWidth;
-    webcamElement.style.width = videoWidth;
-    //console.log(results);
+    
     if (results.landmarks) {
         for (const landmarks of results.landmarks) {
 
@@ -176,42 +139,36 @@ async function predictWebcam() {
             let x = parseFloat(pointerFinger.x.toPrecision(8));
             let y = parseFloat(pointerFinger.y.toPrecision(8));
 
-            // x: Math.floor((1 - x) * viewportWidth),
+            
             window.handPoint = {
-              x: Math.floor((x) * viewportWidth),
+              x: Math.floor((1 - x) * viewportWidth),
               y: Math.floor((y) * viewportHeight)
             };
-            //drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
-                //color: "#00FF00",
-                //lineWidth: 5
-            //});
-            //drawLandmarks(canvasCtx, landmarks, { color: "#FF0000", lineWidth: 2 });
         }
     }
-    canvasCtx.restore();
+    
     if (results.gestures.length > 0) {
-        //g_color = 
-        console.log("Found a gesture");
-        console.log(results.gestures[0][0].categoryName);
-        gestureOutput.style.display = "block";
-        gestureOutput.style.width = videoWidth;
-        
-        gestureOutput.innerText =
-            "GestureRecognizer: " +
-                results.gestures[0][0].categoryName +
-                "\n Confidence: " +
-                Math.round(parseFloat(results.gestures[0][0].score) * 100) +
-                "%";
-        
+
+      console.log("Found a gesture");
+      console.log(results.gestures[0][0].categoryName);
+
+      let gesture = results.gestures[0][0].categoryName;
+
+      if(gesture == 'Pointing_Up')
         window.g_color = "#" + Math.floor(Math.random()*16777215).toString(16);
-    }
-    else {
-        gestureOutput.style.display = "none";
+      else if(gesture == 'Closed_Fist'){
+        if(window.gravity <= 100 )
+          window.gravity = window.gravity + 1;
+        console.log(window.gravity);
+      }
+      else if(gesture == 'Open_Palm'){
+        if(window.gravity >= 1 )
+          window.gravity = window.gravity - 1;
+        console.log(window.gravity);
+      }
     }
     // Call this function again to keep predicting when the browser is ready.
-    if (webcamRunning === true) {
-        window.requestAnimationFrame(predictWebcam);
-    }
+    //window.requestAnimationFrame(predictWebcam);
 }
 
 
