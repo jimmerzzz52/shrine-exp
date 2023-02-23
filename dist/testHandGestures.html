@@ -157,12 +157,12 @@ async function predictWebcam() {
       if(gesture == 'Pointing_Up')
         window.g_color = "#" + Math.floor(Math.random()*16777215).toString(16);
       else if(gesture == 'Closed_Fist'){
-        if(window.gravity >= 1 )
+        if(window.gravity <= 100 )
           window.gravity = window.gravity + 1;
         console.log(window.gravity);
       }
       else if(gesture == 'Open_Palm'){
-        if(window.gravity <= 100 )
+        if(window.gravity >= 1 )
           window.gravity = window.gravity - 1;
         console.log(window.gravity);
       }
