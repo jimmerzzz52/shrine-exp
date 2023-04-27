@@ -47,6 +47,14 @@ new gweb.analytics.AutoTrack({
     text-align: left;
     min-height: 150px;
     }
+    #results-2 {
+      font-size: 14px;
+      font-weight: bold;
+      border: 1px solid #ddd;
+      padding: 15px;
+      text-align: left;
+      min-height: 150px;
+    }
     #found_proverb_parent {
     font-size: 20px;
     font-weight: bold;
@@ -137,10 +145,10 @@ a.c1 {font-weight: normal;}
           <button id="start_button" onclick="startButton(event)" style="display: inline-block;"><img alt="Start" id="start_img" src="./exampleSpeechrecog_files/mic.gif"></button>
         </div>
         <div id="results">
-          <span class="final" id="final_span"></span> <span class="interim" id="interim_span"></span>
+          <span class="final" id="final_span"></span> <span class="interim" id="interim_span"></span>  
         </div>
-        <div id="found_proverb_parent">
-          <span class="final" id="final_span_2"></span> <span id="found_proverb"></span>
+        <div id="results-2">
+          <span class="final-2" id="final-2_span"></span> <span class="interim-2" id="interim-2_span"></span>
         </div>
         <div id="copy">
           <button class="button" id="copy_button" onclick="copyButton()">Copy and Paste</button>
@@ -351,7 +359,7 @@ if (!('webkitSpeechRecognition' in window)) {
     
     recognizing = true;
     showInfo('info_speak_now');
-    start_img.src = '/intl/en/chrome/assets/common/images/content/mic-animate.gif';
+    start_img.src = './exampleSpeechrecog_files/mic.gif';
   };
 
   recognition.onerror = function(event) {
@@ -359,13 +367,13 @@ if (!('webkitSpeechRecognition' in window)) {
     console.log(error);
 
     if (event.error == 'no-speech') {
-      start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+      start_img.src = './exampleSpeechrecog_files/mic.gif';
       showInfo('info_no_speech');
       
       ignore_onend = true;
     }
     if (event.error == 'audio-capture') {
-      start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+      start_img.src = './exampleSpeechrecog_files/mic.gif';
       showInfo('info_no_microphone');
       ignore_onend = true;
     }
@@ -386,7 +394,7 @@ if (!('webkitSpeechRecognition' in window)) {
     if (ignore_onend) {
       return;
     }
-    start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+    start_img.src = './exampleSpeechrecog_files/mic.gif';
     if (!final_transcript) {
       showInfo('info_start');
       return;
@@ -476,27 +484,9 @@ if (!('webkitSpeechRecognition' in window)) {
       }
     }
     final_transcript = capitalize(final_transcript);
-
-    // I need to figure out how to display grammer stats, display sentiment.
-    // I need to find  
     output.innerHTML = linebreak(final_transcript);
-
     final_span.innerHTML = linebreak(final_transcript);
     interim_span.innerHTML = linebreak(capitalize(interim_transcript));
-    
-    // TODO: Do some cooler stuff. Like give the history behind the proverb.
-    // TODO: expand the use of our dictionary too. Maybe do a google search on the data?
-    if(currentProverb != ''){
-      found_proverb.innerHTML += "We found a proverb! " + currentProverb.charAt(0).toUpperCase() + currentProverb.slice(1);
-    }
-    // TODO: order the response to the UI... Right now it's dependent on the response time from the backend.
-    
-    grammerCorrect(interim_transcript, function(res){
-      console.log(interim_transcript)
-      console.log(res)
-      //found_proverb.innerHTML += "Trying to correct grammer: " + res;
-    })
-    
     
     if (final_transcript || interim_transcript) {
       showButtons('inline-block');
@@ -572,7 +562,7 @@ function startButton(event) {
   ignore_onend = false;
   final_span.innerHTML = '';
   interim_span.innerHTML = '';
-  start_img.src = '/intl/en/chrome/assets/common/images/content/mic-slash.gif';
+  start_img.src = './exampleSpeechrecog_files/mic.gif';
   showInfo('info_allow');
   showButtons('none');
   start_timestamp = event.timeStamp;
@@ -602,39 +592,7 @@ function showButtons(style) {
   copy_info.style.display = 'none';
   email_info.style.display = 'none';
 }
-
-function grammerCorrect(sentence, callback){
-  
-  const encodedParams = new URLSearchParams();
-  encodedParams.append("text", sentence);
-  encodedParams.append("language", "en-US");
-
-  const options = {
-  method: 'POST',
-  headers: {
-    'content-type': 'application/x-www-form-urlencoded',
-    'X-RapidAPI-Key': 'a5c1acd831msh0c1b18dab77ec4fp14f11djsn2fb63fbdbe6e',
-    'X-RapidAPI-Host': 'grammarbot.p.rapidapi.com'
-  },
-  body: encodedParams
-  };
-
-  return fetch('https://grammarbot.p.rapidapi.com/check', options)
-  .then(response => response.json())
-  .then(response => callback(response))
-  .catch(err => console.error(err));
-
-}
-
-
-
-
-
-
-
-    </script>
-  
-    <grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+</script>
   </div>
   <div style="width:50%; float: left;" id="output">
 

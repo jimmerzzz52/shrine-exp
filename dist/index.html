@@ -46,6 +46,18 @@ new gweb.analytics.AutoTrack({
     padding: 15px;
     text-align: left;
     min-height: 150px;
+    max-height: 200px;
+    overflow-y: scroll;
+    }
+    #results-2 {
+      font-size: 14px;
+      font-weight: bold;
+      border: 1px solid #ddd;
+      padding: 15px;
+      text-align: left;
+      min-height: 150px;
+      max-height: 200px;
+      overflow-y: scroll;
     }
     #found_proverb_parent {
     font-size: 20px;
@@ -92,14 +104,11 @@ new gweb.analytics.AutoTrack({
 a.c1 {font-weight: normal;}
     </style>
   </head>
-  <div style="width:50%; float: left;" class="" id="grid" data-new-gr-c-s-check-loaded="14.1063.0" data-gr-ext-installed="">
+  <div class="" id="grid" data-new-gr-c-s-check-loaded="14.1063.0" data-gr-ext-installed="">
     <div class="browser-landing" id="main">
       <div class="compact marquee-stacked" id="marquee">
         <div class="marquee-copy">
-          <h1>
-            <a class="c1" href="http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html">Web
-            Speech to Proverb</a> Demonstration
-          </h1>
+          <h1>Speech to Chat GPT Demonstration</h1>
         </div>
       </div>
       <div class="compact marquee">
@@ -139,8 +148,11 @@ a.c1 {font-weight: normal;}
         <div id="results">
           <span class="final" id="final_span"></span> <span class="interim" id="interim_span"></span>
         </div>
-        <div id="found_proverb_parent">
-          <span class="final" id="final_span_2"></span> <span id="found_proverb"></span>
+        <p id="info_start" style="display: inline;">
+          Chat Gpt Output
+        </p>
+        <div id="results-2">
+          <span class="final-2" id="final_span-2"></span> <span class="interim-2" id="interim_span-2"></span>
         </div>
         <div id="copy">
           <button class="button" id="copy_button" onclick="copyButton()">Copy and Paste</button>
@@ -352,7 +364,7 @@ if (!('webkitSpeechRecognition' in window)) {
     
     recognizing = true;
     showInfo('info_speak_now');
-    start_img.src = '/intl/en/chrome/assets/common/images/content/mic-animate.gif';
+    start_img.src = './exampleSpeechrecog_files/mic.gif';
   };
 
   recognition.onerror = function(event) {
@@ -360,13 +372,13 @@ if (!('webkitSpeechRecognition' in window)) {
     console.log(error);
 
     if (event.error == 'no-speech') {
-      start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+      start_img.src = './exampleSpeechrecog_files/mic.gif';
       showInfo('info_no_speech');
       
       ignore_onend = true;
     }
     if (event.error == 'audio-capture') {
-      start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+      start_img.src = './exampleSpeechrecog_files/mic.gif';
       showInfo('info_no_microphone');
       ignore_onend = true;
     }
@@ -387,7 +399,7 @@ if (!('webkitSpeechRecognition' in window)) {
     if (ignore_onend) {
       return;
     }
-    start_img.src = '/intl/en/chrome/assets/common/images/content/mic.gif';
+    start_img.src = './exampleSpeechrecog_files/mic.gif';
     if (!final_transcript) {
       showInfo('info_start');
       return;
@@ -427,32 +439,44 @@ if (!('webkitSpeechRecognition' in window)) {
         console.log("Raw Response from speech to text");
         console.log(event.results[i][0]);
         let tAdd = event.results[i][0].transcript
+        
+        chatGPTQuestion = 'Can you summarize, correct, and give suggestions with the following snippet of a conversation.';
         final_transcript += event.results[i][0].transcript;
         final_ts_right += "<p>" + tAdd + "</p>";
-        
-        // Closure needed here
-        grammerCorrect2(capitalize(tAdd), function(res){
-          console.log("Language Call");
-          console.log(capitalize(tAdd));
-          console.log(res);
+        chatGPTQuestion += final_transcript
 
-          for(var i = 0; i < res.matches.length; i++){
-            console.log(res.matches[i].sentence);
-          }
-          //found_proverb.innerHTML += "Trying to correct grammer: " + res;
+        const url = 'https://api.openai.com/v1/chat/completions';
+        const token = 'NOT GOING TO TELL YOU!!!';
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        };
+        const data = {
+          'model': 'gpt-3.5-turbo',
+          'messages': [{'role': 'user', 'content': chatGPTQuestion}]
+        };
+        
+        fetch(url, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(data)
         })
+        .then(response => response.json())
+        .then(result => {
+          console.log(result);
+          if( result.choices != undefined )
+            cgpt_message = result.choices[0].message.content;
+            document.getElementById('final_span-2').innerHTML = document.getElementById('final_span-2').innerHTML + '<br / >' + cgpt_message;
+            document.getElementById('results-2').scrollTop = document.getElementById('results-2').scrollHeight;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
 
       } else {
 
         // console.log(event.results[i][0].transcript);
         // console.log(event.results[i][0]);
-        
-        let tWords = event.results[i][0].transcript.split(" ");
-        tWords.forEach(function(el){
-          if(el != '')
-            interim_transcript_words.push(el)
-        })
-        
         interim_transcript += event.results[i][0].transcript;
         
         // Loop through each new word.
@@ -461,37 +485,6 @@ if (!('webkitSpeechRecognition' in window)) {
 
         // BUG: Not searching rest of text. Only new text... May be ok.
         // TODO: try to correct grammer.
-        let foundProverb;
-
-        for(var start = 0; start < tWords.length; start++){
-          
-          let searchAr = [];
-          let counter = 0;
-
-          while(counter < maxWordLengthOfProverbs && ( interim_transcript_words.length - counter - start - 1 ) >= 0 ){
-            let cur = interim_transcript_words.length - counter - start - 1;
-            // console.log(interim_transcript_words[cur]);
-            
-            if( interim_transcript_words[cur] == '')
-              break;
-            searchAr.unshift(interim_transcript_words[cur]);
-
-            let searchString = searchAr.join(' ').toLowerCase();
-            // console.log("searching", interim_transcript_words, searchString, searchAr, proverbs[searchString]);
-            
-            // found a proverb in text. Break out of loops.
-            if(proverbs[searchString] !== undefined){
-              foundProverb = searchString;
-              currentProverb = foundProverb;
-              break;
-            }
-
-            counter++;
-          }
-
-          if(foundProverb != undefined)
-            break;
-        }
       }
     }
     final_transcript = capitalize(final_transcript);
@@ -499,10 +492,9 @@ if (!('webkitSpeechRecognition' in window)) {
 
     // I need to figure out how to display grammer stats, display sentiment, display proverbs found.
     // Sense to see if the line is a question.
-    output.innerHTML = linebreak(final_ts_right);
     final_span.innerHTML = linebreak(final_transcript);
-
     interim_span.innerHTML = linebreak(capitalize(interim_transcript));
+    document.getElementById('results').scrollTop = document.getElementById('results-2').scrollHeight;
     
     // TODO: Do some cooler stuff. Like give the history behind the proverb.
     // TODO: expand the use of our dictionary too. Maybe do a google search on the data?
@@ -510,8 +502,6 @@ if (!('webkitSpeechRecognition' in window)) {
       found_proverb.innerHTML += "We found a proverb! " + currentProverb.charAt(0).toUpperCase() + currentProverb.slice(1);
     }
     // TODO: order the response to the UI... Right now it's dependent on the response time from the backend.
-    
-    
     if (final_transcript || interim_transcript) {
       showButtons('inline-block');
     }
@@ -586,7 +576,7 @@ function startButton(event) {
   ignore_onend = false;
   final_span.innerHTML = '';
   interim_span.innerHTML = '';
-  start_img.src = '/intl/en/chrome/assets/common/images/content/mic-slash.gif';
+  start_img.src = './exampleSpeechrecog_files/mic.gif';
   showInfo('info_allow');
   showButtons('none');
   start_timestamp = event.timeStamp;
@@ -615,51 +605,6 @@ function showButtons(style) {
   email_button.style.display = style;
   copy_info.style.display = 'none';
   email_info.style.display = 'none';
-}
-
-function grammerCorrect(sentence, callback){
-  
-  const encodedParams = new URLSearchParams();
-  encodedParams.append("text", sentence);
-  encodedParams.append("language", "en-US");
-
-  const options = {
-  method: 'POST',
-  headers: {
-    'content-type': 'application/x-www-form-urlencoded',
-    'X-RapidAPI-Key': 'a5c1acd831msh0c1b18dab77ec4fp14f11djsn2fb63fbdbe6e',
-    'X-RapidAPI-Host': 'grammarbot.p.rapidapi.com'
-  },
-  body: encodedParams
-  };
-
-  return fetch('https://grammarbot.p.rapidapi.com/check', options)
-  .then(response => response.json())
-  .then(response => callback(response))
-  .catch(err => console.error(err));
-
-}
-
-function grammerCorrect2(sentence, callback){
-
-  const encodedParams = new URLSearchParams();
-  encodedParams.append("language", "en-US");
-  encodedParams.append("text", sentence);
-
-  const options = {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-      'X-RapidAPI-Key': 'a5c1acd831msh0c1b18dab77ec4fp14f11djsn2fb63fbdbe6e',
-      'X-RapidAPI-Host': 'dnaber-languagetool.p.rapidapi.com'
-    },
-    body: encodedParams
-  };
-
-  return fetch('https://dnaber-languagetool.p.rapidapi.com/v2/check', options)
-    .then(response => response.json())
-    .then(response => console.log(response))
-    .catch(err => console.error(err));
 }
     </script>
   
