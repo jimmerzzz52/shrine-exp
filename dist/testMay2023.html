@@ -4,23 +4,40 @@
   <meta charset="utf-8">
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="./scripts/aslGestureRecognizer/normalizeAngles.js"></script>
+  <script src="./scripts/aslGestureRecognizer/gestureLookup.js"></script>
 </head>
 
 <body>
+  <button onclick="module.startGestureTimer()">Start the Timer</button>
   <div class="container">
+    
     <video style="display: none" class="input_video"></video>
     <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    
     <!-- <canvas class="output_canvas" style="display: none" width="1280px" height="720px"></canvas> -->
   </div>
 </body>
+<script type="text/javascript">
+  const module = {};
+</script>
 <script type="module">
   
   const videoElement = document.getElementsByClassName('input_video')[0];
   const canvasElement = document.getElementsByClassName('output_canvas')[0];
   const canvasCtx = canvasElement.getContext('2d');
+  let gesture = undefined;
+  let gestureTimer = 0;
+  let gestureTaken = true;
   
+  module.startGestureTimer = function(){
+    console.log("We are starting the timer");
+    gestureTimer = Date.now();
+    gestureTaken = false;
+  }
+
   function onResults(results) {
     
     canvasCtx.save();
@@ -34,9 +51,21 @@
         drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
                        {color: '#00FF00', lineWidth: 5});
         drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+        
+        // Now we need to calculate the angles compared to the base.
+        // Store the base somewhere.
+        const secondSinceGestureTimerStarted = Math.floor((Date.now() - gestureTimer) / 1000)
 
-        // Change to coordinates so we can create gravity....
-        // Create a few more for each point on our hand.
+        if(secondSinceGestureTimerStarted == 3 && !gestureTaken){
+          gesture = normalizeHand(landmarks);
+          gestureTaken = true;
+        }
+        else if(!gestureTaken){
+          console.log("Seconds until it's taken!!" + (3 - secondSinceGestureTimerStarted));
+        }
+        
+        normalizeHand(landmarks);
+        // See if it is a gesture.
       }
     }
     canvasCtx.restore();
