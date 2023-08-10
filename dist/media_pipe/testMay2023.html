@@ -67,8 +67,10 @@
         }
         
         normalizeHand(landmarks);
-        lookupGestureFromPoints(landmarks);
-        // See if it is a gesture.
+        gesture = closestGestureToPointMap(landmarks);
+        // See if it is a gesture. Output the name of the gesture.
+
+
       }
     }
     canvasCtx.restore();

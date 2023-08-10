@@ -12,20 +12,20 @@
 GESTURE_NAMES = ["eight.json","five.json","four.json","nine.json","one.json","seven.json","six.json","ten.json","three.json","two.json","zero.json"];
   
 // Massage the combined gestures into the right format.
-raw_gestures = []
+gestures = []
 raw_to_indexed = function(){
     
     for(let i = 0; i < COMBINED_GESTURES.length; i++){
-    let pointIndex = i % 21;
-    let gestureIndex = 0;
+        let pointIndex = i % 21;
+        let gestureIndex = 0;
 
-    if(i > 21)
-        gestureIndex = (i - pointIndex) / 21;
-    
-    if( raw_gestures[gestureIndex] == undefined)
-        raw_gestures[gestureIndex] = {};
-    
-    raw_gestures[gestureIndex][pointIndex] = COMBINED_GESTURES[i];
+        if(i > 21)
+            gestureIndex = (i - pointIndex) / 21;
+        
+        if( gestures[gestureIndex] == undefined)
+            gestures[gestureIndex] = {};
+        
+        gestures[gestureIndex][pointIndex] = COMBINED_GESTURES[i];
     }
 }
 
@@ -34,9 +34,9 @@ raw_to_normalized = function(){
     // Take the max and min of the two highest points.
     // Take the max and min of the two left and right.
     
-    for( let i = 0; i < raw_gestures.length; i++){
+    for( let i = 0; i < gestures.length; i++){
         // get min max
-        normalize_item(raw_gestures[i]);
+        normalize_item(gestures[i]);
     }
 }
 // Mutator.
@@ -59,7 +59,7 @@ normalize_item(gesture){
         gesture.c_Y = gesture[i].y - gesture.minY / (gesture.maxY - gesture.minY)
     }
 }
-raw_to_indexed()
+raw_to_indexed();
 
 
 // Let's figure out the error function.
@@ -67,28 +67,29 @@ raw_to_indexed()
 // These areas will be rounding zones.
 // For now this will be sequential.
 
-function lookupGestureFromPoints(points){
+function closestGestureToPointMap(points){
 
   CONFIG = {} // configure the lookup specifics
    
   // Find the closest point to the current point
-  let minDelta = undefined;
-  let gestureClosest = 0;
-  
+  let gestureClosest = undefined;
+  let minError = 0;
   let gesturesError = [];
 
 
-  // Angulur error
-  for(let i = 0; i < raw_gestures.length; i++){
-    let overallDelta = 0;
+  // Angulur error... 
+  // We should compare this to another type of error...
+  for(let i = 0; i < gestures.length; i++){
+    let totalError = 0;
     for(let j = 1; j < points.length - 1; j++){
-      let pointDelta = Math.abs(raw_gestures[i][j].angle - points[i].angle)
-      overallDelta = pointDelta + overallDelta;
+      let pointError = Math.abs(gestures[i][j].angle - points[i].angle)
+      totalError = pointError + totalError;
     }
-    if(minDelta == undefined || minDelta > overallDelta)
+    if(gestureClosest == undefined || totalError < minError)
         gestureClosest = i;
     gesturesError[i] = gesturesError
   }
+  return "gestureClosest: " + i
 
   // Point to Point error. 
   // TODO: Requires normalization of the points themselves.
