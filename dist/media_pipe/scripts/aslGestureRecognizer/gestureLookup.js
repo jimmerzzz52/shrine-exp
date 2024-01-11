@@ -40,7 +40,7 @@ raw_to_normalized = function(){
     }
 }
 // Mutator.
-normalize_item(gesture){
+normalize_item = function(gesture){
     // TODO: Implement infinity, but for now this will do...
     gesture.minX = gesture[0].x;
     gesture.maxX = gesture[0].x;
@@ -73,23 +73,55 @@ function closestGestureToPointMap(points){
    
   // Find the closest point to the current point
   let gestureClosest = undefined;
-  let minError = 0;
-  let gesturesError = [];
+  let angleGestureClosest = undefined;
+  let minAngleError;
+  let minPointError;
+  let pointError = [];
+  let angleError = [];
 
 
   // Angulur error... 
   // We should compare this to another type of error...
   for(let i = 0; i < gestures.length; i++){
-    let totalError = 0;
+    
+    
+    
+    // TODO: Normalize the top and bottom to each other.
+    
+    let totalPointError = 0;
+    let totalAngleError = 0;
+
     for(let j = 1; j < points.length - 1; j++){
-      let pointError = Math.abs(gestures[i][j].angle - points[i].angle)
-      totalError = pointError + totalError;
+      let xError = Math.abs(gestures[i][j].x - points[i].x)
+      let yError = Math.abs(gestures[i][j].y - points[i].y)
+      let angleError = Math.abs(gestures[i][j].angle - points[i].angle)
+      
+      totalPointError = xError + yError + totalPointError;
+      totalAngleError = totalAngleError + angleError;
+
     }
-    if(gestureClosest == undefined || totalError < minError)
+
+    if(minPointError == undefined || totalPointError < minPointError){
         gestureClosest = i;
-    gesturesError[i] = gesturesError
+        minPointError = totalPointError
+    }
+    if(minAngleError == undefined || totalAngleError < minAngleError){
+        angleGestureClosest = i;
+        minAngleError = totalAngleError
+    }
+    
+    pointError[i] = totalPointError;
+    angleError[i] = totalAngleError;
   }
-  return "gestureClosest: " + i
+
+  console.log("-------------------------------");
+  console.log(gestures);
+  console.log(pointError);
+  console.log(angleError);
+  
+  console.log("Point Gesture Closest: " + GESTURE_NAMES[gestureClosest])
+  console.log("Angle Gesture Closest: " + GESTURE_NAMES[angleGestureClosest])
+  return "gestureClosest: " + GESTURE_NAMES[gestureClosest]
 
   // Point to Point error. 
   // TODO: Requires normalization of the points themselves.
