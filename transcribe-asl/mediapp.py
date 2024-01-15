@@ -141,15 +141,15 @@ def transcribe_word(word):
                 break
     cap.release()
 
-    file = open(f"{word.get('id')}_Transcription_Pose.csv", "w")
+    file = open(f"transcribe-asl/gestures/{word.get('id')}_Transcription_Pose.csv", "w")
     file.write(pose_csv)
     file.close()
 
-    file = open(f"{word.get('id')}_Transcription_Left_Hand.csv", "w")
+    file = open(f"transcribe-asl/gestures/{word.get('id')}_Transcription_Left_Hand.csv", "w")
     file.write(left_hand_csv)
     file.close()
 
-    file = open(f"{word.get('id')}_Transcription_Right_Hand.csv", "w")
+    file = open(f"transcribe-asl/gestures/{word.get('id')}_Transcription_Right_Hand.csv", "w")
     file.write(right_hand_csv)
     file.close()
     
@@ -157,6 +157,7 @@ def transcribe_word(word):
     file.write(pose_csv)
     file.close()
 words = [
+  {"id": "ONE", "video_url": "https://www.handspeak.com//word/o/one/one-cardinal.mp4"},
   {"id": "HANDSPEAK", "video_url": "https://www.handspeak.com//word/h/han/handspeak.mp4"},
   {"id": "INTROSPECT", "video_url": "https://www.handspeak.com//word/i/int/introspect.mp4"},
   {"id": "ABANDON", "video_url": "https://www.handspeak.com//word/a/aba/abandon.mp4"},

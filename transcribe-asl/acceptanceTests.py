@@ -9,16 +9,16 @@ import pandas as pd
 
 mypath = './gestures'
 
-print(glob.glob("./gestures/*Pose.csv"))
-gesture_files = glob.glob("./gestures/*Pose.csv")
+print(glob.glob("./gestures/ONE.csv"))
+gesture_files = glob.glob("./gestures/ONE*.csv")
 
 # start at the first five.. TODO: remove
 for indx, gesture_file in enumerate(gesture_files):
-  if indx > 1:
+  if indx > 2:
     break
   print(gesture_file)
   df = pd.read_csv(gesture_file)
   
-  print(df.to_string())
+  print(df.head())
   print(df.columns)
   
