@@ -1,6 +1,8 @@
 import cv2
 import mediapipe as mp
 import datetime
+from pathlib import Path
+
 from math import atan2, degrees, sqrt
 from itertools import zip_longest
 
@@ -15,7 +17,7 @@ def transcribe_word(word):
     pose_csv = 'time,index,x,y,z,pose_id\n'
     left_hand_csv = 'time,index,x_angle,y_angle,z_angle,x,y,z\n'
     right_hand_csv = 'time,index,x_angle,y_angle,z_angle,x,y,z\n'
-    print("here")
+    print("Capturing feed and registering pose points")
     with mp_holistic.Holistic(
         model_complexity=1, 
         smooth_landmarks=True,
@@ -37,11 +39,12 @@ def transcribe_word(word):
             image.flags.writeable = False
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             results = holistic.process(image)
+            timeOfEvent = datetime.datetime.now()
             
             if results.pose_landmarks:
                 for index, data_point in enumerate(results.pose_landmarks.landmark):
                     pose_csv = pose_csv + \
-                        f'{datetime.datetime.now() - start_time},' + \
+                        f'{timeOfEvent - start_time},' + \
                         f'{index},' + \
                         f'{data_point.x},' + \
                         f'{data_point.y},' + \
@@ -52,6 +55,7 @@ def transcribe_word(word):
                 data = list(zip_longest(results.right_hand_landmarks.landmark,
                             results.right_hand_landmarks.landmark[1:]))
                 for index, value in enumerate(data):
+                    
                     if value[0] and value[1]:
                         
                         v = [value[1].x-value[0].x, value[1].y-value[0].y, value[1].z-value[0].z]
@@ -61,7 +65,7 @@ def transcribe_word(word):
                         z_angle = degrees(atan2(v[0], -v[1]))
 
                         right_hand_csv = right_hand_csv + \
-                            f'{datetime.datetime.now() - start_time},' + \
+                            f'{timeOfEvent - start_time},' + \
                             f'{index},' + \
                             f'{360 + x_angle if x_angle < 0 else x_angle},' + \
                             f'{360 + y_angle if y_angle < 0 else y_angle},' + \
@@ -71,7 +75,7 @@ def transcribe_word(word):
                             f'{data_point.z} \n'
                     else:
                         right_hand_csv = right_hand_csv + \
-                            f'{datetime.datetime.now() - start_time},' + \
+                            f'{timeOfEvent - start_time},' + \
                             f'{index},' + \
                             f'{None},' + \
                             f'{None},' + \
@@ -93,7 +97,7 @@ def transcribe_word(word):
                         z_angle = degrees(atan2(v[0], -v[1]))
 
                         left_hand_csv = left_hand_csv + \
-                            f'{datetime.datetime.now() - start_time},' + \
+                            f'{timeOfEvent - start_time},' + \
                             f'{index},' + \
                             f'{360 + x_angle if x_angle < 0 else x_angle},' + \
                             f'{360 + y_angle if y_angle < 0 else y_angle},' + \
@@ -103,7 +107,7 @@ def transcribe_word(word):
                             f'{data_point.z} \n'
                     else:
                         left_hand_csv = left_hand_csv + \
-                            f'{datetime.datetime.now() - start_time},' + \
+                            f'{timeOfEvent - start_time},' + \
                             f'{index},' + \
                             f'{None},' + \
                             f'{None},' + \
@@ -115,47 +119,48 @@ def transcribe_word(word):
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             
-            mp_drawing.draw_landmarks(
-                image,
-                results.pose_landmarks,
-                mp_holistic.POSE_CONNECTIONS,
-                landmark_drawing_spec=mp_drawing_styles
-                .get_default_pose_landmarks_style())
+            # mp_drawing.draw_landmarks(
+            #     image,
+            #     results.pose_landmarks,
+            #     mp_holistic.POSE_CONNECTIONS,
+            #     landmark_drawing_spec=mp_drawing_styles
+            #     .get_default_pose_landmarks_style())
             
-            mp_drawing.draw_landmarks(
-                image,
-                results.left_hand_landmarks,
-                mp_holistic.HAND_CONNECTIONS,
-                landmark_drawing_spec=mp_drawing_styles
-                .get_default_pose_landmarks_style())
+            # mp_drawing.draw_landmarks(
+            #     image,
+            #     results.left_hand_landmarks,
+            #     mp_holistic.HAND_CONNECTIONS,
+            #     landmark_drawing_spec=mp_drawing_styles
+            #     .get_default_pose_landmarks_style())
             
-            mp_drawing.draw_landmarks(
-                image,
-                results.right_hand_landmarks,
-                mp_holistic.HAND_CONNECTIONS,
-                landmark_drawing_spec=mp_drawing_styles
-                .get_default_pose_landmarks_style())
+            # mp_drawing.draw_landmarks(
+            #     image,
+            #     results.right_hand_landmarks,
+            #     mp_holistic.HAND_CONNECTIONS,
+            #     landmark_drawing_spec=mp_drawing_styles
+            #     .get_default_pose_landmarks_style())
 
-            cv2.imshow('MediaPipe Holistic', image)
-            if cv2.waitKey(5) & 0xFF == 27:
-                break
+            # cv2.imshow('MediaPipe Holistic', image)
+            # if cv2.waitKey(5) & 0xFF == 27:
+            #     break
     cap.release()
-
-    file = open(f"transcribe-asl/gestures/{word.get('id')}_Transcription_Pose.csv", "w")
+    
+    file = open(f"./gestures/{word.get('id')}_Transcription_Pose.csv", "w")
     file.write(pose_csv)
     file.close()
 
-    file = open(f"transcribe-asl/gestures/{word.get('id')}_Transcription_Left_Hand.csv", "w")
+    file = open(f"./gestures/{word.get('id')}_Transcription_Left_Hand.csv", "w")
     file.write(left_hand_csv)
     file.close()
 
-    file = open(f"transcribe-asl/gestures/{word.get('id')}_Transcription_Right_Hand.csv", "w")
+    file = open(f"./gestures/{word.get('id')}_Transcription_Right_Hand.csv", "w")
     file.write(right_hand_csv)
     file.close()
-    
-    file = open(f"all_pose.csv", "w")
+
+    file = open(f"./gestures/all_pose.csv", "w")
     file.write(pose_csv)
     file.close()
+
 words = [
   {"id": "ONE", "video_url": "https://www.handspeak.com//word/o/one/one-cardinal.mp4"},
   {"id": "HANDSPEAK", "video_url": "https://www.handspeak.com//word/h/han/handspeak.mp4"},

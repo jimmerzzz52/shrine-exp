@@ -13,6 +13,7 @@ bs4 = "^0.0.1"
 jupyter = "^1.0.0"
 google = "^3.0.0"
 opencv-python = "^4.8.0.74"
+matplotlib = "^3.8.2"
 
 
 [build-system]

@@ -20,5 +20,8 @@ for indx, gesture_file in enumerate(gesture_files):
   df = pd.read_csv(gesture_file)
   
   print(df.head())
+  # Get the middle value.
+  print(df['time'].astype('datetime64[ns]').quantile(0.5, interpolation="midpoint"))
+  from terminalplot import plot
+  plot(df['x'], df['y'])
   print(df.columns)
-  
