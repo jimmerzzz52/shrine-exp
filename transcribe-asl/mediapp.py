@@ -14,9 +14,10 @@ mp_holistic = mp.solutions.holistic
 def transcribe_word(word):
     cap = cv2.VideoCapture(f'{word.get("video_url")}')
 
-    pose_csv = 'time,index,x,y,z,pose_id\n'
+    pose_csv = 'time,index,x_angle,y_angle,z_angle,x,y,z,pose_id\n'
     left_hand_csv = 'time,index,x_angle,y_angle,z_angle,x,y,z\n'
     right_hand_csv = 'time,index,x_angle,y_angle,z_angle,x,y,z\n'
+    
     print("Capturing feed and registering pose points")
     with mp_holistic.Holistic(
         model_complexity=1, 
@@ -41,8 +42,18 @@ def transcribe_word(word):
             results = holistic.process(image)
             timeOfEvent = datetime.datetime.now()
             
+            # TODO: 01: Issue here. We need to find the nearest limb to recrod the angle against instead of sequentially.
+            # e.g. 
             if results.pose_landmarks:
                 for index, data_point in enumerate(results.pose_landmarks.landmark):
+                    
+                    # if data_point[0] and data_point[1]:
+                    #     v = [data_point[1].x-data_point[0].x, data_point[1].y-data_point[0].y, data_point[1].z-data_point[0].z]
+                    #     x_angle = degrees(atan2(v[1], v[2]))
+                    #     y_angle = degrees(
+                    #         atan2(-v[0], sqrt(v[1]**2 + v[2]**2)))
+                    #     z_angle = degrees(atan2(v[0], -v[1]))
+                    
                     pose_csv = pose_csv + \
                         f'{timeOfEvent - start_time},' + \
                         f'{index},' + \
@@ -70,9 +81,9 @@ def transcribe_word(word):
                             f'{360 + x_angle if x_angle < 0 else x_angle},' + \
                             f'{360 + y_angle if y_angle < 0 else y_angle},' + \
                             f'{360 + z_angle if z_angle < 0 else z_angle},' + \
-                            f'{data_point.x},' + \
-                            f'{data_point.y},' + \
-                            f'{data_point.z} \n'
+                            f'{value[1].x},' + \
+                            f'{value[1].y},' + \
+                            f'{value[1].z} \n'
                     else:
                         right_hand_csv = right_hand_csv + \
                             f'{timeOfEvent - start_time},' + \
@@ -80,9 +91,9 @@ def transcribe_word(word):
                             f'{None},' + \
                             f'{None},' + \
                             f'{None},' + \
-                            f'{data_point.x},' + \
-                            f'{data_point.y},' + \
-                            f'{data_point.z} \n'
+                            f'{value[0].x},' + \
+                            f'{value[0].y},' + \
+                            f'{value[0].z} \n'
 
             if results.left_hand_landmarks:
                 data = list(zip_longest(results.left_hand_landmarks.landmark,
@@ -102,9 +113,9 @@ def transcribe_word(word):
                             f'{360 + x_angle if x_angle < 0 else x_angle},' + \
                             f'{360 + y_angle if y_angle < 0 else y_angle},' + \
                             f'{360 + z_angle if z_angle < 0 else z_angle},' + \
-                            f'{data_point.x},' + \
-                            f'{data_point.y},' + \
-                            f'{data_point.z} \n'
+                            f'{value[1].x},' + \
+                            f'{value[1].y},' + \
+                            f'{value[1].z} \n'
                     else:
                         left_hand_csv = left_hand_csv + \
                             f'{timeOfEvent - start_time},' + \
@@ -112,9 +123,9 @@ def transcribe_word(word):
                             f'{None},' + \
                             f'{None},' + \
                             f'{None},' + \
-                            f'{data_point.x},' + \
-                            f'{data_point.y},' + \
-                            f'{data_point.z} \n'
+                            f'{value[0].x},' + \
+                            f'{value[0].y},' + \
+                            f'{value[0].z} \n'
 
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
