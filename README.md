@@ -1,14 +1,14 @@
 # Overview
 
-This repo does a few things. For one it is a website. Not a great one yet, 
-but it is still one. You can view the website at jscray.art Nothing works there yet.
+This repo does a few things. It is a website, a web crawler for test poses, and a gesture recognizer. 
+You can view the website at jscray.art, the website mostly just a stub. The website is a cloudfare CDN and is listening to the master branch and pointing to the dist directory.
 
-For two, it scrapes american sign language gestures from handspeak.com. It stores these 
-gestures in csv files making them accessible to others. 
+Web scraping for poses it scrapes american sign language gestures from handspeak.com. It stores these 
+gestures in csv files making them accessible for tests, etc.
 
-For three it uses these gestures and with our gestures recognition model engine, it is able to compare our transcribed gestures to real time feeds from the camera.
+Currently in development is a gesture recognizer. We have tests in transcribe-asl/tests/ which compare our transcribed gestures to tests we are using to judge the accuracy of the gesture recognizer.
 
-We use python and or javascript to run our model to compare to our dictionary of gestures. 
+In a future state, we would like to recognize gestures in real time.
 
 # How you can contribute
 We need all types of feedback. Whether it's the ease of installation or how the website looks. 
