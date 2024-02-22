@@ -43,7 +43,12 @@ def transcribe_word(word):
             timeOfEvent = datetime.datetime.now()
             
             # TODO: 01: Issue here. We need to find the nearest limb to recrod the angle against instead of sequentially.
-            # e.g. 
+            # e.g. for right and left hands. The limbs attached are as follows:
+            # 0-1-2-3-4, 0-5-6-7-8, 0-9-10-11-12, 0-13-14-15-16, 0-17-18-19-20 etc.
+            # See here for a full registrar of poses, and what limb is closest.\
+                # Hands: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker
+                # Poses: https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/
+            
             if results.pose_landmarks:
                 for index, data_point in enumerate(results.pose_landmarks.landmark):
                     
