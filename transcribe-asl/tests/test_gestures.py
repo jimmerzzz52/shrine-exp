@@ -1,6 +1,7 @@
 import pytest
 import unittest
 
+
 class TestGestureRecognizer(unittest.TestCase):
 
   def test_no_gesture(self):
