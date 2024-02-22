@@ -15,8 +15,18 @@ We need all types of feedback. Whether it's the ease of installation or how the 
 We want you to make comments, contributions, and to have your code merged. Look at any of the files, make an edit: instructions here: 
 
 # Installation and Testing:
-In order to start the application navigate to the dist directory and run "npx serve"
+In order to start the web application navigate to the dist directory and run "npx serve"
 Then load a page localhost:3000/testHandGestures to start testing with gestures!
+
+In order to start testing the gesture recognizer, 
+  navigate to the transcribe-asl directory, 
+  `cd transcribe-asl`
+  install dependencies
+  `poetry install`
+  Scrape the web and get the poses
+  `poetry run python data_in/mediapp.py`
+  Run tests
+  `poetry run pytest`
 
 # Branching
 This is an open source repo that is contributable to  by anyone, however there is an approval process in order to preserve the integrity of the code.
@@ -24,3 +34,4 @@ This is an open source repo that is contributable to  by anyone, however there i
 1: Open up a branch with your feature or addition
 2: Call on members to approve your branch
 3: Merge the branch into main
+

@@ -673,6 +673,7 @@ words = [
   {"id": "BOOKCOVER", "video_url": "https://www.handspeak.com//word/b/boo/bookcover.mp4"},
   {"id": "CATTLE", "video_url": "https://www.handspeak.com//word/c/cat/cattle.mp4"}]
 
-for word in words:
-    print(word)
-    transcribe_word(word)
+if __name__ == '__main__':
+    for word in words:
+        print(word)
+        transcribe_word(word)
