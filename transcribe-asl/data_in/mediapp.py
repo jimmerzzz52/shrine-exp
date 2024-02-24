@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import datetime
 from pathlib import Path
+from multiprocessing import Pool
 
 from math import atan2, degrees, sqrt
 from itertools import zip_longest
@@ -1373,6 +1374,8 @@ words = [
 ]
 
 if __name__ == "__main__":
-    for word in words:
-        print(word)
-        transcribe_word(word)
+    # for word in words:
+    #     print(word)
+    #     transcribe_word(word)
+    with Pool() as p:
+        p.map(transcribe_word, words)
