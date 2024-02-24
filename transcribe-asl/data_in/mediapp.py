@@ -11,6 +11,9 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
+# Excute in parallel?
+execute_parallel = True
+
 
 def transcribe_word(word):
     cap = cv2.VideoCapture(f'{word.get("video_url")}')
@@ -1374,8 +1377,12 @@ words = [
 ]
 
 if __name__ == "__main__":
-    # for word in words:
-    #     print(word)
-    #     transcribe_word(word)
-    with Pool() as p:
-        p.map(transcribe_word, words)
+    if execute_parallel:
+        with Pool() as p:
+            p.map(transcribe_word, words)
+            # This seems to introduce a memory leak, still not a problem on my
+            # machine but can be a problem for others
+    else:
+        for word in words:
+            print(word)
+            transcribe_word(word)
