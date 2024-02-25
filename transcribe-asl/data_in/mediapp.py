@@ -1381,7 +1381,8 @@ if __name__ == "__main__":
         with Pool() as p:
             p.map(transcribe_word, words)
             # This seems to introduce a memory leak, still not a problem on my
-            # machine but can be a problem for others
+            # machine but can be a problem for others. I recommend using parallel 
+            # execution only if your system has 32GB of RAM or more.
     else:
         for word in words:
             print(word)
