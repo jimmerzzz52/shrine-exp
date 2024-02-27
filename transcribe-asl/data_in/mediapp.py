@@ -135,30 +135,30 @@ def transcribe_word(word):
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             
-            # mp_drawing.draw_landmarks(
-            #     image,
-            #     results.pose_landmarks,
-            #     mp_holistic.POSE_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles
-            #     .get_default_pose_landmarks_style())
+            mp_drawing.draw_landmarks(
+                image,
+                results.pose_landmarks,
+                mp_holistic.POSE_CONNECTIONS,
+                landmark_drawing_spec=mp_drawing_styles
+                .get_default_pose_landmarks_style())
             
-            # mp_drawing.draw_landmarks(
-            #     image,
-            #     results.left_hand_landmarks,
-            #     mp_holistic.HAND_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles
-            #     .get_default_pose_landmarks_style())
+            mp_drawing.draw_landmarks(
+                image,
+                results.left_hand_landmarks,
+                mp_holistic.HAND_CONNECTIONS,
+                landmark_drawing_spec=mp_drawing_styles
+                .get_default_pose_landmarks_style())
             
-            # mp_drawing.draw_landmarks(
-            #     image,
-            #     results.right_hand_landmarks,
-            #     mp_holistic.HAND_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles
-            #     .get_default_pose_landmarks_style())
+            mp_drawing.draw_landmarks(
+                image,
+                results.right_hand_landmarks,
+                mp_holistic.HAND_CONNECTIONS,
+                landmark_drawing_spec=mp_drawing_styles
+                .get_default_pose_landmarks_style())
 
-            # cv2.imshow('MediaPipe Holistic', image)
-            # if cv2.waitKey(5) & 0xFF == 27:
-            #     break
+            cv2.imshow('MediaPipe Holistic', image)
+            if cv2.waitKey(5) & 0xFF == 27:
+                break
     cap.release()
     
     file = open(f"./gestures/{word.get('id')}_Transcription_Pose.csv", "w")
