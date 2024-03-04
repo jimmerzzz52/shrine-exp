@@ -3,7 +3,7 @@ import mediapipe as mp
 import datetime
 from pathlib import Path
 from multiprocessing import Pool
-import os
+from cap_from_youtube import cap_from_youtube
 
 from math import atan2, degrees, sqrt
 from itertools import zip_longest
@@ -14,7 +14,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
 # Excute in parallel?
-execute_parallel = True
+execute_parallel = False
 
 
 def transcribe_word(word):
@@ -23,11 +23,14 @@ def transcribe_word(word):
     rigth_name = f"{word.get('id')}_Transcription_Right_Hand"
 
     if (
-        not os.path.exists(f"./gestures/{pose_name}.csv")
-        and not os.path.exists(f"./gestures/{left_name}.csv")
-        and not os.path.exists(f"./gestures/{rigth_name}.csv")
+        not os.path.isfile(f"./gestures/{pose_name}.csv")
+        or not os.path.isfile(f"./gestures/{left_name}.csv")
+        or not os.path.isfile(f"./gestures/{rigth_name}.csv")
     ):
-        cap = cv2.VideoCapture(f'{word.get("video_url")}')
+        if word.get("video_url").startswith("https://www.youtube.com"):
+            cap = cap_from_youtube(word.get("video_url"))
+        else:
+            cap = cv2.VideoCapture(f'{word.get("video_url")}')
 
         # TODO 04: clean this.
         # pose_csv = "time,index,x_angle,y_angle,z_angle,x,y,z,pose_id\n"
@@ -253,6 +256,10 @@ def transcribe_word(word):
 
 
 words = [
+    {
+        "id": "ONE_YT",
+        "video_url": "https://www.youtube.com/watch?v=DZK886Tz1aQ",
+    },
     {
         "id": "ONE",
         "video_url": "https://www.handspeak.com//word/o/one/one-cardinal.mp4",
