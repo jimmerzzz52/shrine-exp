@@ -24,8 +24,8 @@ def transcribe_word(word):
 
     if (
         not os.path.exists(f"./gestures/{pose_name}.csv")
-        and not os.path.exists(left_name)
-        and not os.path.exists(rigth_name)
+        and not os.path.exists(f"./gestures/{left_name}.csv")
+        and not os.path.exists(f"./gestures/{rigth_name}.csv")
     ):
         cap = cv2.VideoCapture(f'{word.get("video_url")}')
 
