@@ -23,15 +23,14 @@ def main():
     ) as holistic:
         while True:
             # pull frame
+            start = time.time()
             ret, frame = cap.read()
             # mirror frame
             frame = cv2.flip(frame, 1)
             # display frame
-            cv2.imshow('frame',frame)
             if cv2.waitKey(1) == ord('q'):
                 break
             
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = holistic.process(frame)
             
             # print(results.pose_landmarks)
@@ -51,10 +50,13 @@ def main():
                 mp_holistic.HAND_CONNECTIONS,
                 landmark_drawing_spec=mp_drawing_styles
                 .get_default_pose_landmarks_style())
-            cv2.imshow("MediaPipe Holistic", frame)
+            
+            end = time.time()
+            
             fps = 1/(end-start)
             # TODO: Insert pose_recognized code here... Import module and run command.
-            cv2.putText(image, f'FPS: {int(fps)}', (20, 70), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 2)
+            cv2.putText(frame, f'FPS: {int(fps)}', (20, 70), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 2)
+            cv2.imshow("MediaPipe Holistic", frame)
             
 #         print(fps)
     # release everything
