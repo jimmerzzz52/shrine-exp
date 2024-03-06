@@ -3,245 +3,263 @@ import mediapipe as mp
 import datetime
 from pathlib import Path
 from multiprocessing import Pool
+from cap_from_youtube import cap_from_youtube
 
 from math import atan2, degrees, sqrt
 from itertools import zip_longest
+import os
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
 # Excute in parallel?
-execute_parallel = True
+execute_parallel = False
 
 
 def transcribe_word(word):
-    cap = cv2.VideoCapture(f'{word.get("video_url")}')
+    pose_name = f"{word.get('id')}_Transcription_Pose"
+    left_name = f"{word.get('id')}_Transcription_Left_Hand"
+    rigth_name = f"{word.get('id')}_Transcription_Right_Hand"
 
-    # TODO 04: clean this.
-    # pose_csv = "time,index,x_angle,y_angle,z_angle,x,y,z,pose_id\n"
-    # left_hand_csv = "time,index,x_angle,y_angle,z_angle,x,y,z\n"
-    # right_hand_csv = "time,index,x_angle,y_angle,z_angle,x,y,z\n"
+    if (
+        not os.path.isfile(f"./gestures/{pose_name}.csv")
+        or not os.path.isfile(f"./gestures/{left_name}.csv")
+        or not os.path.isfile(f"./gestures/{rigth_name}.csv")
+    ):
+        if word.get("video_url").startswith("https://www.youtube.com"):
+            cap = cap_from_youtube(word.get("video_url"))
+        else:
+            cap = cv2.VideoCapture(f'{word.get("video_url")}')
 
-    pose_csv = "time,index,x,y,z,pose_id\n"
-    left_hand_csv = "time,index,x,y,z\n"
-    right_hand_csv = "time,index,x,y,z\n"
+        # TODO 04: clean this.
+        # pose_csv = "time,index,x_angle,y_angle,z_angle,x,y,z,pose_id\n"
+        # left_hand_csv = "time,index,x_angle,y_angle,z_angle,x,y,z\n"
+        # right_hand_csv = "time,index,x_angle,y_angle,z_angle,x,y,z\n"
 
-    print("Capturing feed and registering pose points")
-    with mp_holistic.Holistic(
-        model_complexity=1,
-        smooth_landmarks=True,
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5,
-        enable_segmentation=True,
-        refine_face_landmarks=True,
-    ) as holistic:
-        start_time = datetime.datetime.now()
-        while cap.isOpened():
-            success, image = cap.read()
-            if not success:
-                print("Ignoring empty camera frame.")
-                cap.release()
-                continue
+        pose_csv = "time,index,x,y,z,pose_id\n"
+        left_hand_csv = "time,index,x,y,z\n"
+        right_hand_csv = "time,index,x,y,z\n"
 
-            # To improve performance, optionally mark the image as not writeable to
-            # pass by reference.
-            image.flags.writeable = False
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            results = holistic.process(image)
-            timeOfEvent = datetime.datetime.now()
+        print("Capturing feed and registering pose points")
+        with mp_holistic.Holistic(
+            model_complexity=1,
+            smooth_landmarks=True,
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5,
+            enable_segmentation=True,
+            refine_face_landmarks=True,
+        ) as holistic:
+            start_time = datetime.datetime.now()
+            while cap.isOpened():
+                success, image = cap.read()
+                if not success:
+                    print("Ignoring empty camera frame.")
+                    cap.release()
+                    continue
 
-            """
-            TODO: 01: Issue here. We need to find the nearest limb to recrod the angle against instead of sequentially.
-             e.g. for right and left hands. The limbs attached are as follows:
-             0-1-2-3-4, 0-5-6-7-8, 0-9-10-11-12, 0-13-14-15-16, 0-17-18-19-20 etc.
-             See here for a full registrar of poses, and what limb is closest.\
-                 Hands: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker
-                 Poses: https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/
+                # To improve performance, optionally mark the image as not writeable to
+                # pass by reference.
+                image.flags.writeable = False
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                results = holistic.process(image)
+                timeOfEvent = datetime.datetime.now()
 
-             There are 21 points for each hand, and 33 poses.
-            """
-            """
-            First we need to create a dict of limb conections
-            points 5, 9, 13 and 17 are also conected, but they
-            tend to be close in angle and differential position for different poses.
-            Seems best to use the tip points distance and angles for measuring whatever
-            those conections would measure.
-            """
-            # limb_connections = {
-            #     "thumb": [0, 1, 2, 3, 4],
-            #     "index": [0, 5, 6, 7, 8],
-            #     "middle": [0, 9, 10, 11, 12],
-            #     "ring": [0, 13, 14, 15, 16],
-            #     "pinky": [0, 17, 18, 19, 20],
-            #     "palm": [2, 5, 9, 13, 17],
-            # }
+                """
+                TODO: 01: Issue here. We need to find the nearest limb to recrod the angle against instead of sequentially.
+                e.g. for right and left hands. The limbs attached are as follows:
+                0-1-2-3-4, 0-5-6-7-8, 0-9-10-11-12, 0-13-14-15-16, 0-17-18-19-20 etc.
+                See here for a full registrar of poses, and what limb is closest.\
+                    Hands: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker
+                    Poses: https://developers.google.com/mediapipe/solutions/vision/pose_landmarker/
 
-            # The angles are organized in the csv as being one set of angles for each node.
-            # But node 0, for instance, appears in all limbs. So it will appear
-            # 5 times in the csv. So it doesn't seem adequate to record one set of angles for each node.
-            # It seems better to record the angles for each limb, and then the position of the nodes.
+                There are 21 points for each hand, and 33 poses.
+                """
+                """
+                First we need to create a dict of limb conections
+                points 5, 9, 13 and 17 are also conected, but they
+                tend to be close in angle and differential position for different poses.
+                Seems best to use the tip points distance and angles for measuring whatever
+                those conections would measure.
+                """
+                # limb_connections = {
+                #     "thumb": [0, 1, 2, 3, 4],
+                #     "index": [0, 5, 6, 7, 8],
+                #     "middle": [0, 9, 10, 11, 12],
+                #     "ring": [0, 13, 14, 15, 16],
+                #     "pinky": [0, 17, 18, 19, 20],
+                #     "palm": [2, 5, 9, 13, 17],
+                # }
 
-            # Question, wouldn't it be better to record just the positions of each node, and then calculate the angles
-            # for each limb in the analysis phase? It seems like it would be more efficient to do it that way.
+                # The angles are organized in the csv as being one set of angles for each node.
+                # But node 0, for instance, appears in all limbs. So it will appear
+                # 5 times in the csv. So it doesn't seem adequate to record one set of angles for each node.
+                # It seems better to record the angles for each limb, and then the position of the nodes.
 
-            if results.pose_landmarks:
-                for index, data_point in enumerate(results.pose_landmarks.landmark):
+                # Question, wouldn't it be better to record just the positions of each node, and then calculate the angles
+                # for each limb in the analysis phase? It seems like it would be more efficient to do it that way.
 
-                    # if data_point[0] and data_point[1]:
-                    #     v = [data_point[1].x-data_point[0].x, data_point[1].y-data_point[0].y, data_point[1].z-data_point[0].z]
-                    #     x_angle = degrees(atan2(v[1], v[2]))
-                    #     y_angle = degrees(
-                    #         atan2(-v[0], sqrt(v[1]**2 + v[2]**2)))
-                    #     z_angle = degrees(atan2(v[0], -v[1]))
+                if results.pose_landmarks:
+                    for index, data_point in enumerate(results.pose_landmarks.landmark):
 
-                    pose_csv = (
-                        pose_csv
-                        + f"{timeOfEvent - start_time},"
-                        + f"{index},"
-                        + f"{data_point.x},"
-                        + f"{data_point.y},"
-                        + f"{data_point.z},"
-                        + f'{word.get("id")} \n'
-                    )
+                        # if data_point[0] and data_point[1]:
+                        #     v = [data_point[1].x-data_point[0].x, data_point[1].y-data_point[0].y, data_point[1].z-data_point[0].z]
+                        #     x_angle = degrees(atan2(v[1], v[2]))
+                        #     y_angle = degrees(
+                        #         atan2(-v[0], sqrt(v[1]**2 + v[2]**2)))
+                        #     z_angle = degrees(atan2(v[0], -v[1]))
 
-            if results.right_hand_landmarks:
-                # Takes the n and n+1 points and calculates the angle between them.
-                # data = list(
-                #     zip_longest(
-                #         results.right_hand_landmarks.landmark,
-                #         results.right_hand_landmarks.landmark[1:],
-                #     )
-                # )
-                data = list(results.right_hand_landmarks.landmark)
-                for index, value in enumerate(data):
+                        pose_csv = (
+                            pose_csv
+                            + f"{timeOfEvent - start_time},"
+                            + f"{index},"
+                            + f"{data_point.x},"
+                            + f"{data_point.y},"
+                            + f"{data_point.z},"
+                            + f'{word.get("id")} \n'
+                        )
 
-                    # if value[0] and value[1]:
-
-                    #     v = [
-                    #         value[1].x - value[0].x,
-                    #         value[1].y - value[0].y,
-                    #         value[1].z - value[0].z,
-                    #     ]
-                    #     x_angle = degrees(atan2(v[1], v[2]))
-                    #     y_angle = degrees(atan2(-v[0], sqrt(v[1] ** 2 + v[2] ** 2)))
-                    #     z_angle = degrees(atan2(v[0], -v[1]))
-
-                    right_hand_csv = (
-                        right_hand_csv
-                        + f"{timeOfEvent - start_time},"
-                        + f"{index},"
-                        # + f"{360 + x_angle if x_angle < 0 else x_angle},"
-                        # + f"{360 + y_angle if y_angle < 0 else y_angle},"
-                        # + f"{360 + z_angle if z_angle < 0 else z_angle},"
-                        + f"{value.x},"
-                        + f"{value.y},"
-                        + f"{value.z} \n"
-                    )
-                    # else:
-                    #     right_hand_csv = (
-                    #         right_hand_csv
-                    #         + f"{timeOfEvent - start_time},"
-                    #         + f"{index},"
-                    #         # + f"{None},"
-                    #         # + f"{None},"
-                    #         # + f"{None},"
-                    #         + f"{value[0].x},"
-                    #         + f"{value[0].y},"
-                    #         + f"{value[0].z} \n"
+                if results.right_hand_landmarks:
+                    # Takes the n and n+1 points and calculates the angle between them.
+                    # data = list(
+                    #     zip_longest(
+                    #         results.right_hand_landmarks.landmark,
+                    #         results.right_hand_landmarks.landmark[1:],
                     #     )
+                    # )
+                    data = list(results.right_hand_landmarks.landmark)
+                    for index, value in enumerate(data):
 
-            if results.left_hand_landmarks:
-                # data = list(
-                #     zip_longest(
-                #         results.left_hand_landmarks.landmark,
-                #         results.left_hand_landmarks.landmark[1:],
-                #     )
-                # )
-                data = list(results.left_hand_landmarks.landmark)
-                for index, value in enumerate(data):
-                    # if value[0] and value[1]:
+                        # if value[0] and value[1]:
 
-                    #     v = [
-                    #         value[1].x - value[0].x,
-                    #         value[1].y - value[0].y,
-                    #         value[1].z - value[0].z,
-                    #     ]
-                    #     x_angle = degrees(atan2(v[1], v[2]))
-                    #     y_angle = degrees(atan2(-v[0], sqrt(v[1] ** 2 + v[2] ** 2)))
-                    #     z_angle = degrees(atan2(v[0], -v[1]))
+                        #     v = [
+                        #         value[1].x - value[0].x,
+                        #         value[1].y - value[0].y,
+                        #         value[1].z - value[0].z,
+                        #     ]
+                        #     x_angle = degrees(atan2(v[1], v[2]))
+                        #     y_angle = degrees(atan2(-v[0], sqrt(v[1] ** 2 + v[2] ** 2)))
+                        #     z_angle = degrees(atan2(v[0], -v[1]))
 
-                    left_hand_csv = (
-                        left_hand_csv
-                        + f"{timeOfEvent - start_time},"
-                        + f"{index},"
-                        # + f"{360 + x_angle if x_angle < 0 else x_angle},"
-                        # + f"{360 + y_angle if y_angle < 0 else y_angle},"
-                        # + f"{360 + z_angle if z_angle < 0 else z_angle},"
-                        + f"{value.x},"
-                        + f"{value.y},"
-                        + f"{value.z} \n"
-                    )
-                    # else:
-                    #     left_hand_csv = (
-                    #         left_hand_csv
-                    #         + f"{timeOfEvent - start_time},"
-                    #         + f"{index},"
-                    #         + f"{None},"
-                    #         + f"{None},"
-                    #         + f"{None},"
-                    #         + f"{value[0].x},"
-                    #         + f"{value[0].y},"
-                    #         + f"{value[0].z} \n"
+                        right_hand_csv = (
+                            right_hand_csv
+                            + f"{timeOfEvent - start_time},"
+                            + f"{index},"
+                            # + f"{360 + x_angle if x_angle < 0 else x_angle},"
+                            # + f"{360 + y_angle if y_angle < 0 else y_angle},"
+                            # + f"{360 + z_angle if z_angle < 0 else z_angle},"
+                            + f"{value.x},"
+                            + f"{value.y},"
+                            + f"{value.z} \n"
+                        )
+                        # else:
+                        #     right_hand_csv = (
+                        #         right_hand_csv
+                        #         + f"{timeOfEvent - start_time},"
+                        #         + f"{index},"
+                        #         # + f"{None},"
+                        #         # + f"{None},"
+                        #         # + f"{None},"
+                        #         + f"{value[0].x},"
+                        #         + f"{value[0].y},"
+                        #         + f"{value[0].z} \n"
+                        #     )
+
+                if results.left_hand_landmarks:
+                    # data = list(
+                    #     zip_longest(
+                    #         results.left_hand_landmarks.landmark,
+                    #         results.left_hand_landmarks.landmark[1:],
                     #     )
+                    # )
+                    data = list(results.left_hand_landmarks.landmark)
+                    for index, value in enumerate(data):
+                        # if value[0] and value[1]:
 
-            image.flags.writeable = True
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                        #     v = [
+                        #         value[1].x - value[0].x,
+                        #         value[1].y - value[0].y,
+                        #         value[1].z - value[0].z,
+                        #     ]
+                        #     x_angle = degrees(atan2(v[1], v[2]))
+                        #     y_angle = degrees(atan2(-v[0], sqrt(v[1] ** 2 + v[2] ** 2)))
+                        #     z_angle = degrees(atan2(v[0], -v[1]))
 
-            # mp_drawing.draw_landmarks(
-            #     image,
-            #     results.pose_landmarks,
-            #     mp_holistic.POSE_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles
-            #     .get_default_pose_landmarks_style())
+                        left_hand_csv = (
+                            left_hand_csv
+                            + f"{timeOfEvent - start_time},"
+                            + f"{index},"
+                            # + f"{360 + x_angle if x_angle < 0 else x_angle},"
+                            # + f"{360 + y_angle if y_angle < 0 else y_angle},"
+                            # + f"{360 + z_angle if z_angle < 0 else z_angle},"
+                            + f"{value.x},"
+                            + f"{value.y},"
+                            + f"{value.z} \n"
+                        )
+                        # else:
+                        #     left_hand_csv = (
+                        #         left_hand_csv
+                        #         + f"{timeOfEvent - start_time},"
+                        #         + f"{index},"
+                        #         + f"{None},"
+                        #         + f"{None},"
+                        #         + f"{None},"
+                        #         + f"{value[0].x},"
+                        #         + f"{value[0].y},"
+                        #         + f"{value[0].z} \n"
+                        #     )
 
-            # mp_drawing.draw_landmarks(
-            #     image,
-            #     results.left_hand_landmarks,
-            #     mp_holistic.HAND_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles
-            #     .get_default_pose_landmarks_style())
+                image.flags.writeable = True
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-            # mp_drawing.draw_landmarks(
-            #     image,
-            #     results.right_hand_landmarks,
-            #     mp_holistic.HAND_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles
-            #     .get_default_pose_landmarks_style())
+                # mp_drawing.draw_landmarks(
+                #     image,
+                #     results.pose_landmarks,
+                #     mp_holistic.POSE_CONNECTIONS,
+                #     landmark_drawing_spec=mp_drawing_styles
+                #     .get_default_pose_landmarks_style())
 
-            # cv2.imshow('MediaPipe Holistic', image)
-            # if cv2.waitKey(5) & 0xFF == 27:
-            #     break
-    cap.release()
+                # mp_drawing.draw_landmarks(
+                #     image,
+                #     results.left_hand_landmarks,
+                #     mp_holistic.HAND_CONNECTIONS,
+                #     landmark_drawing_spec=mp_drawing_styles
+                #     .get_default_pose_landmarks_style())
 
-    file = open(f"./gestures/{word.get('id')}_Transcription_Pose.csv", "w")
-    file.write(pose_csv)
-    file.close()
+                # mp_drawing.draw_landmarks(
+                #     image,
+                #     results.right_hand_landmarks,
+                #     mp_holistic.HAND_CONNECTIONS,
+                #     landmark_drawing_spec=mp_drawing_styles
+                #     .get_default_pose_landmarks_style())
 
-    file = open(f"./gestures/{word.get('id')}_Transcription_Left_Hand.csv", "w")
-    file.write(left_hand_csv)
-    file.close()
+                # cv2.imshow('MediaPipe Holistic', image)
+                # if cv2.waitKey(5) & 0xFF == 27:
+                #     break
+        cap.release()
 
-    file = open(f"./gestures/{word.get('id')}_Transcription_Right_Hand.csv", "w")
-    file.write(right_hand_csv)
-    file.close()
+        file = open(f"./gestures/{pose_name}.csv", "w")
+        file.write(pose_csv)
+        file.close()
 
-    file = open(f"./gestures/all_pose.csv", "w")
-    file.write(pose_csv)
-    file.close()
+        file = open(f"./gestures/{left_name}.csv", "w")
+        file.write(left_hand_csv)
+        file.close()
+
+        file = open(f"./gestures/{rigth_name}.csv", "w")
+        file.write(right_hand_csv)
+        file.close()
+
+        file = open(f"./gestures/all_pose.csv", "w")
+        file.write(pose_csv)
+        file.close()
 
 
 words = [
+    {
+        "id": "ONE_YT",
+        "video_url": "https://www.youtube.com/watch?v=DZK886Tz1aQ",
+    },
     {
         "id": "ONE",
         "video_url": "https://www.handspeak.com//word/o/one/one-cardinal.mp4",
@@ -1381,7 +1399,7 @@ if __name__ == "__main__":
         with Pool() as p:
             p.map(transcribe_word, words)
             # This seems to introduce a memory leak, still not a problem on my
-            # machine but can be a problem for others. I recommend using parallel 
+            # machine but can be a problem for others. I recommend using parallel
             # execution only if your system has 32GB of RAM or more.
     else:
         for word in words:
