@@ -23,9 +23,9 @@ def transcribe_word(word):
     rigth_name = f"{word.get('id')}_Transcription_Right_Hand"
 
     if (
-        not os.path.isfile(f"./gestures/{pose_name}.csv")
-        or not os.path.isfile(f"./gestures/{left_name}.csv")
-        or not os.path.isfile(f"./gestures/{rigth_name}.csv")
+        not os.path.isfile(f"./gesture_data/{pose_name}.csv")
+        or not os.path.isfile(f"./gesture_data/{left_name}.csv")
+        or not os.path.isfile(f"./gesture_data/{rigth_name}.csv")
     ):
         if word.get("video_url").startswith("https://www.youtube.com"):
             cap = cap_from_youtube(word.get("video_url"))
@@ -238,19 +238,19 @@ def transcribe_word(word):
                 #     break
         cap.release()
 
-        file = open(f"./gestures/{pose_name}.csv", "w")
+        file = open(f"./gesture_data/{pose_name}.csv", "w")
         file.write(pose_csv)
         file.close()
 
-        file = open(f"./gestures/{left_name}.csv", "w")
+        file = open(f"./gesture_data/{left_name}.csv", "w")
         file.write(left_hand_csv)
         file.close()
 
-        file = open(f"./gestures/{rigth_name}.csv", "w")
+        file = open(f"./gesture_data/{rigth_name}.csv", "w")
         file.write(right_hand_csv)
         file.close()
 
-        file = open(f"./gestures/all_pose.csv", "w")
+        file = open(f"./gesture_data/all_pose.csv", "w")
         file.write(pose_csv)
         file.close()
 
