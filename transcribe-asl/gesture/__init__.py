@@ -1,5 +1,5 @@
 # gesture/__init__.py
 
 
-from .gesture import Gesture
-__all__ = ['gesture']
+from .base import Gesture
+__all__ = ['base']
