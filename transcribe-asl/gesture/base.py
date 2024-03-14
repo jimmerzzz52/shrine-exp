@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 from typing import Optional
-from sklearn.preprocessing import MinMaxScaler
-import os
 
 
 class Gesture:
