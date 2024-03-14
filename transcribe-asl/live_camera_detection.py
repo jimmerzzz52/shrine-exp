@@ -1,7 +1,7 @@
 import cv2
 import mediapipe as mp
 import time
-from gesture.base import Gesture
+from gesture.base import Gesture, to_hand_frame
 import numpy as np
 
 import cv2
@@ -19,7 +19,7 @@ def main():
     # cap.open(address)
     with mp_holistic.Holistic(
         model_complexity=1,
-        smooth_landmarks=False,
+        smooth_landmarks=True,
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
         enable_segmentation=True,
@@ -43,12 +43,12 @@ def main():
             # Draw landmark annotation on the frame.
             frame.flags.writeable = True
             # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            mp_drawing.draw_landmarks(
-                frame,
-                results.pose_landmarks,
-                mp_holistic.POSE_CONNECTIONS,
-                landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
-            )
+            # mp_drawing.draw_landmarks(
+            #     frame,
+            #     results.pose_landmarks,
+            #     mp_holistic.POSE_CONNECTIONS,
+            #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
+            # )
             mp_drawing.draw_landmarks(
                 frame,
                 results.left_hand_landmarks,
@@ -63,8 +63,13 @@ def main():
                 landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
             )
 
-            mp_drawing.draw_axis(frame, np.eye(3), np.zeros(3)) 
-            # This is important, it draws the axis of the camera. 
+            mp_drawing.draw_axis(
+                frame,
+                np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]]),
+                np.array([0.089, -0.089, 0]),
+            )
+
+            # This is important, it draws the axis of the camera.
 
             end = time.time()
 
@@ -93,6 +98,42 @@ def main():
             g = Gesture(right_hand_data, left_hand_data, pose_data)
             recognition_output = g.fit()
 
+            draw_rotated_left_hand(
+                frame,
+                left_hand_data,
+                mp_drawing,
+                results.left_hand_landmarks,
+                mp_holistic.HAND_CONNECTIONS,
+                mp_drawing_styles.get_default_pose_landmarks_style(),
+            )
+
+            draw_rotated_right_hand(
+                frame,
+                right_hand_data,
+                mp_drawing,
+                results.right_hand_landmarks,
+                mp_holistic.HAND_CONNECTIONS,
+                mp_drawing_styles.get_default_pose_landmarks_style(),
+                # scale=1,
+            )
+
+            # base_points_in_hand_frame: np.array = to_hand_frame(
+            #     np.genfromtxt(
+            #         "./gesture/base_poses_hf/one_Transcription_Right_Hand.csv",
+            #         delimiter=",",
+            #     )[1:, 1:]
+            # )
+
+            # draw_rotated_right_hand(
+            #     frame,
+            #     base_points_in_hand_frame,
+            #     mp_drawing,
+            #     results.right_hand_landmarks,
+            #     mp_holistic.HAND_CONNECTIONS,
+            #     mp_drawing_styles.get_default_pose_landmarks_style(),
+            #     scale=1,
+            # )
+
             cv2.putText(
                 frame,
                 f"FPS: {int(fps)}   Gesture Recognized: {recognition_output}",
@@ -102,13 +143,101 @@ def main():
                 (0, 255, 0),
                 2,
             )
-            
+
             cv2.imshow("MediaPipe Holistic", frame)
 
     #         print(fps)
     # release everything
     cap.release()
     cv2.destroyAllWindows()
+
+
+def draw_rotated_left_hand(
+    frame,
+    left_hand_data,
+    mp_drawing,
+    landmarks,
+    connections,
+    landmark_drawing_spec,
+    scale=1 / 3,
+):
+    """
+    Draw the left hand landmarks in the top left corner of the frame.
+    """
+    # Draw left hand smaller in corner
+    if landmarks:
+        left_hand_data = to_hand_frame(left_hand_data).dot(
+            np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])
+        )
+        left_hand_data_small = left_hand_data * scale
+        left_hand_data_small[:, 0] = (
+            left_hand_data_small[:, 0] - left_hand_data_small[:, 0].min()
+        )
+        left_hand_data_small[:, 1] = (
+            left_hand_data_small[:, 1] - left_hand_data_small[:, 1].max() + 1
+        )
+        # left_hand_data_small[:, 2] = left_hand_data_small[:, 2] - left_hand_data_small[:, 2].min()
+        draw_landmark(
+            frame,
+            left_hand_data_small,
+            mp_drawing,
+            landmarks,
+            connections,
+            landmark_drawing_spec,
+        )
+
+
+def draw_rotated_right_hand(
+    frame,
+    right_hand_data,
+    mp_drawing,
+    landmarks,
+    connections,
+    landmark_drawing_spec,
+    scale=1 / 3,
+):
+    """
+    Draw the right hand landmarks in the top right corner of the frame.
+    """
+    # Draw right hand smaller in corner
+    if landmarks:
+        right_hand_data = to_hand_frame(right_hand_data).dot(
+            np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])
+        )
+        right_hand_data_small = right_hand_data * scale
+        right_hand_data_small[:, 0] = (
+            right_hand_data_small[:, 0] - right_hand_data_small[:, 0].max() + 1
+        )
+        right_hand_data_small[:, 1] = (
+            right_hand_data_small[:, 1] - right_hand_data_small[:, 1].max() + 1
+        )
+        # right_hand_data_small[:, 2] = right_hand_data_small[:, 2] - right_hand_data_small[:, 2].min()
+        draw_landmark(
+            frame,
+            right_hand_data_small,
+            mp_drawing,
+            landmarks,
+            connections,
+            landmark_drawing_spec,
+        )
+
+
+def draw_landmark(
+    frame, data, mp_drawing, landmarks, connections, landmark_drawing_spec
+):
+    """
+    Draw the landmark data on the frame.
+    """
+    for i in range(len(landmarks.landmark)):
+        landmarks.landmark[i].x = data[i, 0].astype(float)
+        landmarks.landmark[i].y = data[i, 1].astype(float)
+        landmarks.landmark[i].z = data[i, 2].astype(float)
+    mp_drawing.draw_landmarks(
+        frame,
+        landmarks,
+        connections,
+        landmark_drawing_spec,
+    )
 
 
 if __name__ == "__main__":

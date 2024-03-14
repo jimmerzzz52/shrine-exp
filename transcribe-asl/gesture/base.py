@@ -32,6 +32,8 @@ class Gesture:
             #     return "Pointed Finger!"
             if self._is_one():
                 return "One!"
+            if self._is_two():
+                return "Two!"
 
     def _is_pointed_finger(self) -> bool:
         """
@@ -85,6 +87,29 @@ class Gesture:
             base_points_in_hand_frame, incoming_points_in_hand_frame
         )
 
+    def _is_two(self) -> bool:
+        """
+        Check if the hand is in the two pose.
+
+        Returns
+        -------
+        is_one: bool
+            A bool indicating if the hand is in the one pose.
+        """
+        # Load the base points in the hand frame of reference.
+        base_points_in_hand_frame: np.array = to_hand_frame(
+            np.genfromtxt(
+                "./gesture/base_poses_hf/two_Transcription_Right_Hand.csv",
+                delimiter=",",
+            )[1:, 1:]
+        )
+        # get the incoming poitns in the hand frame of reference.
+        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        # match the points.
+        return match_position_points(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
+
 
 # auxillary functions (Not sure they should be here or not but I think it deserves its own file)
 def hand_frame_of_reference(coordinates: np.array) -> np.array:
@@ -115,7 +140,7 @@ def hand_frame_of_reference(coordinates: np.array) -> np.array:
     hand_frame[1] = y_vec / np.linalg.norm(y_vec)
     # The x base vector is the cross product of the y and z base vectors
     hand_frame[0] = np.cross(hand_frame[2], hand_frame[1])
-    return hand_frame
+    return hand_frame.T
 
 
 def to_hand_frame(coordinates: np.array) -> np.array:
