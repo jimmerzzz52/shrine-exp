@@ -2,46 +2,68 @@ import pandas as pd
 import numpy as np
 from typing import Optional
 from sklearn.preprocessing import MinMaxScaler
+import os
 
 
 class Gesture:
 
     def __init__(
         self,
+        base_gestures: Optional[dict[str, dict[str, np.array]]] = None,
+    ):
+        """
+        Initialize the Gesture object.
+
+        Parameters
+        ----------
+        base_gestures: dict[str, dict[str, np.array]]
+            A dictionary containing the base gestures.
+            The keys are the names of the gestures.
+            The values are dictionaries containing the base points of the right, left, and body gestures.
+
+        Examples
+        --------
+        base_gestures["one"]["right"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
+        base_gestures["one"]["left"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
+        base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
+        """
+        if base_gestures is None:
+            self.base_gestures: dict[str, dict[str, np.array]] = (
+                Gesture.get_base_gestures()
+            )
+        else:
+            self.base_gestures = base_gestures
+        # Note to self: this class should be loaded outside the loop, initialized with the data in the database and then
+        # the fit method should be called in the loop with right, left, and body data as the parameters.
+        # fit should be called predict.
+
+    def predict(
+        self,
         right: Optional[np.array] = None,
         left: Optional[np.array] = None,
         body: Optional[np.array] = None,
     ):
-        """
-        Initialize the Gesture object.
-        """
-        self.right: Optional[np.array] = right
-        self.left: Optional[np.array] = left
-        self.body: Optional[np.array] = body
-
-    def fit(self):
         # TODO: Add all of the poses here...
 
         # For The pose one, all we need is the right hand.
-        if self.right is None and self.left is None:
+        if right is None and left is None:
             return "Nothing recognized"
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
-        if self.right is not None:
-            # if self._is_pointed_finger():
-            #     return "Pointed Finger!"
-            if self._is_one():
-                return "One!"
-            if self._is_two():
-                return "Two!"
-            if self._is_three():
-                return "Three!"
-            if self._is_four():
-                return "Four!"
-            if self._is_five():
-                return "Five!"
+        if right is not None:
+            errors = {
+                "one": self._one(right),
+                "two": self._two(right),
+                "three": self._three(right),
+                "four": self._four(right),
+                "five": self._five(right),
+            }
+            smaller = min(
+                errors, key=errors.get
+            )  # The identified pose is the one with the smallest error.
+            return smaller
 
-    def _is_pointed_finger(self) -> bool:
+    def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """
         Check if the hand is in the pointed finger pose.
 
@@ -50,9 +72,7 @@ class Gesture:
         is_pointed_finger: bool
             A bool indicating if the hand is in the pointed finger pose.
         """
-        df = pd.DataFrame(
-            self.right, columns=["x", "y", "z"]
-        )  # isn't this x, y, z? YES!
+        df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
 
         print(df)
         index_finger_height = df["y"].iloc[8]
@@ -70,121 +90,188 @@ class Gesture:
         else:
             return False
 
-    def _is_one(self) -> bool:
+    def _one(self, right: Optional[np.array]) -> float:
         """
-        Check if the hand is in the one pose.
+        Check the error with the one pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
 
         Returns
         -------
-        is_one: bool
-            A bool indicating if the hand is in the one pose.
+        error: float
+            The error with the one pose.
         """
         # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(
-            np.genfromtxt(
-                "./gesture/base_poses_hf/one_Transcription_Right_Hand.csv",
-                delimiter=",",
-            )[1:, 1:]
-        )
+        base_points_in_hand_frame: np.array = to_hand_frame(self.base_gestures["one"]["right_hand"])
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return match_position_points(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
-        )
+        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
 
-    def _is_two(self) -> bool:
+    def _two(self, right: Optional[np.array]) -> bool:
         """
-        Check if the hand is in the two pose.
+        Check the error with the two pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
 
         Returns
         -------
-        is_one: bool
-            A bool indicating if the hand is in the one pose.
+        error: float
+            The error with the two pose.
         """
         # Load the base points in the hand frame of reference.
         base_points_in_hand_frame: np.array = to_hand_frame(
-            np.genfromtxt(
-                "./gesture/base_poses_hf/two_Transcription_Right_Hand.csv",
-                delimiter=",",
-            )[1:, 1:]
+            self.base_gestures["two"]["right_hand"]
         )
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return match_position_points(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
-        )
+        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
 
-    def _is_three(self) -> bool:
+    def _three(self, right: Optional[np.array]) -> bool:
         """
-        Check if the hand is in the three pose.
+        Check the error with the three pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
 
         Returns
         -------
-        is_one: bool
-            A bool indicating if the hand is in the three pose.
+        error: float
+            The error with the three pose.
         """
         # Load the base points in the hand frame of reference.
         base_points_in_hand_frame: np.array = to_hand_frame(
-            np.genfromtxt(
-                "./gesture/base_poses_hf/three_Transcription_Right_Hand.csv",
-                delimiter=",",
-            )[1:, 1:]
+            self.base_gestures["three"]["right_hand"]
         )
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return match_position_points(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
-        )
+        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
 
-    def _is_four(self) -> bool:
+    def _four(self, right: Optional[np.array]) -> bool:
         """
-        Check if the hand is in the four pose.
+        Check the error with the four pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
 
         Returns
         -------
-        is_one: bool
-            A bool indicating if the hand is in the four pose.
+        error: float
+            The error with the four pose.
         """
         # Load the base points in the hand frame of reference.
         base_points_in_hand_frame: np.array = to_hand_frame(
-            np.genfromtxt(
-                "./gesture/base_poses_hf/four_Transcription_Right_Hand.csv",
-                delimiter=",",
-            )[1:, 1:]
+            self.base_gestures["four"]["right_hand"]
         )
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return match_position_points(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
-        )
+        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
 
-    def _is_five(self) -> bool:
+    def _five(self, right: Optional[np.array]) -> bool:
         """
-        Check if the hand is in the five pose.
+        Check the error with the five pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
 
         Returns
         -------
-        is_one: bool
-            A bool indicating if the hand is in the five pose.
+        error: float
+            The error with the five pose.
         """
         # Load the base points in the hand frame of reference.
         base_points_in_hand_frame: np.array = to_hand_frame(
-            np.genfromtxt(
-                "./gesture/base_poses_hf/five_Transcription_Right_Hand.csv",
-                delimiter=",",
-            )[1:, 1:]
+            self.base_gestures["five"]["right_hand"]
         )
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return match_position_points(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
-        )
+        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
 
+    @staticmethod
+    def get_base_gestures() -> dict[str, dict[str, np.array]]:
+        """
+        Get the base gestures.
+
+        Returns
+        -------
+        base_gestures: dict[str,dict[str,np.array]]
+            A dictionary containing the base gestures.
+        """
+        # Define the base gestures path
+        base_path: str = "./gesture/base_poses_hf"
+        # Define the gestures.
+        gestures: list[str] = ["one", "two", "three", "four", "five"]
+        # Load the base gestures from the database.
+        base_gestures: dict[str, dict[str, np.array]] = {}
+        for gesture in gestures:
+            base_gestures[gesture] = {
+                "right_hand": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
+                ),
+                "left_hand": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
+                ),
+                "pose": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Pose.csv"
+                ),
+            }
+        return base_gestures
+
+
+def load_base_gesture(path: str) -> Optional[np.array]:
+    """
+    Load the base gesture from a file.
+
+    Parameters
+    ----------
+    path: str
+        The path to the file.
+
+    Returns
+    -------
+    base_gesture: Optional[np.array]
+        The base gesture if exists.
+    """
+    base_gesture = np.genfromtxt(path, delimiter=",")
+    if len(base_gesture.shape) > 1:  # Check if the base gesture is not empty.
+        return base_gesture[1:, 1:]
+    else:
+        return None
+
+
+def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
+    """
+    Compute the mean squared error.
+
+    Parameters
+    ----------
+    y_true: np.array
+        The true values.
+    y_pred: np.array
+        The predicted values.
+
+    Returns
+    -------
+    mse: float
+        The mean squared error.
+    """
+    return np.square(y_true - y_pred).mean()
 
 # auxillary functions (Not sure they should be here or not but I think it deserves its own file)
 def hand_frame_of_reference(coordinates: np.array) -> np.array:

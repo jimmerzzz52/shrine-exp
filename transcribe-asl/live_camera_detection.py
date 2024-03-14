@@ -9,6 +9,8 @@ import cv2
 
 def main():
 
+    g = Gesture()  # Load outside to prevent reloading base gestures from disk
+
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
     mp_holistic = mp.solutions.holistic
@@ -95,8 +97,7 @@ def main():
                     [[value.x, value.y, value.z] for value in left_hand_raw]
                 )
 
-            g = Gesture(right_hand_data, left_hand_data, pose_data)
-            recognition_output = g.fit()
+            recognition_output = g.predict(right_hand_data, left_hand_data, pose_data)
 
             draw_rotated_left_hand(
                 frame,
