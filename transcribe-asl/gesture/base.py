@@ -34,6 +34,12 @@ class Gesture:
                 return "One!"
             if self._is_two():
                 return "Two!"
+            if self._is_three():
+                return "Three!"
+            if self._is_four():
+                return "Four!"
+            if self._is_five():
+                return "Five!"
 
     def _is_pointed_finger(self) -> bool:
         """
@@ -100,6 +106,75 @@ class Gesture:
         base_points_in_hand_frame: np.array = to_hand_frame(
             np.genfromtxt(
                 "./gesture/base_poses_hf/two_Transcription_Right_Hand.csv",
+                delimiter=",",
+            )[1:, 1:]
+        )
+        # get the incoming poitns in the hand frame of reference.
+        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        # match the points.
+        return match_position_points(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
+
+    def _is_three(self) -> bool:
+        """
+        Check if the hand is in the three pose.
+
+        Returns
+        -------
+        is_one: bool
+            A bool indicating if the hand is in the three pose.
+        """
+        # Load the base points in the hand frame of reference.
+        base_points_in_hand_frame: np.array = to_hand_frame(
+            np.genfromtxt(
+                "./gesture/base_poses_hf/three_Transcription_Right_Hand.csv",
+                delimiter=",",
+            )[1:, 1:]
+        )
+        # get the incoming poitns in the hand frame of reference.
+        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        # match the points.
+        return match_position_points(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
+
+    def _is_four(self) -> bool:
+        """
+        Check if the hand is in the four pose.
+
+        Returns
+        -------
+        is_one: bool
+            A bool indicating if the hand is in the four pose.
+        """
+        # Load the base points in the hand frame of reference.
+        base_points_in_hand_frame: np.array = to_hand_frame(
+            np.genfromtxt(
+                "./gesture/base_poses_hf/four_Transcription_Right_Hand.csv",
+                delimiter=",",
+            )[1:, 1:]
+        )
+        # get the incoming poitns in the hand frame of reference.
+        incoming_points_in_hand_frame: np.array = to_hand_frame(self.right)
+        # match the points.
+        return match_position_points(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
+
+    def _is_five(self) -> bool:
+        """
+        Check if the hand is in the five pose.
+
+        Returns
+        -------
+        is_one: bool
+            A bool indicating if the hand is in the five pose.
+        """
+        # Load the base points in the hand frame of reference.
+        base_points_in_hand_frame: np.array = to_hand_frame(
+            np.genfromtxt(
+                "./gesture/base_poses_hf/five_Transcription_Right_Hand.csv",
                 delimiter=",",
             )[1:, 1:]
         )
