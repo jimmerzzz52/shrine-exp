@@ -4,8 +4,6 @@ import time
 from gesture.base import Gesture, to_hand_frame
 import numpy as np
 
-import cv2
-
 
 def main():
 
