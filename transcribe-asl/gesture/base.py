@@ -105,11 +105,15 @@ class Gesture:
             The error with the one pose.
         """
         # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(self.base_gestures["one"]["right_hand"])
+        base_points_in_hand_frame: np.array = to_hand_frame(
+            self.base_gestures["one"]["right_hand"]
+        )
         # get the incoming poitns in the hand frame of reference.
         incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
+        return mean_squared_error(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
 
     def _two(self, right: Optional[np.array]) -> bool:
         """
@@ -132,7 +136,9 @@ class Gesture:
         # get the incoming poitns in the hand frame of reference.
         incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
+        return mean_squared_error(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
 
     def _three(self, right: Optional[np.array]) -> bool:
         """
@@ -155,7 +161,9 @@ class Gesture:
         # get the incoming poitns in the hand frame of reference.
         incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
+        return mean_squared_error(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
 
     def _four(self, right: Optional[np.array]) -> bool:
         """
@@ -178,7 +186,9 @@ class Gesture:
         # get the incoming poitns in the hand frame of reference.
         incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
+        return mean_squared_error(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
 
     def _five(self, right: Optional[np.array]) -> bool:
         """
@@ -201,7 +211,9 @@ class Gesture:
         # get the incoming poitns in the hand frame of reference.
         incoming_points_in_hand_frame: np.array = to_hand_frame(right)
         # match the points.
-        return mean_squared_error(base_points_in_hand_frame, incoming_points_in_hand_frame)
+        return mean_squared_error(
+            base_points_in_hand_frame, incoming_points_in_hand_frame
+        )
 
     @staticmethod
     def get_base_gestures() -> dict[str, dict[str, np.array]]:
@@ -272,6 +284,7 @@ def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
         The mean squared error.
     """
     return np.square(y_true - y_pred).mean()
+
 
 # auxillary functions (Not sure they should be here or not but I think it deserves its own file)
 def hand_frame_of_reference(coordinates: np.array) -> np.array:
