@@ -123,7 +123,7 @@ class Gesture:
         self, base_points: np.array, incoming_points: np.array
     ) -> float:
         """
-        Compare the base points of the right hand with the incoming points of the right hand.
+        Compare the base points of the hand with the incoming points of the hand.
 
         Parameters
         ----------
