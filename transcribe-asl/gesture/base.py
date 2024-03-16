@@ -49,17 +49,33 @@ class Gesture:
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
-            errors = {
-                "one": self._one(right),
-                "two": self._two(right),
-                "three": self._three(right),
-                "four": self._four(right),
-                "five": self._five(right),
-            }
-            smaller = min(
-                errors, key=errors.get
-            )  # The identified pose is the one with the smallest error.
-            return smaller
+            if left is None:
+                errors = {
+                    "one": self._one(right),
+                    "two": self._two(right),
+                    "three": self._three(right),
+                    "four": self._four(right),
+                    "five": self._five(right),
+                }
+                smaller = min(
+                    errors, key=errors.get
+                )  # The identified pose is the one with the smallest error.
+                return smaller
+            if left is not None:
+                errors = {
+                    "one": self._one(right),
+                    "two": self._two(right),
+                    "three": self._three(right),
+                    "four": self._four(right),
+                    "five": self._five(right),
+                    "six": self._six(right, left),
+                    "seven": self._seven(right, left),
+                    "eight": self._eight(right, left),
+                    "nine": self._nine(right, left),
+                    "ten": self._ten(right, left),
+                }
+                smaller = min(errors, key=errors.get)
+                return smaller
 
     def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """
@@ -213,6 +229,151 @@ class Gesture:
             base_points_in_hand_frame, incoming_points_in_hand_frame
         )
 
+    def _six(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
+        """
+        Check the error with the six pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
+        left: np.array
+            The points of the left hand.
+
+        Returns
+        -------
+        error: float
+            The error with the six pose.
+        """
+        # Load the base points in the hand frame of reference for the right hand.
+        bphf_right: np.array = to_hand_frame(self.base_gestures["six"]["right_hand"])
+        bphf_left: np.array = to_hand_frame(self.base_gestures["six"]["left_hand"])
+        # get the incoming poitns in the hand frame of reference for the right hand.
+        iphf_right: np.array = to_hand_frame(right)
+        # get the incoming poitns in the hand frame of reference for the left hand.
+        iphf_left: np.array = to_hand_frame(left)
+        # match the points of both hands.
+        return (
+            mean_squared_error(bphf_left, iphf_left)
+            + mean_squared_error(bphf_right, iphf_right)
+        ) / 2
+
+    def _seven(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
+        """
+        Check the error with the seven pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
+        left: np.array
+            The points of the left hand.
+
+        Returns
+        -------
+        error: float
+            The error with the seven pose.
+        """
+        # Load the base points in the hand frame of reference for the right hand.
+        bphf_right: np.array = to_hand_frame(self.base_gestures["seven"]["right_hand"])
+        bphf_left: np.array = to_hand_frame(self.base_gestures["seven"]["left_hand"])
+        # get the incoming poitns in the hand frame of reference for the right hand.
+        iphf_right: np.array = to_hand_frame(right)
+        # get the incoming poitns in the hand frame of reference for the left hand.
+        iphf_left: np.array = to_hand_frame(left)
+        # match the points of both hands.
+        return (
+            mean_squared_error(bphf_left, iphf_left)
+            + mean_squared_error(bphf_right, iphf_right)
+        ) / 2
+
+    def _eight(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
+        """
+        Check the error with the eight pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
+        left: np.array
+            The points of the left hand.
+
+        Returns
+        -------
+        error: float
+            The error with the eight pose.
+        """
+        # Load the base points in the hand frame of reference for the right hand.
+        bphf_right: np.array = to_hand_frame(self.base_gestures["eight"]["right_hand"])
+        bphf_left: np.array = to_hand_frame(self.base_gestures["eight"]["left_hand"])
+        # get the incoming poitns in the hand frame of reference for the right hand.
+        iphf_right: np.array = to_hand_frame(right)
+        # get the incoming poitns in the hand frame of reference for the left hand.
+        iphf_left: np.array = to_hand_frame(left)
+        # match the points of both hands.
+        return (
+            mean_squared_error(bphf_left, iphf_left)
+            + mean_squared_error(bphf_right, iphf_right)
+        ) / 2
+
+    def _nine(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
+        """
+        Check the error with the nine pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
+        left: np.array
+            The points of the left hand.
+
+        Returns
+        -------
+        error: float
+            The error with the nine pose.
+        """
+        # Load the base points in the hand frame of reference for the right hand.
+        bphf_right: np.array = to_hand_frame(self.base_gestures["nine"]["right_hand"])
+        bphf_left: np.array = to_hand_frame(self.base_gestures["nine"]["left_hand"])
+        # get the incoming poitns in the hand frame of reference for the right hand.
+        iphf_right: np.array = to_hand_frame(right)
+        # get the incoming poitns in the hand frame of reference for the left hand.
+        iphf_left: np.array = to_hand_frame(left)
+        # match the points of both hands.
+        return (
+            mean_squared_error(bphf_left, iphf_left)
+            + mean_squared_error(bphf_right, iphf_right)
+        ) / 2
+
+    def _ten(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
+        """
+        Check the error with the ten pose.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
+        left: np.array
+            The points of the left hand.
+
+        Returns
+        -------
+        error: float
+            The error with the ten pose.
+        """
+        # Load the base points in the hand frame of reference for the right hand.
+        bphf_right: np.array = to_hand_frame(self.base_gestures["ten"]["right_hand"])
+        bphf_left: np.array = to_hand_frame(self.base_gestures["ten"]["left_hand"])
+        # get the incoming poitns in the hand frame of reference for the right hand.
+        iphf_right: np.array = to_hand_frame(right)
+        # get the incoming poitns in the hand frame of reference for the left hand.
+        iphf_left: np.array = to_hand_frame(left)
+        # match the points of both hands.
+        return (
+            mean_squared_error(bphf_left, iphf_left)
+            + mean_squared_error(bphf_right, iphf_right)
+        ) / 2
+
     @staticmethod
     def get_base_gestures() -> dict[str, dict[str, np.array]]:
         """
@@ -226,7 +387,18 @@ class Gesture:
         # Define the base gestures path
         base_path: str = "./gesture/base_poses_hf"
         # Define the gestures.
-        gestures: list[str] = ["one", "two", "three", "four", "five"]
+        gestures: list[str] = [
+            "one",
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten",
+        ]
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
         for gesture in gestures:
