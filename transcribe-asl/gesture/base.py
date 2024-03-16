@@ -68,7 +68,7 @@ class Gesture:
         if right is not None:
             poses_names = ["one", "two", "three", "four", "five"]
             errors = {
-                pose_name: self._compare_right_hand(
+                pose_name: self._compare_hand(
                     self.base_gestures[pose_name]["right_hand"], right
                 )
                 for pose_name in poses_names
@@ -85,10 +85,12 @@ class Gesture:
                     for pose_name in poses_names
                 }
                 errors = errors | errors_six_to_ten  # merge the two dictionaries
-        smaller = min(
-            errors, key=errors.get
-        )  # The identified pose is the one with the smallest error.
-        return smaller
+            smaller = min(
+                errors, key=errors.get
+            )  # The identified pose is the one with the smallest error.
+            return smaller
+        if left is None:
+            return "Nothing recognized"
 
     def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """
@@ -117,18 +119,18 @@ class Gesture:
         else:
             return False
 
-    def _compare_right_hand(
-        self, right_base_points: np.array, right_incoming_points: np.array
+    def _compare_hand(
+        self, base_points: np.array, incoming_points: np.array
     ) -> float:
         """
         Compare the base points of the right hand with the incoming points of the right hand.
 
         Parameters
         ----------
-        right_base_points: np.array
-            The base points of the right hand.
-        right_incoming_points: np.array
-            The incoming points of the right hand.
+        base_points: np.array
+            The base points of the hand.
+        incoming_points: np.array
+            The incoming points of the hand.
 
         Returns
         -------
@@ -136,36 +138,9 @@ class Gesture:
             The error between the base points and the incoming points.
         """
         # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(right_base_points)
+        base_points_in_hand_frame: np.array = to_hand_frame(base_points)
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(right_incoming_points)
-        # match the points.
-        return mean_squared_error(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
-        )
-
-    def _compare_left_hand(
-        self, left_base_points: np.array, left_incoming_points: np.array
-    ) -> float:
-        """
-        Compare the base points of the left hand with the incoming points of the left hand.
-
-        Parameters
-        ----------
-        left_base_points: np.array
-            The base points of the left hand.
-        left_incoming_points: np.array
-            The incoming points of the left hand.
-
-        Returns
-        -------
-        error: float
-            The error between the base points and the incoming points.
-        """
-        # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(left_base_points)
-        # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(left_incoming_points)
+        incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points)
         # match the points.
         return mean_squared_error(
             base_points_in_hand_frame, incoming_points_in_hand_frame
@@ -218,11 +193,11 @@ class Gesture:
             The error between the base points and the incoming points.
         """
         # Get the error of the right hand.
-        error_right: float = self._compare_right_hand(
+        error_right: float = self._compare_hand(
             right_base_points, right_incoming_points
         )
         # Get the error of the left hand.
-        error_left: float = self._compare_left_hand(
+        error_left: float = self._compare_hand(
             left_base_points, left_incoming_points
         )
         # match the points of both hands.
