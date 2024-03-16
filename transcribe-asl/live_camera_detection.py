@@ -165,7 +165,7 @@ def draw_rotated_left_hand(
     """
     # Draw left hand smaller in corner
     if landmarks:
-        left_hand_data = to_hand_frame(left_hand_data).dot(
+        left_hand_data = to_hand_frame(left_hand_data, norm=False).dot(
             np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])
         )
         left_hand_data_small = left_hand_data * scale
@@ -200,7 +200,7 @@ def draw_rotated_right_hand(
     """
     # Draw right hand smaller in corner
     if landmarks:
-        right_hand_data = to_hand_frame(right_hand_data).dot(
+        right_hand_data = to_hand_frame(right_hand_data, norm=False).dot(
             np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])
         )
         right_hand_data_small = right_hand_data * scale

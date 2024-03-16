@@ -316,12 +316,14 @@ def hand_frame_of_reference(coordinates: np.array) -> np.array:
     return hand_frame.T
 
 
-def to_hand_frame(coordinates: np.array) -> np.array:
+def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
     """Rotate and translates the coordinates to the hand frame of reference.
 
     Inputs:
         coordinates: np.array
             A 2D array containing the coordinates of the points to rotate.
+        norm: bool
+            A bool indicating if the coordinates should be normalized.
 
     Outputs:
         coordinates_hand_frame: np.array
@@ -338,6 +340,11 @@ def to_hand_frame(coordinates: np.array) -> np.array:
         coordinates_hand_frame[i] = np.dot(
             rotation_matrix, coordinates[i] - coordinates[0]
         )
+    if norm:
+        # The coordinates are normalized by dividing them by the maximum absolute value of the coordinates.
+        coordinates_hand_frame = coordinates_hand_frame / np.abs(
+            coordinates_hand_frame
+        ).max(axis=0)
     return coordinates_hand_frame
 
 
