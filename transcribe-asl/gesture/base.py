@@ -40,7 +40,24 @@ class Gesture:
         right: Optional[np.array] = None,
         left: Optional[np.array] = None,
         body: Optional[np.array] = None,
-    ):
+    ) -> str:
+        """
+        Predict the pose of the person.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
+        left: np.array
+            The points of the left hand.
+        body: np.array
+            The points of the body.
+
+        Returns
+        -------
+        pose: str
+            The pose of the person.
+        """
         # TODO: Add all of the poses here...
 
         # For The pose one, all we need is the right hand.
@@ -49,33 +66,29 @@ class Gesture:
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
-            if left is None:
-                errors = {
-                    "one": self._one(right),
-                    "two": self._two(right),
-                    "three": self._three(right),
-                    "four": self._four(right),
-                    "five": self._five(right),
-                }
-                smaller = min(
-                    errors, key=errors.get
-                )  # The identified pose is the one with the smallest error.
-                return smaller
+            poses_names = ["one", "two", "three", "four", "five"]
+            errors = {
+                pose_name: self._compare_right_hand(
+                    self.base_gestures[pose_name]["right_hand"], right
+                )
+                for pose_name in poses_names
+            }
             if left is not None:
-                errors = {
-                    "one": self._one(right),
-                    "two": self._two(right),
-                    "three": self._three(right),
-                    "four": self._four(right),
-                    "five": self._five(right),
-                    "six": self._six(right, left),
-                    "seven": self._seven(right, left),
-                    "eight": self._eight(right, left),
-                    "nine": self._nine(right, left),
-                    "ten": self._ten(right, left),
+                poses_names = ["six", "seven", "eight", "nine", "ten"]
+                errors_six_to_ten = {
+                    pose_name: self._compare_both_hands(
+                        self.base_gestures[pose_name]["right_hand"],
+                        self.base_gestures[pose_name]["left_hand"],
+                        right,
+                        left,
+                    )
+                    for pose_name in poses_names
                 }
-                smaller = min(errors, key=errors.get)
-                return smaller
+                errors = errors | errors_six_to_ten  # merge the two dictionaries
+        smaller = min(
+            errors, key=errors.get
+        )  # The identified pose is the one with the smallest error.
+        return smaller
 
     def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """
@@ -104,275 +117,116 @@ class Gesture:
         else:
             return False
 
-    def _one(self, right: Optional[np.array]) -> float:
+    def _compare_right_hand(
+        self, right_base_points: np.array, right_incoming_points: np.array
+    ) -> float:
         """
-        Check the error with the one pose.
+        Compare the base points of the right hand with the incoming points of the right hand.
 
         Parameters
         ----------
-        right: np.array
-            The points of the right hand.
+        right_base_points: np.array
+            The base points of the right hand.
+        right_incoming_points: np.array
+            The incoming points of the right hand.
 
         Returns
         -------
         error: float
-            The error with the one pose.
+            The error between the base points and the incoming points.
         """
         # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(
-            self.base_gestures["one"]["right_hand"]
-        )
+        base_points_in_hand_frame: np.array = to_hand_frame(right_base_points)
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
+        incoming_points_in_hand_frame: np.array = to_hand_frame(right_incoming_points)
         # match the points.
         return mean_squared_error(
             base_points_in_hand_frame, incoming_points_in_hand_frame
         )
 
-    def _two(self, right: Optional[np.array]) -> bool:
+    def _compare_left_hand(
+        self, left_base_points: np.array, left_incoming_points: np.array
+    ) -> float:
         """
-        Check the error with the two pose.
+        Compare the base points of the left hand with the incoming points of the left hand.
 
         Parameters
         ----------
-        right: np.array
-            The points of the right hand.
+        left_base_points: np.array
+            The base points of the left hand.
+        left_incoming_points: np.array
+            The incoming points of the left hand.
 
         Returns
         -------
         error: float
-            The error with the two pose.
+            The error between the base points and the incoming points.
         """
         # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(
-            self.base_gestures["two"]["right_hand"]
-        )
+        base_points_in_hand_frame: np.array = to_hand_frame(left_base_points)
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
+        incoming_points_in_hand_frame: np.array = to_hand_frame(left_incoming_points)
         # match the points.
         return mean_squared_error(
             base_points_in_hand_frame, incoming_points_in_hand_frame
         )
 
-    def _three(self, right: Optional[np.array]) -> bool:
+    def _compare_body(
+        self, body_base_points: np.array, body_incoming_points: np.array
+    ) -> float:
         """
-        Check the error with the three pose.
+        Compare the base points of the body with the incoming points of the body.
 
         Parameters
         ----------
-        right: np.array
-            The points of the right hand.
+        body_base_points: np.array
+            The base points of the body.
+        body_incoming_points: np.array
+            The incoming points of the body.
 
         Returns
         -------
         error: float
-            The error with the three pose.
+            The error between the base points and the incoming points.
         """
-        # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(
-            self.base_gestures["three"]["right_hand"]
-        )
-        # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
-        # match the points.
-        return mean_squared_error(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
-        )
+        pass
 
-    def _four(self, right: Optional[np.array]) -> bool:
+    def _compare_both_hands(
+        self,
+        right_base_points: np.array,
+        left_base_points: np.array,
+        right_incoming_points: np.array,
+        left_incoming_points: np.array,
+    ) -> float:
         """
-        Check the error with the four pose.
+        Compare the base points of both hands with the incoming points of both hands.
 
         Parameters
         ----------
-        right: np.array
-            The points of the right hand.
+        right_base_points: np.array
+            The base points of the right hand.
+        left_base_points: np.array
+            The base points of the left hand.
+        right_incoming_points: np.array
+            The incoming points of the right hand.
+        left_incoming_points: np.array
+            The incoming points of the left hand.
 
         Returns
         -------
         error: float
-            The error with the four pose.
+            The error between the base points and the incoming points.
         """
-        # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(
-            self.base_gestures["four"]["right_hand"]
+        # Get the error of the right hand.
+        error_right: float = self._compare_right_hand(
+            right_base_points, right_incoming_points
         )
-        # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
-        # match the points.
-        return mean_squared_error(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
+        # Get the error of the left hand.
+        error_left: float = self._compare_left_hand(
+            left_base_points, left_incoming_points
         )
-
-    def _five(self, right: Optional[np.array]) -> bool:
-        """
-        Check the error with the five pose.
-
-        Parameters
-        ----------
-        right: np.array
-            The points of the right hand.
-
-        Returns
-        -------
-        error: float
-            The error with the five pose.
-        """
-        # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(
-            self.base_gestures["five"]["right_hand"]
-        )
-        # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(right)
-        # match the points.
-        return mean_squared_error(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
-        )
-
-    def _six(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
-        """
-        Check the error with the six pose.
-
-        Parameters
-        ----------
-        right: np.array
-            The points of the right hand.
-        left: np.array
-            The points of the left hand.
-
-        Returns
-        -------
-        error: float
-            The error with the six pose.
-        """
-        # Load the base points in the hand frame of reference for the right hand.
-        bphf_right: np.array = to_hand_frame(self.base_gestures["six"]["right_hand"])
-        bphf_left: np.array = to_hand_frame(self.base_gestures["six"]["left_hand"])
-        # get the incoming poitns in the hand frame of reference for the right hand.
-        iphf_right: np.array = to_hand_frame(right)
-        # get the incoming poitns in the hand frame of reference for the left hand.
-        iphf_left: np.array = to_hand_frame(left)
         # match the points of both hands.
-        return (
-            mean_squared_error(bphf_left, iphf_left)
-            + mean_squared_error(bphf_right, iphf_right)
-        ) / 2
-
-    def _seven(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
-        """
-        Check the error with the seven pose.
-
-        Parameters
-        ----------
-        right: np.array
-            The points of the right hand.
-        left: np.array
-            The points of the left hand.
-
-        Returns
-        -------
-        error: float
-            The error with the seven pose.
-        """
-        # Load the base points in the hand frame of reference for the right hand.
-        bphf_right: np.array = to_hand_frame(self.base_gestures["seven"]["right_hand"])
-        bphf_left: np.array = to_hand_frame(self.base_gestures["seven"]["left_hand"])
-        # get the incoming poitns in the hand frame of reference for the right hand.
-        iphf_right: np.array = to_hand_frame(right)
-        # get the incoming poitns in the hand frame of reference for the left hand.
-        iphf_left: np.array = to_hand_frame(left)
-        # match the points of both hands.
-        return (
-            mean_squared_error(bphf_left, iphf_left)
-            + mean_squared_error(bphf_right, iphf_right)
-        ) / 2
-
-    def _eight(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
-        """
-        Check the error with the eight pose.
-
-        Parameters
-        ----------
-        right: np.array
-            The points of the right hand.
-        left: np.array
-            The points of the left hand.
-
-        Returns
-        -------
-        error: float
-            The error with the eight pose.
-        """
-        # Load the base points in the hand frame of reference for the right hand.
-        bphf_right: np.array = to_hand_frame(self.base_gestures["eight"]["right_hand"])
-        bphf_left: np.array = to_hand_frame(self.base_gestures["eight"]["left_hand"])
-        # get the incoming poitns in the hand frame of reference for the right hand.
-        iphf_right: np.array = to_hand_frame(right)
-        # get the incoming poitns in the hand frame of reference for the left hand.
-        iphf_left: np.array = to_hand_frame(left)
-        # match the points of both hands.
-        return (
-            mean_squared_error(bphf_left, iphf_left)
-            + mean_squared_error(bphf_right, iphf_right)
-        ) / 2
-
-    def _nine(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
-        """
-        Check the error with the nine pose.
-
-        Parameters
-        ----------
-        right: np.array
-            The points of the right hand.
-        left: np.array
-            The points of the left hand.
-
-        Returns
-        -------
-        error: float
-            The error with the nine pose.
-        """
-        # Load the base points in the hand frame of reference for the right hand.
-        bphf_right: np.array = to_hand_frame(self.base_gestures["nine"]["right_hand"])
-        bphf_left: np.array = to_hand_frame(self.base_gestures["nine"]["left_hand"])
-        # get the incoming poitns in the hand frame of reference for the right hand.
-        iphf_right: np.array = to_hand_frame(right)
-        # get the incoming poitns in the hand frame of reference for the left hand.
-        iphf_left: np.array = to_hand_frame(left)
-        # match the points of both hands.
-        return (
-            mean_squared_error(bphf_left, iphf_left)
-            + mean_squared_error(bphf_right, iphf_right)
-        ) / 2
-
-    def _ten(self, right: Optional[np.array], left: Optional[np.array]) -> bool:
-        """
-        Check the error with the ten pose.
-
-        Parameters
-        ----------
-        right: np.array
-            The points of the right hand.
-        left: np.array
-            The points of the left hand.
-
-        Returns
-        -------
-        error: float
-            The error with the ten pose.
-        """
-        # Load the base points in the hand frame of reference for the right hand.
-        bphf_right: np.array = to_hand_frame(self.base_gestures["ten"]["right_hand"])
-        bphf_left: np.array = to_hand_frame(self.base_gestures["ten"]["left_hand"])
-        # get the incoming poitns in the hand frame of reference for the right hand.
-        iphf_right: np.array = to_hand_frame(right)
-        # get the incoming poitns in the hand frame of reference for the left hand.
-        iphf_left: np.array = to_hand_frame(left)
-        # match the points of both hands.
-        return (
-            mean_squared_error(bphf_left, iphf_left)
-            + mean_squared_error(bphf_right, iphf_right)
-        ) / 2
+        return (error_right + error_left) / 2
 
     @staticmethod
     def get_base_gestures() -> dict[str, dict[str, np.array]]:
