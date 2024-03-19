@@ -31,9 +31,6 @@ class Gesture:
             )
         else:
             self.base_gestures = base_gestures
-        # Note to self: this class should be loaded outside the loop, initialized with the data in the database and then
-        # the fit method should be called in the loop with right, left, and body data as the parameters.
-        # fit should be called predict.
 
     def predict(
         self,
