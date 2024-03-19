@@ -66,25 +66,25 @@ class Gesture:
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
-            poses_names = ["one", "two", "three", "four", "five"]
+            poses_names = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
             errors = {
                 pose_name: self._compare_hand(
                     self.base_gestures[pose_name]["right_hand"], right
                 )
                 for pose_name in poses_names
             }
-            if left is not None:
-                poses_names = ["six", "seven", "eight", "nine", "ten"]
-                errors_six_to_ten = {
-                    pose_name: self._compare_both_hands(
-                        self.base_gestures[pose_name]["right_hand"],
-                        self.base_gestures[pose_name]["left_hand"],
-                        right,
-                        left,
-                    )
-                    for pose_name in poses_names
-                }
-                errors = errors | errors_six_to_ten  # merge the two dictionaries
+            # if left is not None:
+            #     poses_names = ["six", "seven", "eight", "nine", "ten"]
+            #     errors_six_to_ten = {
+            #         pose_name: self._compare_both_hands(
+            #             self.base_gestures[pose_name]["right_hand"],
+            #             self.base_gestures[pose_name]["left_hand"],
+            #             right,
+            #             left,
+            #         )
+            #         for pose_name in poses_names
+            #     }
+            #     errors = errors | errors_six_to_ten  # merge the two dictionaries
             smaller = min(
                 errors, key=errors.get
             )  # The identified pose is the one with the smallest error.
@@ -226,7 +226,6 @@ class Gesture:
             "seven",
             "eight",
             "nine",
-            "ten",
         ]
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
