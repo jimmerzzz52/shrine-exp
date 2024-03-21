@@ -27,6 +27,9 @@ In order to start testing the gesture recognizer,
   `poetry run python data_in/mediapp.py`
   Run tests
   `poetry run pytest`
+  Make some changes, build
+  `poetry publish --build`
+
 
 # Branching
 This is an open source repo that is contributable to  by anyone, however there is an approval process in order to preserve the integrity of the code.

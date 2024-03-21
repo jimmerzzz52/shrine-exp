@@ -1,4 +1,9 @@
-transcribe-asl/gestures_data*
+transcribe-asl/gesture_data/
+teesee/gesture_data/*
+transcribe-asl/gestures_data/*
+teesee/gestures_data/*
 .vscode
 transcribe-asl/images_of_gestures/*
+teesee/images_of_gestures/*
 trascribe-asl/gesture/__pycache__*
+.env
