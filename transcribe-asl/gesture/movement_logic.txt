@@ -1,0 +1,16 @@
+There is a problem in the logic of detection of movements.
+If the first pose of a gesture with movement matches a pose of a gesture without movement, the recognition will fail.
+If this isn't a problem, i.e., the first pose of any gesture with movement isn't the same of a static gesture, then 
+we could rely os just identifying the first gesture and all would work. Since ASL contains gestures with movement that
+can't be the case.
+
+This seem to indicate that to identify gestures with movement we would have to send to the gesture recognizer class
+all the frames in the past T seconds and then apply the steps:
+    1 - If there isn't a movement in the past T seconds, recognize static gestures;
+    2 - All check points of all possible gestures with movement would have to be measured;
+    3 - The recognized gesture would be the one were all the checkpoints were recognized in the incoming video
+        and also where the acumulated error is the smallest.
+
+# NOTE: It's possible to create a buffer of arrays using collections.deque, each frame is appended efficiently 
+at the beggining of the queue and every frame that has its time larger than T should be dropped. Is this efficient?
+I can walk the array and consecutively drop frames that have its time larger than T, seems efficient...

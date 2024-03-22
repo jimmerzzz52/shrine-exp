@@ -143,6 +143,16 @@ def main():
                 2,
             )
 
+            cv2.putText(
+                frame,
+                f"Check point: {g.check_point}",
+                (20, 100),
+                cv2.FONT_HERSHEY_PLAIN,
+                1,
+                (0, 255, 0),
+                2,
+            )
+
             cv2.imshow("MediaPipe Holistic", frame)
 
     #         print(fps)
