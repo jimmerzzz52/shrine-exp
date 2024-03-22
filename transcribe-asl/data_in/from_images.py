@@ -113,17 +113,17 @@ def transcribe_word(image_file):
                 if cv2.waitKey(1) == ord("q"):
                     break
 
-    file = open(f"./gesture/base_poses_hf/{pose_name}.csv", "w")
-    file.write(pose_csv)
-    file.close()
+        file = open(f"./gesture/base_poses_hf/{pose_name}.csv", "w")
+        file.write(pose_csv)
+        file.close()
 
-    file = open(f"./gesture/base_poses_hf/{left_name}.csv", "w")
-    file.write(left_hand_csv)
-    file.close()
+        file = open(f"./gesture/base_poses_hf/{left_name}.csv", "w")
+        file.write(left_hand_csv)
+        file.close()
 
-    file = open(f"./gesture/base_poses_hf/{rigth_name}.csv", "w")
-    file.write(right_hand_csv)
-    file.close()
+        file = open(f"./gesture/base_poses_hf/{rigth_name}.csv", "w")
+        file.write(right_hand_csv)
+        file.close()
 
 
 if __name__ == "__main__":
