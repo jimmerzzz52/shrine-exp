@@ -35,6 +35,21 @@ class Gesture:
 
         self.check_point = 0
         self.check_point_time = datetime.now() - timedelta(seconds=60)
+        
+        self.gesture_wanted_states = {}
+        
+        # TODO Implement for movements
+        
+        # e.g. For 10
+        # gesture movements dict
+        self.movements = {
+            "Thumb Neutral" : {
+                "timeallowed": "2 seconds", 
+                "transition_to": "thumbs up",
+            }
+        }
+        
+        
 
     def predict(
         self,
@@ -105,6 +120,12 @@ class Gesture:
                 ):
                     return "Identifying hand movement"
                 else:
+                    if self.movement[smaller] is not None:
+                        transition_to = self.movement[smaller].transition_to
+                        self.gesture_wanted_states[transition_to] = datetime.now()
+                    
+                        
+                        
                     return smaller
             else:
                 return smaller
