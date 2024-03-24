@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from typing import Optional
+from datetime import datetime, timedelta
 
 
 class Gesture:
@@ -31,9 +32,9 @@ class Gesture:
             )
         else:
             self.base_gestures = base_gestures
-        # Note to self: this class should be loaded outside the loop, initialized with the data in the database and then
-        # the fit method should be called in the loop with right, left, and body data as the parameters.
-        # fit should be called predict.
+
+        self.check_point = 0
+        self.check_point_time = datetime.now() - timedelta(seconds=60)
 
     def predict(
         self,
@@ -58,37 +59,55 @@ class Gesture:
         pose: str
             The pose of the person.
         """
-        # TODO: Add all of the poses here...
-
+        # Reset the check points.
+        self._reset_check_points(wait_seconds = 5)
         # For The pose one, all we need is the right hand.
         if right is None and left is None:
             return "Nothing recognized"
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
-            poses_names = ["one", "two", "three", "four", "five"]
-            errors = {
-                pose_name: self._compare_hand(
+            # Poses are static, so we can compare the points directly.
+            poses_names = [
+                "one",
+                "two",
+                "three",
+                "four",
+                "five",
+                "six",
+                "seven",
+                "eight",
+                "nine",
+                "ten",
+            ]
+            errors_poses = {
+                pose_name: self._compare_hand_check_points(
                     self.base_gestures[pose_name]["right_hand"], right
                 )
                 for pose_name in poses_names
             }
-            if left is not None:
-                poses_names = ["six", "seven", "eight", "nine", "ten"]
-                errors_six_to_ten = {
-                    pose_name: self._compare_both_hands(
-                        self.base_gestures[pose_name]["right_hand"],
-                        self.base_gestures[pose_name]["left_hand"],
-                        right,
-                        left,
-                    )
-                    for pose_name in poses_names
-                }
-                errors = errors | errors_six_to_ten  # merge the two dictionaries
+            movs_names = ["ten"]
+            errors_movs = {
+                mov_name: self._compare_hand_movement(
+                    self.base_gestures[mov_name]["right_hand"], right
+                )
+                for mov_name in movs_names
+            }
+            errors = errors_poses | errors_movs  # merge the two dictionaries
             smaller = min(
                 errors, key=errors.get
             )  # The identified pose is the one with the smallest error.
-            return smaller
+            print(self.check_point)
+            if smaller in movs_names:
+                if (
+                    self.check_point
+                    < self.base_gestures[smaller]["right_hand"].shape[2] - 1
+                ):
+                    return "Identifying hand movement"
+                else:
+                    return smaller
+            else:
+                return smaller
         if left is None:
             return "Nothing recognized"
 
@@ -119,9 +138,7 @@ class Gesture:
         else:
             return False
 
-    def _compare_hand(
-        self, base_points: np.array, incoming_points: np.array
-    ) -> float:
+    def _compare_hand(self, base_points: np.array, incoming_points: np.array) -> float:
         """
         Compare the base points of the hand with the incoming points of the hand.
 
@@ -197,11 +214,111 @@ class Gesture:
             right_base_points, right_incoming_points
         )
         # Get the error of the left hand.
-        error_left: float = self._compare_hand(
-            left_base_points, left_incoming_points
-        )
+        error_left: float = self._compare_hand(left_base_points, left_incoming_points)
         # match the points of both hands.
         return (error_right + error_left) / 2
+
+    def _compare_hand_check_points(
+        self, base_points: np.array, incoming_points: np.array
+    ) -> float:
+        """
+        Compare the base points of the hand with the incoming points of the hand, but only if check point is zero.
+
+        Parameters
+        ----------
+        base_points: np.array
+            The base points of the hand.
+        incoming_points: np.array
+            The incoming points of the hand.
+
+        Returns
+        -------
+        error: float
+            The error between the base points and the incoming points.
+
+        Note
+        ----
+        This function is used to compare the incoming points with the base points of the hand only if the check point
+        is zero. If the check point is not zero, the function returns a big error.
+        """
+        if self.check_point == 0:
+            return self._compare_hand(base_points[:, :, 0], incoming_points)
+        else:
+            return 1e3  # big error
+
+    def _compare_hand_movement(
+        self, base_points: np.array, incoming_points: np.array
+    ) -> float:
+        """
+        Compare the base points of the hand with the incoming points of the hand in terms of movement.
+
+        Parameters
+        ----------
+        base_points: np.array
+            The base points of the hand.
+        incoming_points: np.array
+            The incoming points of the hand.
+
+        Returns
+        -------
+        error: float
+            The error between the base points and the incoming points.
+        """
+        # 1
+        """
+        There is another possible approach, which is to average every point in the incoming points
+        and compare it with the base points average of the gesture. This should be simpler and more
+        but it's not clear if it's more accurate.
+        """
+        # 2
+        """
+        The proposed approach is to compare the incoming points with check points.
+        There are n check points. The incoming points are compared with the first check point.
+        If it passes, in the next frame it's compared with the second check point, and so on.
+
+        Possible problems:
+        1 - The next frame doesn't yet contain the next check point because the movement is too slow.
+        2 - The next frame doesn't contain the next check point because the movement is too fast.
+        3 - If a check point is missed, how to resume the comparison?
+        4 - How to determine the number of check points?
+        5 - What about the speed of the movement, does it matter?
+
+        Assumptions:
+        5 - The speed of the movement is not important.
+        4 - The number of check points is determined by the user, there can be as many as desired.
+        3 - As soon as the first check point is captured, a clock starts. 
+            If the next check point is not captured within a certain time, it resets.
+        2 - See 3.
+        1 - See 3.
+        """
+        # Lets try the second approach first.
+
+        # The first step is to compare the incoming points with the one from the check point.
+        if self.check_point < base_points.shape[2]:
+            error = self._compare_hand(
+                to_hand_frame(base_points[:, :, self.check_point]),
+                to_hand_frame(incoming_points),
+            )
+            # Note: Base_points_in_hand_frame is a 3D array. The third dimension is the number of check points.
+            if error < 1e-2:  # this is bad
+                if self.check_point == 0:
+                    self.check_point_time = datetime.now()
+                self.check_point += 1
+            return error
+        else:
+            return self._compare_hand(
+                to_hand_frame(base_points[:, :, base_points.shape[2] - 1]),
+                to_hand_frame(incoming_points),
+            )
+
+    def _reset_check_points(self, wait_seconds: int = 5):
+        """
+        Reset the check points.
+        """
+        # Reset the check point if it's been too long.
+        if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
+            self.check_point = 0
+            self.check_point_time = datetime.now() - timedelta(seconds=60)
 
     @staticmethod
     def get_base_gestures() -> dict[str, dict[str, np.array]]:
@@ -216,33 +333,81 @@ class Gesture:
         # Define the base gestures path
         base_path: str = "./gesture/base_poses_hf"
         # Define the gestures.
-        gestures: list[str] = [
-            "one",
-            "two",
-            "three",
-            "four",
-            "five",
-            "six",
-            "seven",
-            "eight",
-            "nine",
-            "ten",
+        gestures: list[list[str]] = [
+            ["one"],
+            ["two"],
+            ["three"],
+            ["four"],
+            ["five"],
+            ["six"],
+            ["seven"],
+            ["eight"],
+            ["nine"],
+            ["ten_1", "ten_2", "ten_3"],
         ]
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
-        for gesture in gestures:
-            base_gestures[gesture] = {
-                "right_hand": load_base_gesture(
-                    f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
-                ),
-                "left_hand": load_base_gesture(
-                    f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
-                ),
-                "pose": load_base_gesture(
-                    f"{base_path}/{gesture}_Transcription_Pose.csv"
-                ),
-            }
+        for list_gesture in gestures:
+            if len(list_gesture) == 1:
+                gesture = list_gesture[0]
+                base_gestures[gesture] = {
+                    "right_hand": load_base_gesture(
+                        f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
+                    ),
+                    "left_hand": load_base_gesture(
+                        f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
+                    ),
+                    "pose": load_base_gesture(
+                        f"{base_path}/{gesture}_Transcription_Pose.csv"
+                    ),
+                }
+            else:
+                right_hand: list[np.array] = []
+                left_hand: list[np.array] = []
+                pose: list[np.array] = []
+                for gesture in list_gesture:
+                    right_hand.append(
+                        load_base_gesture(
+                            f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
+                        )
+                    )
+                    left_hand.append(
+                        load_base_gesture(
+                            f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
+                        )
+                    )
+                    pose.append(
+                        load_base_gesture(
+                            f"{base_path}/{gesture}_Transcription_Pose.csv"
+                        )
+                    )
+                gesture_name = list_gesture[0].split("_")[0]
+                base_gestures[gesture_name] = {
+                    "right_hand": concat_or_none(right_hand),
+                    "left_hand": concat_or_none(left_hand),
+                    "pose": concat_or_none(pose),
+                }
         return base_gestures
+
+
+def concat_or_none(array: list[np.array]) -> Optional[np.array]:
+    """
+    Concatenate a list of arrays or return None if the list is empty.
+
+    Parameters
+    ----------
+    array: list[np.array]
+        A list of arrays.
+
+    Returns
+    -------
+    concatenated_array: Optional[np.array]
+        The concatenated array if the list is not empty, otherwise None.
+    """
+    if not (np.array(array) == None).all():  # noqa
+        return np.concatenate(array, axis=2)
+    else:
+        return None
 
 
 def load_base_gesture(path: str) -> Optional[np.array]:
@@ -261,7 +426,7 @@ def load_base_gesture(path: str) -> Optional[np.array]:
     """
     base_gesture = np.genfromtxt(path, delimiter=",")
     if len(base_gesture.shape) > 1:  # Check if the base gesture is not empty.
-        return base_gesture[1:, 1:]
+        return base_gesture[1:, 1:, np.newaxis]
     else:
         return None
 
