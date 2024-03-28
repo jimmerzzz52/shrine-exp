@@ -95,7 +95,7 @@ def main():
                     [[value.x, value.y, value.z] for value in left_hand_raw]
                 )
 
-            recognition_output = g.predict(right_hand_data, left_hand_data, pose_data)
+            recognition_output_static, recognition_output_mov = g.predict(right_hand_data, left_hand_data, pose_data)
 
             draw_rotated_left_hand(
                 frame,
@@ -135,7 +135,7 @@ def main():
 
             cv2.putText(
                 frame,
-                f"FPS: {int(fps)}   Gesture Recognized: {recognition_output}",
+                f"FPS: {int(fps)}   Static: {recognition_output_static}",
                 (20, 70),
                 cv2.FONT_HERSHEY_PLAIN,
                 3,
@@ -145,8 +145,18 @@ def main():
 
             cv2.putText(
                 frame,
+                f"Movement: {recognition_output_mov}",
+                (20, 110),
+                cv2.FONT_HERSHEY_PLAIN,
+                3,
+                (0, 255, 0),
+                2,
+            )
+
+            cv2.putText(
+                frame,
                 f"Check point: {g.check_point}",
-                (20, 100),
+                (20, 140),
                 cv2.FONT_HERSHEY_PLAIN,
                 1,
                 (0, 255, 0),

@@ -45,12 +45,10 @@ class Gesture:
             ]
         )
         # Define the gestures with movements.
-        self.gesture_movie_array = np.array(
-            [
-                ["ten_1", "ten_2", "ten_3"],  # Ten
-                # ["one","closed_fist_front","one"], # Eleven
-            ]
-        )
+        self.gestures_mov: dict[str, list[str]] = {
+            "ten": ["ten_1", "ten_2", "ten_3"],
+            "thirteen": ["one", "three"],
+        }
         if base_gestures is None:
             self.base_gestures: dict[str, dict[str, np.array]] = (
                 Gesture.get_base_gestures(self.gestures)
@@ -59,7 +57,7 @@ class Gesture:
             self.base_gestures = base_gestures
 
         self.past_gestures = []
-        self.check_point = 0
+        self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
 
     def predict(
@@ -88,10 +86,10 @@ class Gesture:
             The movement gesture.
         """
         # Reset the check points.
-        self._reset_check_points(wait_seconds=5)
+        self._reset_check_points(wait_seconds=10)
         # For The pose one, all we need is the right hand.
         if right is None and left is None:
-            return "Nothing recognized"
+            return "Nothing recognized", "Nothing recognized"
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
@@ -105,17 +103,16 @@ class Gesture:
             static_gesture: str = min(
                 errors_gesture, key=errors_gesture.get
             )  # The identified static gesture is the one with the smallest error.
-            print(static_gesture)
+            # Don't need this in code but it helps debugging.
             self.past_gestures.append(static_gesture)
             # Update the check points.
             self._update_check_points(static_gesture)
-            print(self.check_point)
             # Check if there is a movement in the buffer of identified static gestures.
             # This function will have to be able to
             mov_gestures: list[str] = self._identify_gestures_movement()
             return static_gesture, mov_gestures
         if left is None:
-            return "Nothing recognized"
+            return "Nothing recognized", "Nothing recognized"
 
     def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """
@@ -326,13 +323,14 @@ class Gesture:
         gesture: str
             The gesture to update the check points.
         """
-        for i, gestures_movie in enumerate(self.gesture_movie_array):
+        for gesture_mov in self.gestures_mov:
             if (
-                self.check_point[i] < len(gestures_movie)
-                and gesture == gestures_movie[self.check_point[i]]
+                self.check_point[gesture_mov] < len(self.gestures_mov[gesture_mov])
+                and gesture == self.gestures_mov[gesture_mov][self.check_point[gesture_mov]]
             ):
-                self.check_point[i] += 1
-                self.check_point_time[i] = datetime.now()  # ?
+                if np.sum([self.check_point[key] for key in self.check_point]) == 0:
+                    self.check_point_time = datetime.now()  # ?
+                self.check_point[gesture_mov] += 1
 
     def _reset_check_points(self, wait_seconds: int = 5):
         """
@@ -340,7 +338,7 @@ class Gesture:
         """
         # Reset the check point if it's been too long.
         if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
-            self.check_point = np.zeros(len(self.gesture_movie_array))
+            self.check_point = {gesture: 0 for gesture in self.gestures_mov}
             self.check_point_time = datetime.now() - timedelta(seconds=60)
             self.past_gestures = []
 
@@ -353,11 +351,11 @@ class Gesture:
         gesture_movement: str
             The identified gesture.
         """
-        identified_gestures_mask: list[bool] = [False] * len(self.gesture_movie_array)
-        for i in range(len(self.gesture_movie_array)):
-            if self.check_point[i] == len(self.gesture_movie_array[i]):
-                identified_gestures_mask[i] = True
-        return self.gesture_movie_array[identified_gestures_mask]
+        identified_gestures: list[str] = []
+        for gesture_mov in self.gestures_mov:
+            if self.check_point[gesture_mov] == len(self.gestures_mov[gesture_mov]):
+                identified_gestures.append(gesture_mov)
+        return identified_gestures
 
     @staticmethod
     def get_base_gestures(gestures: list[str]) -> dict[str, dict[str, np.array]]:
@@ -424,7 +422,7 @@ def load_base_gesture(path: str) -> Optional[np.array]:
     """
     base_gesture = np.genfromtxt(path, delimiter=",")
     if len(base_gesture.shape) > 1:  # Check if the base gesture is not empty.
-        return base_gesture[1:, 1:, np.newaxis]
+        return base_gesture[1:, 1:]
     else:
         return None
 
