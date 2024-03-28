@@ -27,26 +27,30 @@ class Gesture:
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
         # Define the gestures.
-        self.gestures: list[str] = [
-            "one",
-            "two",
-            "three",
-            "four",
-            "five",
-            "six",
-            "seven",
-            "eight",
-            "nine",
-            "ten_1",
-            "ten_2",
-            "ten_3",
-            # "closed_fist_front",
-        ]
+        self.gestures: np.array[str] = np.array(
+            [
+                "one",
+                "two",
+                "three",
+                "four",
+                "five",
+                "six",
+                "seven",
+                "eight",
+                "nine",
+                "ten_1",
+                "ten_2",
+                "ten_3",
+                # "closed_fist_front",
+            ]
+        )
         # Define the gestures with movements.
-        self.gesture_movie_array = [
-            ["ten_1", "ten_2", "ten_3"],  # Ten
-            # ["one","closed_fist_front","one"], # Eleven
-        ]
+        self.gesture_movie_array = np.array(
+            [
+                ["ten_1", "ten_2", "ten_3"],  # Ten
+                # ["one","closed_fist_front","one"], # Eleven
+            ]
+        )
         if base_gestures is None:
             self.base_gestures: dict[str, dict[str, np.array]] = (
                 Gesture.get_base_gestures(self.gestures)
@@ -54,6 +58,7 @@ class Gesture:
         else:
             self.base_gestures = base_gestures
 
+        self.past_gestures = []
         self.check_point = 0
         self.check_point_time = datetime.now() - timedelta(seconds=60)
 
@@ -62,9 +67,9 @@ class Gesture:
         right: Optional[np.array] = None,
         left: Optional[np.array] = None,
         body: Optional[np.array] = None,
-    ) -> str:
+    ) -> tuple[str, list[str]]:
         """
-        Predict the pose of the person.
+        Predict the gesture.
 
         Parameters
         ----------
@@ -77,8 +82,10 @@ class Gesture:
 
         Returns
         -------
-        pose: str
-            The pose of the person.
+        static_gesture: str
+            The static gesture.
+        mov_gesture: list[str]
+            The movement gesture.
         """
         # Reset the check points.
         self._reset_check_points(wait_seconds=5)
@@ -88,47 +95,25 @@ class Gesture:
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
-            # Poses are static, so we can compare the points directly.
-            poses_names = [
-                "one",
-                "two",
-                "three",
-                "four",
-                "five",
-                "six",
-                "seven",
-                "eight",
-                "nine",
-                "ten",
-            ]
-            errors_poses = {
-                pose_name: self._compare_hand_check_points(
-                    self.base_gestures[pose_name]["right_hand"], right
+            # Compare incoming points with the static gestures.
+            errors_gesture = {
+                gesture: self._compare_hand(
+                    self.base_gestures[gesture]["right_hand"], right
                 )
-                for pose_name in poses_names
+                for gesture in self.base_gestures
             }
-            movs_names = ["ten"]
-            errors_movs = {
-                mov_name: self._compare_hand_movement(
-                    self.base_gestures[mov_name]["right_hand"], right
-                )
-                for mov_name in movs_names
-            }
-            errors = errors_poses | errors_movs  # merge the two dictionaries
-            smaller = min(
-                errors, key=errors.get
-            )  # The identified pose is the one with the smallest error.
+            static_gesture: str = min(
+                errors_gesture, key=errors_gesture.get
+            )  # The identified static gesture is the one with the smallest error.
+            print(static_gesture)
+            self.past_gestures.append(static_gesture)
+            # Update the check points.
+            self._update_check_points(static_gesture)
             print(self.check_point)
-            if smaller in movs_names:
-                if (
-                    self.check_point
-                    < self.base_gestures[smaller]["right_hand"].shape[2] - 1
-                ):
-                    return "Identifying hand movement"
-                else:
-                    return smaller
-            else:
-                return smaller
+            # Check if there is a movement in the buffer of identified static gestures.
+            # This function will have to be able to
+            mov_gestures: list[str] = self._identify_gestures_movement()
+            return static_gesture, mov_gestures
         if left is None:
             return "Nothing recognized"
 
@@ -357,6 +342,22 @@ class Gesture:
         if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
             self.check_point = np.zeros(len(self.gesture_movie_array))
             self.check_point_time = datetime.now() - timedelta(seconds=60)
+            self.past_gestures = []
+
+    def _identify_gestures_movement(self) -> str:
+        """
+        Identify if there is a gesture in the buffer of identified static gestures.
+
+        Returns
+        -------
+        gesture_movement: str
+            The identified gesture.
+        """
+        identified_gestures_mask: list[bool] = [False] * len(self.gesture_movie_array)
+        for i in range(len(self.gesture_movie_array)):
+            if self.check_point[i] == len(self.gesture_movie_array[i]):
+                identified_gestures_mask[i] = True
+        return self.gesture_movie_array[identified_gestures_mask]
 
     @staticmethod
     def get_base_gestures(gestures: list[str]) -> dict[str, dict[str, np.array]]:
