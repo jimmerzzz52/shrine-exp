@@ -27,17 +27,25 @@ class Gesture:
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
         # Define the gestures.
-        self.gestures: list[list[str]] = [
-            ["one"],
-            ["two"],
-            ["three"],
-            ["four"],
-            ["five"],
-            ["six"],
-            ["seven"],
-            ["eight"],
-            ["nine"],
-            ["ten_1", "ten_2", "ten_3"],
+        self.gestures: list[str] = [
+            "one",
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten_1",
+            "ten_2",
+            "ten_3",
+            # "closed_fist_front",
+        ]
+        # Define the gestures with movements.
+        self.gesture_movie_array = [
+            ["ten_1", "ten_2", "ten_3"],  # Ten
+            # ["one","closed_fist_front","one"], # Eleven
         ]
         if base_gestures is None:
             self.base_gestures: dict[str, dict[str, np.array]] = (
@@ -46,9 +54,6 @@ class Gesture:
         else:
             self.base_gestures = base_gestures
 
-        self.gesture_movie_array = [
-            gesture for gesture in self.gestures if len(gesture) > 1
-        ]
         self.check_point = 0
         self.check_point_time = datetime.now() - timedelta(seconds=60)
 
@@ -350,11 +355,11 @@ class Gesture:
         """
         # Reset the check point if it's been too long.
         if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
-            self.check_point = 0  # np.zeros(len(self.base_gestures))
+            self.check_point = np.zeros(len(self.gesture_movie_array))
             self.check_point_time = datetime.now() - timedelta(seconds=60)
 
     @staticmethod
-    def get_base_gestures(gestures: list[list[str]]) -> dict[str, dict[str, np.array]]:
+    def get_base_gestures(gestures: list[str]) -> dict[str, dict[str, np.array]]:
         """
         Get the base gestures.
 
@@ -367,46 +372,18 @@ class Gesture:
         base_path: str = "./gesture/base_poses_hf"
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
-        for list_gesture in gestures:
-            if len(list_gesture) == 1:
-                gesture = list_gesture[0]
-                base_gestures[gesture] = {
-                    "right_hand": load_base_gesture(
-                        f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
-                    ),
-                    "left_hand": load_base_gesture(
-                        f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
-                    ),
-                    "pose": load_base_gesture(
-                        f"{base_path}/{gesture}_Transcription_Pose.csv"
-                    ),
-                }
-            else:
-                right_hand: list[np.array] = []
-                left_hand: list[np.array] = []
-                pose: list[np.array] = []
-                for gesture in list_gesture:
-                    right_hand.append(
-                        load_base_gesture(
-                            f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
-                        )
-                    )
-                    left_hand.append(
-                        load_base_gesture(
-                            f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
-                        )
-                    )
-                    pose.append(
-                        load_base_gesture(
-                            f"{base_path}/{gesture}_Transcription_Pose.csv"
-                        )
-                    )
-                gesture_name = list_gesture[0].split("_")[0]
-                base_gestures[gesture_name] = {
-                    "right_hand": concat_or_none(right_hand),
-                    "left_hand": concat_or_none(left_hand),
-                    "pose": concat_or_none(pose),
-                }
+        for gesture in gestures:
+            base_gestures[gesture] = {
+                "right_hand": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
+                ),
+                "left_hand": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
+                ),
+                "pose": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Pose.csv"
+                ),
+            }
         return base_gestures
 
 
