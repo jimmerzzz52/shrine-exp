@@ -317,8 +317,8 @@ class Gesture:
         """
         # Reset the check point if it's been too long.
         if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
-            self.check_point = 0
-            self.check_point_time = datetime.now() - timedelta(seconds=60)
+            self.check_point = np.zeros(len(self.base_gestures))
+            self.check_point_time = [datetime.now() - timedelta(seconds=60)]*len(self.base_gestures)
 
     @staticmethod
     def get_base_gestures() -> dict[str, dict[str, np.array]]:

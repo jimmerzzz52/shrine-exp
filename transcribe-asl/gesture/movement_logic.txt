@@ -14,3 +14,12 @@ all the frames in the past T seconds and then apply the steps:
 # NOTE: It's possible to create a buffer of arrays using collections.deque, each frame is appended efficiently 
 at the beggining of the queue and every frame that has its time larger than T should be dropped. Is this efficient?
 I can walk the array and consecutively drop frames that have its time larger than T, seems efficient...
+
+
+## mar 25
+
+The current best idea is to make the movement recognizer be composed of a sequence of static recognitions. If a specific sequence of static 
+gestures is recognized in a given time window, then that is the recognized gesture.
+
+Ideally we wouldn't lock the recognizer on a specific starting gesture, as done right now. This can be solved using a buffer of static gestures, and
+with each new static gesture added to the buffer, we would have perform the identification on it.
