@@ -41,13 +41,50 @@ class Gesture:
                 "ten_1",
                 "ten_2",
                 "ten_3",
-                # "closed_fist_front",
+                "closed_fist",
+                "left_thumb_right",
+                "zero",
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "i_down",
+                "i_flipped",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
             ]
         )
         # Define the gestures with movements.
         self.gestures_mov: dict[str, list[str]] = {
             "ten": ["ten_1", "ten_2", "ten_3"],
-            "thirteen": ["one", "three"],
+            "eleven": ["one", "closed_fist", "one"],
+            "twelve": ["two", "closed_fist", "two"],
+            "thirteen": ["three", "left_thumb_right", "three"],
+            "fourteen": ["four", "closed_fist", "four"],
+            "fifteen": ["five", "left_thumb_right", "five"],
+            "sixteen": ["closed_fist", "six"],
+            "seventeen": ["left_thumb_right", "seven"],
+            "eighteen": ["left_thumb_right", "eight"],
+            "nineteen": ["left_thumb_right", "nine"],
+            "J": ["I", "i_down", "i_flipped"],
         }
         if base_gestures is None:
             self.base_gestures: dict[str, dict[str, np.array]] = (
@@ -86,10 +123,12 @@ class Gesture:
             The movement gesture.
         """
         # Reset the check points.
-        self._reset_check_points(wait_seconds=10)
+        self._reset_check_points(wait_seconds=5)
         # For The pose one, all we need is the right hand.
-        if right is None and left is None:
-            return "Nothing recognized", "Nothing recognized"
+        static_gesture = "Nothing recognized"
+
+        if left is None and right is not None:
+            static_gesture = "No left hand gesture"
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
@@ -109,10 +148,8 @@ class Gesture:
             self._update_check_points(static_gesture)
             # Check if there is a movement in the buffer of identified static gestures.
             # This function will have to be able to
-            mov_gestures: list[str] = self._identify_gestures_movement()
-            return static_gesture, mov_gestures
-        if left is None:
-            return "Nothing recognized", "Nothing recognized"
+        mov_gestures: list[str] = self._identify_gestures_movement()
+        return static_gesture, mov_gestures
 
     def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """
@@ -326,7 +363,8 @@ class Gesture:
         for gesture_mov in self.gestures_mov:
             if (
                 self.check_point[gesture_mov] < len(self.gestures_mov[gesture_mov])
-                and gesture == self.gestures_mov[gesture_mov][self.check_point[gesture_mov]]
+                and gesture
+                == self.gestures_mov[gesture_mov][self.check_point[gesture_mov]]
             ):
                 if np.sum([self.check_point[key] for key in self.check_point]) == 0:
                     self.check_point_time = datetime.now()  # ?

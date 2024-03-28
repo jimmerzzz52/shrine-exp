@@ -23,7 +23,7 @@ def main():
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
         enable_segmentation=True,
-        refine_face_landmarks=False,
+        refine_face_landmarks=True,
     ) as holistic:
         while True:
             # pull frame
