@@ -26,13 +26,29 @@ class Gesture:
         base_gestures["one"]["left"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
+        # Define the gestures.
+        self.gestures: list[list[str]] = [
+            ["one"],
+            ["two"],
+            ["three"],
+            ["four"],
+            ["five"],
+            ["six"],
+            ["seven"],
+            ["eight"],
+            ["nine"],
+            ["ten_1", "ten_2", "ten_3"],
+        ]
         if base_gestures is None:
             self.base_gestures: dict[str, dict[str, np.array]] = (
-                Gesture.get_base_gestures()
+                Gesture.get_base_gestures(self.gestures)
             )
         else:
             self.base_gestures = base_gestures
 
+        self.gesture_movie_array = [
+            gesture for gesture in self.gestures if len(gesture) > 1
+        ]
         self.check_point = 0
         self.check_point_time = datetime.now() - timedelta(seconds=60)
 
@@ -60,7 +76,7 @@ class Gesture:
             The pose of the person.
         """
         # Reset the check points.
-        self._reset_check_points(wait_seconds = 5)
+        self._reset_check_points(wait_seconds=5)
         # For The pose one, all we need is the right hand.
         if right is None and left is None:
             return "Nothing recognized"
@@ -311,17 +327,34 @@ class Gesture:
                 to_hand_frame(incoming_points),
             )
 
+    def _update_check_points(self, gesture: str):
+        """
+        Update the check points.
+
+        Parameters
+        ----------
+        gesture: str
+            The gesture to update the check points.
+        """
+        for i, gestures_movie in enumerate(self.gesture_movie_array):
+            if (
+                self.check_point[i] < len(gestures_movie)
+                and gesture == gestures_movie[self.check_point[i]]
+            ):
+                self.check_point[i] += 1
+                self.check_point_time[i] = datetime.now()  # ?
+
     def _reset_check_points(self, wait_seconds: int = 5):
         """
         Reset the check points.
         """
         # Reset the check point if it's been too long.
         if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
-            self.check_point = np.zeros(len(self.base_gestures))
-            self.check_point_time = [datetime.now() - timedelta(seconds=60)]*len(self.base_gestures)
+            self.check_point = 0  # np.zeros(len(self.base_gestures))
+            self.check_point_time = datetime.now() - timedelta(seconds=60)
 
     @staticmethod
-    def get_base_gestures() -> dict[str, dict[str, np.array]]:
+    def get_base_gestures(gestures: list[list[str]]) -> dict[str, dict[str, np.array]]:
         """
         Get the base gestures.
 
@@ -332,19 +365,6 @@ class Gesture:
         """
         # Define the base gestures path
         base_path: str = "./gesture/base_poses_hf"
-        # Define the gestures.
-        gestures: list[list[str]] = [
-            ["one"],
-            ["two"],
-            ["three"],
-            ["four"],
-            ["five"],
-            ["six"],
-            ["seven"],
-            ["eight"],
-            ["nine"],
-            ["ten_1", "ten_2", "ten_3"],
-        ]
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
         for list_gesture in gestures:
