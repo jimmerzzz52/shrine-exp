@@ -27,18 +27,65 @@ class Gesture:
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
         # Define the gestures.
-        self.gestures: list[list[str]] = [
-            ["one"],
-            ["two"],
-            ["three"],
-            ["four"],
-            ["five"],
-            ["six"],
-            ["seven"],
-            ["eight"],
-            ["nine"],
-            ["ten_1", "ten_2", "ten_3"],
-        ]
+        self.gestures: np.array[str] = np.array(
+            [
+                "one",
+                "two",
+                "three",
+                "four",
+                "five",
+                "six",
+                "seven",
+                "eight",
+                "nine",
+                "ten_1",
+                "ten_2",
+                "ten_3",
+                "closed_fist",
+                "left_thumb_right",
+                "zero",
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "i_down",
+                "i_flipped",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+            ]
+        )
+        # Define the gestures with movements.
+        self.gestures_mov: dict[str, list[str]] = {
+            "ten": ["ten_1", "ten_2", "ten_3"],
+            "eleven": ["one", "closed_fist", "one"],
+            "twelve": ["two", "closed_fist", "two"],
+            "thirteen": ["three", "left_thumb_right", "three"],
+            "fourteen": ["four", "closed_fist", "four"],
+            "fifteen": ["five", "left_thumb_right", "five"],
+            "sixteen": ["closed_fist", "six"],
+            "seventeen": ["left_thumb_right", "seven"],
+            "eighteen": ["left_thumb_right", "eight"],
+            "nineteen": ["left_thumb_right", "nine"],
+            "J": ["I", "i_down", "i_flipped"],
+        }
         if base_gestures is None:
             self.base_gestures: dict[str, dict[str, np.array]] = (
                 Gesture.get_base_gestures(self.gestures)
@@ -46,10 +93,8 @@ class Gesture:
         else:
             self.base_gestures = base_gestures
 
-        self.gesture_movie_array = [
-            gesture for gesture in self.gestures if len(gesture) > 1
-        ]
-        self.check_point = 0
+        self.past_gestures = []
+        self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
 
     def predict(
@@ -57,9 +102,9 @@ class Gesture:
         right: Optional[np.array] = None,
         left: Optional[np.array] = None,
         body: Optional[np.array] = None,
-    ) -> str:
+    ) -> tuple[str, list[str]]:
         """
-        Predict the pose of the person.
+        Predict the gesture.
 
         Parameters
         ----------
@@ -72,60 +117,39 @@ class Gesture:
 
         Returns
         -------
-        pose: str
-            The pose of the person.
+        static_gesture: str
+            The static gesture.
+        mov_gesture: list[str]
+            The movement gesture.
         """
         # Reset the check points.
         self._reset_check_points(wait_seconds=5)
         # For The pose one, all we need is the right hand.
-        if right is None and left is None:
-            return "Nothing recognized"
+        static_gesture = "Nothing recognized"
+
+        if left is None and right is not None:
+            static_gesture = "No left hand gesture"
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
-            # Poses are static, so we can compare the points directly.
-            poses_names = [
-                "one",
-                "two",
-                "three",
-                "four",
-                "five",
-                "six",
-                "seven",
-                "eight",
-                "nine",
-                "ten",
-            ]
-            errors_poses = {
-                pose_name: self._compare_hand_check_points(
-                    self.base_gestures[pose_name]["right_hand"], right
+            # Compare incoming points with the static gestures.
+            errors_gesture = {
+                gesture: self._compare_hand(
+                    self.base_gestures[gesture]["right_hand"], right
                 )
-                for pose_name in poses_names
+                for gesture in self.base_gestures
             }
-            movs_names = ["ten"]
-            errors_movs = {
-                mov_name: self._compare_hand_movement(
-                    self.base_gestures[mov_name]["right_hand"], right
-                )
-                for mov_name in movs_names
-            }
-            errors = errors_poses | errors_movs  # merge the two dictionaries
-            smaller = min(
-                errors, key=errors.get
-            )  # The identified pose is the one with the smallest error.
-            print(self.check_point)
-            if smaller in movs_names:
-                if (
-                    self.check_point
-                    < self.base_gestures[smaller]["right_hand"].shape[2] - 1
-                ):
-                    return "Identifying hand movement"
-                else:
-                    return smaller
-            else:
-                return smaller
-        if left is None:
-            return "Nothing recognized"
+            static_gesture: str = min(
+                errors_gesture, key=errors_gesture.get
+            )  # The identified static gesture is the one with the smallest error.
+            # Don't need this in code but it helps debugging.
+            self.past_gestures.append(static_gesture)
+            # Update the check points.
+            self._update_check_points(static_gesture)
+            # Check if there is a movement in the buffer of identified static gestures.
+            # This function will have to be able to
+        mov_gestures: list[str] = self._identify_gestures_movement()
+        return static_gesture, mov_gestures
 
     def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """
@@ -336,13 +360,15 @@ class Gesture:
         gesture: str
             The gesture to update the check points.
         """
-        for i, gestures_movie in enumerate(self.gesture_movie_array):
+        for gesture_mov in self.gestures_mov:
             if (
-                self.check_point[i] < len(gestures_movie)
-                and gesture == gestures_movie[self.check_point[i]]
+                self.check_point[gesture_mov] < len(self.gestures_mov[gesture_mov])
+                and gesture
+                == self.gestures_mov[gesture_mov][self.check_point[gesture_mov]]
             ):
-                self.check_point[i] += 1
-                self.check_point_time[i] = datetime.now()  # ?
+                if np.sum([self.check_point[key] for key in self.check_point]) == 0:
+                    self.check_point_time = datetime.now()  # ?
+                self.check_point[gesture_mov] += 1
 
     def _reset_check_points(self, wait_seconds: int = 5):
         """
@@ -350,11 +376,27 @@ class Gesture:
         """
         # Reset the check point if it's been too long.
         if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
-            self.check_point = 0  # np.zeros(len(self.base_gestures))
+            self.check_point = {gesture: 0 for gesture in self.gestures_mov}
             self.check_point_time = datetime.now() - timedelta(seconds=60)
+            self.past_gestures = []
+
+    def _identify_gestures_movement(self) -> str:
+        """
+        Identify if there is a gesture in the buffer of identified static gestures.
+
+        Returns
+        -------
+        gesture_movement: str
+            The identified gesture.
+        """
+        identified_gestures: list[str] = []
+        for gesture_mov in self.gestures_mov:
+            if self.check_point[gesture_mov] == len(self.gestures_mov[gesture_mov]):
+                identified_gestures.append(gesture_mov)
+        return identified_gestures
 
     @staticmethod
-    def get_base_gestures(gestures: list[list[str]]) -> dict[str, dict[str, np.array]]:
+    def get_base_gestures(gestures: list[str]) -> dict[str, dict[str, np.array]]:
         """
         Get the base gestures.
 
@@ -367,46 +409,18 @@ class Gesture:
         base_path: str = "./gesture/base_poses_hf"
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
-        for list_gesture in gestures:
-            if len(list_gesture) == 1:
-                gesture = list_gesture[0]
-                base_gestures[gesture] = {
-                    "right_hand": load_base_gesture(
-                        f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
-                    ),
-                    "left_hand": load_base_gesture(
-                        f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
-                    ),
-                    "pose": load_base_gesture(
-                        f"{base_path}/{gesture}_Transcription_Pose.csv"
-                    ),
-                }
-            else:
-                right_hand: list[np.array] = []
-                left_hand: list[np.array] = []
-                pose: list[np.array] = []
-                for gesture in list_gesture:
-                    right_hand.append(
-                        load_base_gesture(
-                            f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
-                        )
-                    )
-                    left_hand.append(
-                        load_base_gesture(
-                            f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
-                        )
-                    )
-                    pose.append(
-                        load_base_gesture(
-                            f"{base_path}/{gesture}_Transcription_Pose.csv"
-                        )
-                    )
-                gesture_name = list_gesture[0].split("_")[0]
-                base_gestures[gesture_name] = {
-                    "right_hand": concat_or_none(right_hand),
-                    "left_hand": concat_or_none(left_hand),
-                    "pose": concat_or_none(pose),
-                }
+        for gesture in gestures:
+            base_gestures[gesture] = {
+                "right_hand": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Right_Hand.csv"
+                ),
+                "left_hand": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Left_Hand.csv"
+                ),
+                "pose": load_base_gesture(
+                    f"{base_path}/{gesture}_Transcription_Pose.csv"
+                ),
+            }
         return base_gestures
 
 
@@ -446,7 +460,7 @@ def load_base_gesture(path: str) -> Optional[np.array]:
     """
     base_gesture = np.genfromtxt(path, delimiter=",")
     if len(base_gesture.shape) > 1:  # Check if the base gesture is not empty.
-        return base_gesture[1:, 1:, np.newaxis]
+        return base_gesture[1:, 1:]
     else:
         return None
 
