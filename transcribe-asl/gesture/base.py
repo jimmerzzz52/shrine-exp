@@ -195,12 +195,14 @@ class Gesture:
             The error between the base points and the incoming points.
         """
         # Load the base points in the hand frame of reference.
-        base_points_in_hand_frame: np.array = to_hand_frame(base_points)
+        base_points_zzero: np.array = base_points.copy()
+        base_points_zzero[:, 2] = 0
+        base_points_in_hand_frame: np.array = to_hand_frame(base_points_zzero)
         # get the incoming poitns in the hand frame of reference.
         incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points)
         # match the points.
         return mean_squared_error(
-            base_points_in_hand_frame, incoming_points_in_hand_frame
+            base_points_in_hand_frame[:,:2], incoming_points_in_hand_frame[:,:2]
         )
 
     def _compare_body(
