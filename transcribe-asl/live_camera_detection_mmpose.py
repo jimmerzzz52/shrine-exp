@@ -3,11 +3,52 @@ import mediapipe as mp
 import time
 from gesture.base import Gesture, to_hand_frame
 import numpy as np
-from mmpose.apis import MMPoseInferencer
+from mmpose.apis import MMPoseInferencer, inference_topdown, init_model
 from mmpose.registry import VISUALIZERS
+from mmpose.apis.inferencers.utils import default_det_models, get_model_aliases
 
+import os.path as osp
 
-inferencer = MMPoseInferencer("hand3d")
+from mmengine.config.utils import MODULE2PACKAGE
+from mmengine.utils import get_installed_path
+
+# fix base_dense_head as https://github.com/open-mmlab/mmdetection/issues/11063
+# I changed my own file in venv since its easier
+
+print(get_model_aliases('mmdet'))
+
+mmpose_path = get_installed_path(MODULE2PACKAGE['mmpose'])
+mmdet_path = get_installed_path(MODULE2PACKAGE['mmdet'])
+
+# 
+object_type = "hand"
+det_info = default_det_models[object_type]
+det_info['cat_ids'] = tuple(range(10))
+# Printing the bounding box is possible to see that the detection is fine and the problem is the had
+# Get model values at https://github.com/open-mmlab/mmdetection/tree/main/configs
+# det_info = dict(
+#     model=osp.join(mmdet_path, ".mim", "configs/ssd/ssdlite_mobilenetv2-scratch_8xb24-600e_coco.py"),
+#     weights='https://download.openmmlab.com/mmdetection/v2.0/ssd/ssdlite_mobilenetv2_scratch_600e_coco/'
+#     'ssdlite_mobilenetv2_scratch_600e_coco_20210629_110627-974d9307.pth',
+#     cat_ids=tuple(0,)
+# )
+# det_info = dict(
+#     model=osp.join(mmdet_path, ".mim", "configs/ssd/ssdlite_mobilenetv2-scratch_8xb24-600e_coco.py"),
+#     weights='https://github.com/open-mmlab/mmdetection/blob/main/configs/rtmdet/rtmdet_tiny_8xb32-300e_coco.py',
+#     cat_ids=(4, )
+# )
+det_model, det_weights, det_cat_ids = (
+    det_info["model"],
+    det_info["weights"],
+    det_info["cat_ids"],
+)
+inferencer = MMPoseInferencer("hand3d", det_model=det_model, det_weights=det_weights, det_cat_ids=det_cat_ids)
+# inferencer = MMPoseInferencer("hand3d", det_model='ssdlite')
+# inferencer = MMPoseInferencer("hand3d")
+# inferencer = MMPoseInferencer("hand")
+
+# model = init_model("internet_res50_4xb16-20e_interhand3d-256x256.py", "hand3d")
+# inferencer = inference_topdown("hand3d", det_model="ssdlite_mobilenetv2")
 
 
 def main():
@@ -56,7 +97,7 @@ def main():
         # if results.right_hand_landmarks:
         #     # TODO: Move this repetitive code into a function or module somewhere...
         #     right_hand_raw = list(results.right_hand_landmarks.landmark)
-        right_hand_raw = np.array(result["predictions"][0][0]["keypoints"])#[:,:2]
+        right_hand_raw = np.array(result["predictions"][0][0]["keypoints"])  # [:,:2]
         right_hand_data = right_hand_raw[:21]
         draw_hand_from_kps(frame, right_hand_data)
         # if results.pose_landmarks:
@@ -69,6 +110,10 @@ def main():
         #     left_hand_data = np.array(
         #         [[value.x, value.y, value.z] for value in left_hand_raw]
         #     )
+        # Draw bounding box
+        bboxs = result["predictions"][0][0]["bbox"]
+        for bbox in bboxs:
+            cv2.rectangle(frame, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3]),), (0, 255, 0), 2)
 
         recognition_output_static, recognition_output_mov = g.predict(
             right_hand_data, left_hand_data, pose_data
