@@ -38,9 +38,6 @@ def main():
 
         # make prediction
         result = next(inferencer(frame))
-
-        draw_hand_from_kps(frame, result["predictions"][0][0]["keypoints"])
-
         # mp_drawing.draw_axis(
         #     frame,
         #     np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]]),
@@ -59,10 +56,9 @@ def main():
         # if results.right_hand_landmarks:
         #     # TODO: Move this repetitive code into a function or module somewhere...
         #     right_hand_raw = list(results.right_hand_landmarks.landmark)
-        right_hand_raw = np.array(result["predictions"][0][0]["keypoints"])
-        right_hand_data = np.concatenate(
-            (right_hand_raw[:, :2], np.zeros((21, 1))), axis=1
-        )
+        right_hand_raw = np.array(result["predictions"][0][0]["keypoints"])#[:,:2]
+        right_hand_data = right_hand_raw[:21]
+        draw_hand_from_kps(frame, right_hand_data)
         # if results.pose_landmarks:
         #     pose_raw = list(results.pose_landmarks.landmark)
         #     pose_data = np.array(
@@ -189,7 +185,7 @@ def draw_rotated_right_hand(
 
     draw_hand_from_kps(
         frame,
-        right_hand_data_small[:, :2],
+        right_hand_data_small,
     )
 
 
@@ -243,12 +239,12 @@ def draw_hand_from_kps(img, kps):
         [0, 17, 18, 19, 20],
     ]
     for kp in kps:
-        x, y = kp
+        x, y, z = kp
         cv2.circle(img, (int(x), int(y)), 5, (255, 0, 0), -1)
     for connections in hand_connections:
         for i in range(len(connections) - 1):
-            x1, y1 = kps[connections[i]]
-            x2, y2 = kps[connections[i + 1]]
+            x1, y1, z1 = kps[connections[i]]
+            x2, y2, z2 = kps[connections[i + 1]]
             cv2.line(img, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
     return img
 
