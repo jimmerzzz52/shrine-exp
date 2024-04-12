@@ -23,7 +23,7 @@ mmdet_path = get_installed_path(MODULE2PACKAGE['mmdet'])
 # 
 object_type = "hand"
 det_info = default_det_models[object_type]
-det_info['cat_ids'] = tuple(range(10))
+# det_info['cat_ids'] = tuple(range(10))
 # Printing the bounding box is possible to see that the detection is fine and the problem is the had
 # Get model values at https://github.com/open-mmlab/mmdetection/tree/main/configs
 # det_info = dict(
