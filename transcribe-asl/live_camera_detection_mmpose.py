@@ -22,7 +22,7 @@ def main():
     cap = cv2.VideoCapture(0)
     # address = "http://192.168.15.35:8080/video"
     # cap.open(address)
-    inferencer = MMPoseInferencer("hand")
+    # inferencer = MMPoseInferencer("hand")
     while True:
         # pull frame
         start = time.time()
