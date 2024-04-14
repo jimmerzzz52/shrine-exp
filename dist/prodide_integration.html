@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+      <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+  </head>
+  <body>
+   
+  
+    <button onclick="evaluatePython()">Test Python</button>
+    <h1>Input</h1>
+    <textarea id="input_python" name="input_python" rows="4" cols="50"></textarea>
+    <h1>Output</h1>
+    <textarea id="output_python" name="output_python" rows="4" cols="50"></textarea>
+    <!-- <div>Output:</div> -->
+
+    <script type="text/javascript">
+      const output = document.getElementById("output_python");
+      const code = document.getElementById("input_python");
+
+      code.value = "Initializing...\n";
+      // init Pyodide
+      async function main() {
+        let pyodide = await loadPyodide({
+          stdin: window.prompt,
+          stdout: (text) => {output.value += text;},
+          stderr: (text) => {output.value += text;}
+        });
+        code.value += "Ready!\n";
+        return pyodide;
+      }
+      let pyodideReadyPromise = main();
+      
+      async function evaluatePython() {
+        let pyodide = await pyodideReadyPromise;
+        try {
+        //   alert(pyodide.runPython(`
+        //     import sys
+        //     sys.version
+        // `));
+          let outputR = await pyodide.runPython(code.value);
+          // console.log(pyodide.globals.output)
+          // addToOutput(outputR);
+        } catch (err) {
+          // addToOutput(err);
+        }
+      }
+
+      function addToOutput(s) {
+        
+        output.value += ">>>" + code.value + "\n" + s + "\n";
+      }
+    </script>
+  </body>
+</html>

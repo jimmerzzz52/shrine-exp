@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "transcribe-asl"
+name = "gesture"
 version = "0.1.0"
 description = ""
-authors = ["Jimmy Scray <jimmy.scray@kochgs.com>"]
+authors = ["Your Name <you@example.com>"]
 readme = "README.md"
-packages = [{include = "transcribe_asl"}]
+
 
 [tool.poetry.dependencies]
 python = "^3.11.7"
@@ -15,7 +15,6 @@ google = "^3.0.0"
 opencv-python = "^4.8.0.74"
 matplotlib = "^3.8.2"
 pytest = "^8.0.1"
-
 
 [build-system]
 requires = ["poetry-core"]
