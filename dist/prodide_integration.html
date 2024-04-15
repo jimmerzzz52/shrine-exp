@@ -25,6 +25,7 @@
           stdout: (text) => {output.value += text;},
           stderr: (text) => {output.value += text;}
         });
+        pyodide.loadPackage('pandas') 
         code.value += "Ready!\n";
         return pyodide;
       }

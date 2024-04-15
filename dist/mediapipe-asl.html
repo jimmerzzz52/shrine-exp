@@ -16,6 +16,11 @@
 </head>
 <body>
 <button onclick="module.startGestureTimer()">Start the Timer</button>
+<button onclick="executePythonCode()">Run Python</button>
+<h1>Input</h1>
+<textarea id="input_python" name="input_python" rows="4" cols="50"></textarea>
+<h1>Output</h1>
+<textarea id="output_python" name="output_python" rows="4" cols="50"></textarea>
 <div class="container">
 <video style="display: none" class="input_video"></video>
 <canvas class="output_canvas" width="1280px" height="720px"></canvas>
@@ -36,6 +41,82 @@ Open your browser console to see Pyodide output -->
 </script> -->
 </body>
 <script type="text/javascript">
+    
+    const output = document.getElementById("output_python");
+    const code = document.getElementById("input_python");
+    var codeInput = ""
+    // var output = ""
+    var xyz = []
+//   const code = `
+// import pandas
+
+// mydataset = {
+//   'cars': ["BMW", "Volvo", "Ford"],
+//   'passings': [3, 7, 2]
+// }
+
+// myvar = pandas.DataFrame(mydataset)
+
+// print(myvar)`
+
+  async function main() {
+        let pyodide = await loadPyodide({
+          stdin: window.prompt,
+          stdout: (text) => {output += text;},
+          stderr: (text) => {output += text;}
+        });
+        pyodide.loadPackage('pandas') 
+        // code.value += "Ready!\n";
+        alert('ready')
+        return pyodide;
+      }
+      
+      
+      
+      code.value = "Initializing...\n";
+      // init Pyodide
+      async function main() {
+        let pyodide = await loadPyodide({
+          stdin: window.prompt,
+          stdout: (text) => {output.value += text;},
+          stderr: (text) => {output.value += text;}
+        });
+        pyodide.loadPackage('pandas') 
+        code.value += "Ready!\n";
+        return pyodide;
+      }
+      let pyodideReadyPromise = main();
+      
+      async function evaluatePython() {
+        let pyodide = await pyodideReadyPromise;
+        try {
+        //   alert(pyodide.runPython(`
+        //     import sys
+        //     sys.version
+        // `));
+          let outputR = await pyodide.runPython(codeInput);
+          // console.log(pyodide.globals.output)
+          // addToOutput(outputR);
+        } catch (err) {
+          // addToOutput(err);
+        }
+      }
+
+      function addToOutput(s) {
+        
+        output.value += ">>>" + codeInput + "\n" + s + "\n";
+      }
+
+      
+
+      async function executePythonCode() {
+        codeInput = code.value;
+        codeInput= codeInput.replace('--input here--',JSON.stringify(xyz))
+        alert(codeInput)
+        await evaluatePython();
+        // alert(JSON.stringify(xyz))
+  }
+
   const module = {};
 </script>
 <script type="module">
@@ -53,12 +134,14 @@ Open your browser console to see Pyodide output -->
     gestureTaken = false;
   }
 
+
   function onResults(results) {
     
     canvasCtx.save();
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     canvasCtx.drawImage(
         results.image, 0, 0, canvasElement.width, canvasElement.height);
+        // console.log(results)
     if (results.multiHandLandmarks) {
       
       // TODO: We have twenty points. We have to create a mapping.
@@ -78,11 +161,12 @@ Open your browser console to see Pyodide output -->
         else if(!gestureTaken){
           console.log("Seconds until it's taken!!" + (3 - secondSinceGestureTimerStarted));
         }
-        
+        console.log(landmarks)
+        xyz = landmarks;
         normalizeHand(landmarks);
         gesture = closestGestureToPointMap(landmarks);
         
-        console.log(gesture);
+        // console.log(gesture);
 
 
       }
