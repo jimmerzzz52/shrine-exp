@@ -550,6 +550,32 @@ def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
     return coordinates_hand_frame
 
 
+def euler_angles_from_rotation_matrix(rotation_matrix: np.array) -> np.array:
+    """Get the Euler angles from the rotation matrix.
+
+    Inputs:
+        rotation_matrix: np.array
+            A 2D array containing the rotation matrix.
+
+    Outputs:
+        euler_angles: np.array
+            A 1D array containing the Euler angles.
+    """
+    # The Euler angles are obtained by the arctangent of the ratio of the elements of the rotation matrix.
+    # The rotation matrix is assumed to be in the ZYX order.
+    euler_angles = np.zeros(3)
+    euler_angles[0] = np.arctan2(
+        rotation_matrix[1, 2], rotation_matrix[2, 2]
+    )  # phi_x = arctan2(r23, r33)
+    euler_angles[1] = -np.arcsin(
+        rotation_matrix[0, 2]
+    )  # theta_y = -arcsin(r13)
+    euler_angles[2] = np.arctan2(
+        rotation_matrix[0, 1], rotation_matrix[0, 0]
+    )  # psi_z = arctan2(r12, r11)
+    return euler_angles
+
+
 def match_position_points(base_points: np.array, points: np.array) -> np.array:
     """Match the position of the points to the base points.
 
