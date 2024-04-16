@@ -202,7 +202,7 @@ class Gesture:
         incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points)
         # match the points.
         return mean_squared_error(
-            base_points_in_hand_frame[:,:2], incoming_points_in_hand_frame[:,:2]
+            base_points_in_hand_frame[:, :2], incoming_points_in_hand_frame[:, :2]
         )
 
     def _compare_body(
