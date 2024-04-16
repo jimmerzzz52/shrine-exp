@@ -490,14 +490,16 @@ def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
 def hand_frame_of_reference(coordinates: np.array) -> np.array:
     """Get the hand frame of reference.
 
-    Inputs:
-        coordinates: np.array
-            A 2D array containing the coordinates of the points.
-            Coordinates are expected to be sorted according to their index.
+    Parameters
+    ----------
+    coordinates: np.array
+        A 2D array containing the coordinates of the points.
+        Coordinates are expected to be sorted according to their index.
 
-    Outputs:
-        hand_frame: np.array
-            A 2D array containing the base vectors of the hand frame of reference in global coordinates.
+    Returns
+    -------
+    hand_frame: np.array
+        A 2D array containing the base vectors of the hand frame of reference in global coordinates.
     """
     hand_frame = np.zeros((3, 3))
     # the plane passes through the points 0, 5, and 17
@@ -521,15 +523,17 @@ def hand_frame_of_reference(coordinates: np.array) -> np.array:
 def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
     """Rotate and translates the coordinates to the hand frame of reference.
 
-    Inputs:
-        coordinates: np.array
-            A 2D array containing the coordinates of the points to rotate.
-        norm: bool
-            A bool indicating if the coordinates should be normalized.
+    Parameters
+    ----------
+    coordinates: np.array
+        A 2D array containing the coordinates of the points to rotate.
+    norm: bool
+        A bool indicating if the coordinates should be normalized.
 
-    Outputs:
-        coordinates_hand_frame: np.array
-            A 2D array containing the coordinates of the points in the hand frame of reference.
+    Returns
+    -------
+    coordinates_hand_frame: np.array
+        A 2D array containing the coordinates of the points in the hand frame of reference.
     """
     coordinates = coordinates.astype(float)
     # The hand frame of reference is obtained by the hand_frame_of_reference function.
@@ -553,13 +557,15 @@ def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
 def euler_angles_from_rotation_matrix(rotation_matrix: np.array) -> np.array:
     """Get the Euler angles from the rotation matrix.
 
-    Inputs:
-        rotation_matrix: np.array
-            A 2D array containing the rotation matrix.
+    Parameters
+    ----------
+    rotation_matrix: np.array
+        A 2D array containing the rotation matrix.
 
-    Outputs:
-        euler_angles: np.array
-            A 1D array containing the Euler angles.
+    Returns
+    -------
+    euler_angles: np.array
+        A 1D array containing the Euler angles.
     """
     # The Euler angles are obtained by the arctangent of the ratio of the elements of the rotation matrix.
     # The rotation matrix is assumed to be in the ZYX order.
@@ -579,17 +585,21 @@ def euler_angles_from_rotation_matrix(rotation_matrix: np.array) -> np.array:
 def match_position_points(base_points: np.array, points: np.array) -> np.array:
     """Match the position of the points to the base points.
 
-    Inputs:
-        base_points: np.array
-            A 2D array containing the base points in the hand frame of reference.
-        points: np.array
-            A 2D array containing the points to match in the hand frame of reference.
+    Parameters
+    ----------
+    base_points: np.array
+        A 2D array containing the base points in the hand frame of reference.
+    points: np.array
+        A 2D array containing the points to match in the hand frame of reference.
 
-    Outputs:
-        points_matched: bool
-            A bool indicating if the points were matched.
+    Returns
+    -------
+    points_matched: bool
+        A bool indicating if the points were matched.
 
-    Note: For this to work properly, the points should be in the hand frame of reference.
+    Note
+    ----
+       For this to work properly, the points should be in the hand frame of reference.
     """
 
     return np.allclose(base_points, points, atol=9e-2)
