@@ -71,6 +71,11 @@ class Gesture:
                 "X",
                 "Y",
             ]
+            # [
+            #     "two",
+            #     "P",
+            #     "seven",
+            # ]
         )
         # Define the gestures with movements.
         self.gestures_mov: dict[str, list[str]] = {
@@ -199,11 +204,55 @@ class Gesture:
         base_points_zzero[:, 2] = 0
         base_points_in_hand_frame: np.array = to_hand_frame(base_points_zzero)
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points)
-        # match the points.
-        return mean_squared_error(
+        incoming_points_zzero: np.array = incoming_points.copy()
+        incoming_points_zzero[:, 2] = 0
+        incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points_zzero)
+        # Mean squared error of distance of points.
+        error_points_distance = mean_squared_error(
             base_points_in_hand_frame[:, :2], incoming_points_in_hand_frame[:, :2]
         )
+        # Get the rotation matrices of the base points and the incoming points.
+        # base_rotation_matrix = hand_frame_of_reference(base_points).T
+        # incoming_rotation_matrix = hand_frame_of_reference(incoming_points).T
+        # print(f"Incoming rotation matrix = {incoming_rotation_matrix}")
+        # Get the Euler angles of the rotation matrices.
+        # base_euler_angles = euler_angles_from_rotation_matrix(base_rotation_matrix)
+        # incoming_euler_angles = euler_angles_from_rotation_matrix(
+        #     incoming_rotation_matrix
+        # )
+        # print(f"Base euler = {base_euler_angles}")
+        # print(f"Incoming euler = {incoming_euler_angles}")
+        angle_hand_inc = angle_hand(incoming_points)
+        angle_hand_base = angle_hand(base_points)
+        # print(f"Angle hand = {angle*180/np.pi}")
+
+        # if np.isclose(theta_inc, np.pi, atol=0.1):
+        #     psi_inc -= np.pi
+
+        # if np.isclose(theta_base, np.pi, atol=0.1):
+        #     psi_base -= np.pi
+
+        # print(
+        #     f"Incoming theta = {theta_inc}\n Incoming psi = {psi_inc}\nIncoming psi crude = {incoming_euler_angles[2]}"
+        # )
+
+        # print(f"Error points = {error_points_distance}")
+        # Mean squared error of the Euler angles.
+        # error_euler_angles = mean_squared_error(
+        #     base_euler_angles[-1], incoming_euler_angles[-1]
+        # )
+        # print(f"Error euler = {error_euler_angles}")
+        # error_rotation = mean_squared_error(base_rotation_matrix, incoming_rotation_matrix) / np.pi
+        # The error is the sum of the errors of the points and the Euler angles.
+        # error_points_sgm = sigmoid(error_points_distance)
+        # error_euler_sgm = sigmoid(error_euler_angles)
+        error_angle = mean_squared_error(angle_hand_base, angle_hand_inc)
+        error = error_points_distance + sigmoid(error_angle) / (2 * np.pi)
+        # print(f"incoming euler= {psi_inc*180/np.pi}")
+        # print(f"Error points = {error_points_sgm} Error euler = {error_euler_sgm} Error = {error}")
+        # NOTE: THIS MIGHT NEED FINETUNING BY APPLYING AN WEIGHTED AVERAGE.
+        # return (error_points_distance + error_euler_angles) / 2
+        return error
 
     def _compare_body(
         self, body_base_points: np.array, body_incoming_points: np.array
@@ -573,13 +622,34 @@ def euler_angles_from_rotation_matrix(rotation_matrix: np.array) -> np.array:
     euler_angles[0] = np.arctan2(
         rotation_matrix[1, 2], rotation_matrix[2, 2]
     )  # phi_x = arctan2(r23, r33)
-    euler_angles[1] = -np.arcsin(
-        rotation_matrix[0, 2]
-    )  # theta_y = -arcsin(r13)
+    euler_angles[1] = -np.arcsin(rotation_matrix[0, 2])  # theta_y = -arcsin(r13)
     euler_angles[2] = np.arctan2(
         rotation_matrix[0, 1], rotation_matrix[0, 0]
     )  # psi_z = arctan2(r12, r11)
+    for i, euler_angle in enumerate(euler_angles):
+        if euler_angle < 0:
+            euler_angles[i] += np.pi
+
     return euler_angles
+
+
+def angle_hand(coordinates: np.array) -> float:
+    """Get the angle of the hand.
+
+    Parameters
+    ----------
+    coordinates: np.array
+        A 2D array containing the coordinates of the points.
+
+    Returns
+    -------
+    angle: float
+        The angle of the hand.
+    """
+    # The angle of the hand is the angle between the x and y base vectors of the hand frame of reference.
+    hand_frame = hand_frame_of_reference(coordinates.astype(float))
+    angle = np.arctan2(hand_frame[1, 0], hand_frame[1, 1])
+    return angle
 
 
 def match_position_points(base_points: np.array, points: np.array) -> np.array:
@@ -603,3 +673,20 @@ def match_position_points(base_points: np.array, points: np.array) -> np.array:
     """
 
     return np.allclose(base_points, points, atol=9e-2)
+
+
+def sigmoid(x):
+    """
+    The sigmoid function.
+
+    Parameters
+    ----------
+    x: float
+        The input.
+
+    Returns
+    -------
+    y: float
+        The output.
+    """
+    return 2 / (1 + np.exp(-x)) - 1
