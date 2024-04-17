@@ -35,3 +35,19 @@ This is an open source repo that is contributable to  by anyone, however there i
 2: Call on members to approve your branch
 3: Merge the branch into main
 
+# Creating environment to use mmpose recognizer
+To use the mmpose recognizer, you first need to install pytorch:
+0. Create and start your virtual environment, in theory any python 3.10 should work but 3.10.12 is the only tested version;
+1. Install PyTorch. You can find the instructions on how to install PyTorch on your system [here](https://pytorch.org/get-started/locally/).
+ - Select stable build;
+ - Select your OS (only tested on Linux but should work with any OS);
+ - Select your package manager, pip is recommended;
+ - Select your platform, CPU is recommended;
+2. Use the command generated in pytorch's website to install it, E.g.
+```bash
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+```
+3. Install all other dependencies with:
+```bash
+pip install -r requirements.txt
+```
