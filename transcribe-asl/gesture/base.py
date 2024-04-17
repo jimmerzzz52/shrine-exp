@@ -224,7 +224,7 @@ class Gesture:
         # print(f"Incoming euler = {incoming_euler_angles}")
         angle_hand_inc = angle_hand(incoming_points)
         angle_hand_base = angle_hand(base_points)
-        # print(f"Angle hand = {angle*180/np.pi}")
+        # print(f"Angle hand = {angle_hand_inc}")
 
         # if np.isclose(theta_inc, np.pi, atol=0.1):
         #     psi_inc -= np.pi
@@ -238,16 +238,28 @@ class Gesture:
 
         # print(f"Error points = {error_points_distance}")
         # Mean squared error of the Euler angles.
-        # error_euler_angles = mean_squared_error(
-        #     base_euler_angles[-1], incoming_euler_angles[-1]
-        # )
+        # error_rotation = mean_absolute_error(
+        #     base_euler_angles, incoming_euler_angles
+        # ) / (8 * np.pi)
         # print(f"Error euler = {error_euler_angles}")
-        # error_rotation = mean_squared_error(base_rotation_matrix, incoming_rotation_matrix) / np.pi
+        # error_rotation = mean_absolute_error(
+        #     base_rotation_matrix / np.abs(base_rotation_matrix).max(),
+        #     incoming_rotation_matrix / np.abs(incoming_rotation_matrix).max(),
+        # )
+        # error_rotation = mean_squared_error(
+        #     base_euler_angles / np.abs(base_euler_angles).max(),
+        #     incoming_euler_angles / np.abs(base_euler_angles).max(),
+        # )
         # The error is the sum of the errors of the points and the Euler angles.
         # error_points_sgm = sigmoid(error_points_distance)
         # error_euler_sgm = sigmoid(error_euler_angles)
-        error_angle = mean_squared_error(angle_hand_base, angle_hand_inc)
-        error = error_points_distance + sigmoid(error_angle) / (2 * np.pi)
+
+        ## WORKS FINE
+        error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (8*np.pi)
+        ##
+
+        # error = error_points_distance + sigmoid(error_rotation) / (2 * np.pi)
+        error = error_points_distance + error_rotation
         # print(f"incoming euler= {psi_inc*180/np.pi}")
         # print(f"Error points = {error_points_sgm} Error euler = {error_euler_sgm} Error = {error}")
         # NOTE: THIS MIGHT NEED FINETUNING BY APPLYING AN WEIGHTED AVERAGE.
@@ -535,6 +547,25 @@ def mean_squared_error(y_true: np.array, y_pred: np.array) -> float:
     return np.square(y_true - y_pred).mean()
 
 
+def mean_absolute_error(y_true: np.array, y_pred: np.array) -> float:
+    """
+    Compute the mean absolute error.
+
+    Parameters
+    ----------
+    y_true: np.array
+        The true values.
+    y_pred: np.array
+        The predicted values.
+
+    Returns
+    -------
+    mae: float
+        The mean absolute error.
+    """
+    return np.abs(y_true - y_pred).mean()
+
+
 # auxillary functions (Not sure they should be here or not but I think it deserves its own file)
 def hand_frame_of_reference(coordinates: np.array) -> np.array:
     """Get the hand frame of reference.
@@ -595,6 +626,8 @@ def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
         coordinates_hand_frame[i] = np.dot(
             rotation_matrix, coordinates[i] - coordinates[0]
         )
+    # for i in range(coordinates.shape[0]):
+    #     coordinates_hand_frame[i] = coordinates[i] - coordinates[0]
     if norm:
         # The coordinates are normalized by dividing them by the maximum absolute value of the coordinates.
         coordinates_hand_frame = coordinates_hand_frame / np.abs(
@@ -628,7 +661,7 @@ def euler_angles_from_rotation_matrix(rotation_matrix: np.array) -> np.array:
     )  # psi_z = arctan2(r12, r11)
     for i, euler_angle in enumerate(euler_angles):
         if euler_angle < 0:
-            euler_angles[i] += np.pi
+            euler_angles[i] += 2 * np.pi
 
     return euler_angles
 
@@ -648,7 +681,9 @@ def angle_hand(coordinates: np.array) -> float:
     """
     # The angle of the hand is the angle between the x and y base vectors of the hand frame of reference.
     hand_frame = hand_frame_of_reference(coordinates.astype(float))
-    angle = np.arctan2(hand_frame[1, 0], hand_frame[1, 1])
+    angle = np.arctan2(hand_frame[1, 1], hand_frame[1, 0])
+    if angle < 0:
+        angle += 2 * np.pi
     return angle
 
 
