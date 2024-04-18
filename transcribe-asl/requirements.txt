@@ -1,3 +1,6 @@
+# wheel
+# setuptools
+-f https://download.pytorch.org/whl/cpu
 absl-py==2.1.0
 addict==2.4.0
 aliyun-python-sdk-core==2.15.0
@@ -55,7 +58,7 @@ nest-asyncio==1.6.0
 networkx==3.2.1
 numpy==1.24.3
 opencv-contrib-python==4.7.0.72
-opencv-python==4.7.0.72
+opencv-python-headless==4.7.0.72
 opendatalab==0.0.10
 openmim==0.3.9
 openxlab==0.0.37
@@ -95,9 +98,6 @@ termcolor==2.4.0
 terminaltables==3.1.10
 tifffile==2024.2.12
 tomli==2.0.1
-torch==2.2.2+cpu
-torchaudio==2.2.2+cpu
-torchvision==0.17.2+cpu
 tornado==6.4
 tqdm==4.65.2
 traitlets==5.14.2

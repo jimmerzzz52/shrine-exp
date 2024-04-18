@@ -42,10 +42,10 @@ det_model, det_weights, det_cat_ids = (
     det_info["weights"],
     det_info["cat_ids"],
 )
-inferencer = MMPoseInferencer("hand3d", det_model=det_model, det_weights=det_weights, det_cat_ids=det_cat_ids)
+# inferencer = MMPoseInferencer("hand3d", det_model=det_model, det_weights=det_weights, det_cat_ids=det_cat_ids)
 # inferencer = MMPoseInferencer("hand3d", det_model='ssdlite')
 # inferencer = MMPoseInferencer("hand3d")
-# inferencer = MMPoseInferencer("hand")
+inferencer = MMPoseInferencer("hand")
 
 # model = init_model("internet_res50_4xb16-20e_interhand3d-256x256.py", "hand3d")
 # inferencer = inference_topdown("hand3d", det_model="ssdlite_mobilenetv2")

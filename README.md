@@ -45,9 +45,11 @@ To use the mmpose recognizer, you first need to install pytorch:
  - Select your platform, CPU is recommended;
 2. Use the command generated in pytorch's website to install it, E.g.
 ```bash
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu 
+
 ```
 3. Install all other dependencies with:
 ```bash
 pip install -r requirements.txt
 ```
+ 
