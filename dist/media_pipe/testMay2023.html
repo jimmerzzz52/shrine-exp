@@ -52,12 +52,10 @@
         // Store the base somewhere.
 
         
-        normalizeHand(landmarks);
-        gesture = closestGestureToPointMap(landmarks);
+        // normalizeHand(landmarks);
+        //gesture = closestGestureToPointMap(landmarks);
         
         console.log(gesture);
-
-
       }
     }
     canvasCtx.restore();
@@ -665,11 +663,18 @@
       
         return np.allclose(base_points, points, atol=9e-2)
       `));
-      pyodide.runPython(`
-        new Gesture()
+
+      function classify(xyz_input){
+        // TODO: Create the string below... Or input it into the python somehow.
+        pyodide.runPython(`
+          gesture = new Gesture()
+          # TODO: We need to input the dataframe/xyz string from above here...
+          # gesture.predict()
         
       
-      `);
+        `);
+      }
+      
     }
     main();
   </script>
