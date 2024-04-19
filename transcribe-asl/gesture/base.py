@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from typing import Optional
+# from typing import Optional
 from datetime import datetime, timedelta
 
 
@@ -8,7 +8,7 @@ class Gesture:
 
     def __init__(
         self,
-        base_gestures: Optional[dict[str, dict[str, np.array]]] = None,
+        base_gestures: dict[str, dict[str, np.array]] = None,
     ):
         """
         Initialize the Gesture object.
@@ -99,9 +99,9 @@ class Gesture:
 
     def predict(
         self,
-        right: Optional[np.array] = None,
-        left: Optional[np.array] = None,
-        body: Optional[np.array] = None,
+        right: np.array = None,
+        left: np.array = None,
+        body: np.array = None,
     ) -> tuple[str, list[str]]:
         """
         Predict the gesture.
@@ -151,7 +151,7 @@ class Gesture:
         mov_gestures: list[str] = self._identify_gestures_movement()
         return static_gesture, mov_gestures
 
-    def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
+    def _is_pointed_finger(self, right: np.array) -> bool:
         """
         Check if the hand is in the pointed finger pose.
 
@@ -426,7 +426,7 @@ class Gesture:
         return base_gestures
 
 
-def concat_or_none(array: list[np.array]) -> Optional[np.array]:
+def concat_or_none(array: list[np.array]) -> np.array:
     """
     Concatenate a list of arrays or return None if the list is empty.
 
@@ -446,7 +446,7 @@ def concat_or_none(array: list[np.array]) -> Optional[np.array]:
         return None
 
 
-def load_base_gesture(path: str) -> Optional[np.array]:
+def load_base_gesture(path: str) -> np.array:
     """
     Load the base gesture from a file.
 
