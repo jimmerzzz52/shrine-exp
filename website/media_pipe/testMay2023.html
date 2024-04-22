@@ -85,7 +85,7 @@
       await pyodide.loadPackage("numpy")
       //await pyodide.loadPackage("datetime")
       
-      console.log(pyodide.runPython(`
+      console.log( await pyodide.runPython(`
       import pandas as pd
       import numpy as np
       # from typing import Optional
@@ -656,18 +656,20 @@
 
         return np.allclose(base_points, points, atol=9e-2)
       `));
+      let classifier = {
+        classify: function(xyz_input){
+        // TODO: Create the string below... Or input it into the python somehow.
+        pyodide.runPython(`
+          gesture = new Gesture()
+          # TODO: We need to input the dataframe/xyz string from above here...
+          g = Gesture()
+          print(`+xyz_input+`)
+        `);
+        }
+      }
+      return classifier.classify;
     }
-    function classify(xyz_input){
-      // TODO: Create the string below... Or input it into the python somehow.
-      pyodide.runPython(`
-        gesture = new Gesture()
-        # TODO: We need to input the dataframe/xyz string from above here...
-        # gesture.predict()
-        print(`+xyz_input+`)
-      `);
-      return classify()
-    }
-    main();
+    test = await main();
   </script>
 
 
