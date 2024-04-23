@@ -214,8 +214,8 @@ class Gesture:
         # Get the rotation matrices of the base points and the incoming points.
         # base_rotation_matrix = hand_frame_of_reference(base_points).T
         # incoming_rotation_matrix = hand_frame_of_reference(incoming_points).T
-        # print(f"Incoming rotation matrix = {incoming_rotation_matrix}")
-        # Get the Euler angles of the rotation matrices.
+        # # print(f"Incoming rotation matrix = {incoming_rotation_matrix}")
+        # # Get the Euler angles of the rotation matrices.
         # base_euler_angles = euler_angles_from_rotation_matrix(base_rotation_matrix)
         # incoming_euler_angles = euler_angles_from_rotation_matrix(
         #     incoming_rotation_matrix
@@ -224,7 +224,8 @@ class Gesture:
         # print(f"Incoming euler = {incoming_euler_angles}")
         angle_hand_inc = angle_hand(incoming_points)
         angle_hand_base = angle_hand(base_points)
-        # print(f"Angle hand = {angle_hand_inc}")
+        print(f"Angle hand = {angle_hand_inc}")
+        # print(f"Euler angles = {incoming_euler_angles}")
 
         # if np.isclose(theta_inc, np.pi, atol=0.1):
         #     psi_inc -= np.pi
@@ -255,11 +256,19 @@ class Gesture:
         # error_euler_sgm = sigmoid(error_euler_angles)
 
         ## WORKS FINE
-        error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (8*np.pi)
+        error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
+            8 * np.pi
+        )
         ##
-
+        # THIS WORKS perfectly fine in mediapipe but not in mmpose, I can only assume that this is 
+        # due to the way the database was created (with mediapipe).
+        # Actually, this also has to do with the fact that the camera is not in the same orientation.
+        # error_rotation = mean_absolute_error(
+        #     base_euler_angles[-1], incoming_euler_angles[-1]
+        # ) / (8 * np.pi)
         # error = error_points_distance + sigmoid(error_rotation) / (2 * np.pi)
         error = error_points_distance + error_rotation
+        # error = error_points_distance
         # print(f"incoming euler= {psi_inc*180/np.pi}")
         # print(f"Error points = {error_points_sgm} Error euler = {error_euler_sgm} Error = {error}")
         # NOTE: THIS MIGHT NEED FINETUNING BY APPLYING AN WEIGHTED AVERAGE.
@@ -681,8 +690,11 @@ def angle_hand(coordinates: np.array) -> float:
     """
     # The angle of the hand is the angle between the x and y base vectors of the hand frame of reference.
     hand_frame = hand_frame_of_reference(coordinates.astype(float))
+    euler = euler_angles_from_rotation_matrix(hand_frame)
     angle = np.arctan2(hand_frame[1, 1], hand_frame[1, 0])
     if angle < 0:
+        angle += 2 * np.pi
+    if euler[0] < 0.5:
         angle += 2 * np.pi
     return angle
 
