@@ -134,16 +134,24 @@ def main():
             #     scale=1,
             # )
 
-            rec_out_static_print = "; ".join(
-                [
-                    f"{i}, Confidence: {str(output.static_gestures_confidence[i])}"
-                    for i in output.static_gestures
-                ]
-            )
+            rec_out_static_print = [
+                f"{i}, Conf: {str(output.static_gestures_confidence[i])}"
+                for i in output.static_gestures
+            ]
 
+            for i, rec in enumerate(rec_out_static_print):
+                cv2.putText(
+                    frame,
+                    rec,
+                    (20, 170 + i * 30),
+                    cv2.FONT_HERSHEY_PLAIN,
+                    1,
+                    (0, 255, 0),
+                    2,
+                )
             cv2.putText(
                 frame,
-                f"FPS: {int(fps)}   Static: {rec_out_static_print}",
+                f"FPS: {int(fps)}   Static: {output.static_gestures[0]}",
                 (20, 70),
                 cv2.FONT_HERSHEY_PLAIN,
                 3,
@@ -161,15 +169,15 @@ def main():
                 2,
             )
 
-            cv2.putText(
-                frame,
-                f"Check point: {g.check_point}",
-                (20, 140),
-                cv2.FONT_HERSHEY_PLAIN,
-                1,
-                (0, 255, 0),
-                2,
-            )
+            # cv2.putText(
+            #     frame,
+            #     f"Check point: {g.check_point}",
+            #     (20, 140),
+            #     cv2.FONT_HERSHEY_PLAIN,
+            #     1,
+            #     (0, 255, 0),
+            #     2,
+            # )
 
             cv2.imshow("MediaPipe Holistic", frame)
 

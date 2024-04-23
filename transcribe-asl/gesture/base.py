@@ -457,7 +457,14 @@ class Gesture:
             self.base_gestures["A"]["right_hand"],
             self.base_gestures["five"]["right_hand"],
         )
+        # NOTE to self: max_possible error is not actually the max possible error,
+        # only a good approximation.
+        # since sometimes the confidence is smaller than zero, only possible if 
+        # the error is larger than the max_possible_error.
         confidences: np.array = 1 - errors / max_possible_error
+        for i, confidence in enumerate(confidences):
+            if confidence < 0:
+                confidences[i] = 0
         confidence_gesture: dict[str, float] = {
             gesture: confidence
             for gesture, confidence in zip(static_gestures, confidences)
