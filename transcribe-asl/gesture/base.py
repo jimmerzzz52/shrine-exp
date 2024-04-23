@@ -201,15 +201,16 @@ class Gesture:
         """
         # Load the base points in the hand frame of reference.
         base_points_zzero: np.array = base_points.copy()
-        base_points_zzero[:, 2] = 0
+        # base_points_zzero[:, 2] = 0
         base_points_in_hand_frame: np.array = to_hand_frame(base_points_zzero)
         # get the incoming poitns in the hand frame of reference.
         incoming_points_zzero: np.array = incoming_points.copy()
-        incoming_points_zzero[:, 2] = 0
+        # incoming_points_zzero[:, 2] = 0
         incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points_zzero)
         # Mean squared error of distance of points.
         error_points_distance = mean_squared_error(
-            base_points_in_hand_frame[:, :2], incoming_points_in_hand_frame[:, :2]
+            base_points_in_hand_frame,  # [:, :2],
+            incoming_points_in_hand_frame,  # [:, :2]
         )
         # Get the rotation matrices of the base points and the incoming points.
         # base_rotation_matrix = hand_frame_of_reference(base_points).T
@@ -255,7 +256,9 @@ class Gesture:
         # error_euler_sgm = sigmoid(error_euler_angles)
 
         ## WORKS FINE
-        error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (8*np.pi)
+        error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
+            8 * np.pi
+        )
         ##
 
         # error = error_points_distance + sigmoid(error_rotation) / (2 * np.pi)
