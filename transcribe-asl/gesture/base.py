@@ -130,7 +130,7 @@ class Gesture:
         # Reset the check points.
         self._reset_check_points(wait_seconds=5)
         # For The pose one, all we need is the right hand.
-        static_gesture = "Nothing recognized"
+        static_gesture: str = "Nothing recognized"
 
         if left is None and right is not None:
             static_gesture = "No left hand gesture"
@@ -138,13 +138,13 @@ class Gesture:
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
             # Compare incoming points with the static gestures.
-            errors_gesture = {
+            errors_gesture: dict[str, float] = {
                 gesture: self._compare_hand(
                     self.base_gestures[gesture]["right_hand"], right
                 )
                 for gesture in self.base_gestures
             }
-            static_gesture: str = min(
+            static_gesture = min(
                 errors_gesture, key=errors_gesture.get
             )  # The identified static gesture is the one with the smallest error.
             # Don't need this in code but it helps debugging.
