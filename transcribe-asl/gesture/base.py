@@ -107,6 +107,7 @@ class Gesture:
         right: Optional[np.array] = None,
         left: Optional[np.array] = None,
         body: Optional[np.array] = None,
+        top_most: Optional[int] = 3,
     ) -> tuple[str, list[str]]:
         """
         Predict the gesture.
@@ -146,7 +147,6 @@ class Gesture:
                 )
                 for gesture in self.base_gestures
             }
-            top_most: int = 3
             static_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
                 :top_most
             ]  # The identified static gesture is the one with the smallest error.
