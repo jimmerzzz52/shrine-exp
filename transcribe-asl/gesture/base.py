@@ -31,10 +31,15 @@ class Gesture:
         self.gestures: np.array[str] = np.array(
             [
                 "one",
+                "one_inv",
                 "two",
+                "two_inv",
                 "three",
+                "three_inv",
                 "four",
+                "four_inv",
                 "five",
+                "five_inv",
                 "six",
                 "seven",
                 "eight",

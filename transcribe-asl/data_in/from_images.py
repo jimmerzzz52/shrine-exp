@@ -3,7 +3,7 @@ import mediapipe as mp
 import datetime
 from pathlib import Path
 from multiprocessing import Pool
-from cap_from_youtube import cap_from_youtube
+# from cap_from_youtube import cap_from_youtube
 
 from math import atan2, degrees, sqrt
 from itertools import zip_longest
