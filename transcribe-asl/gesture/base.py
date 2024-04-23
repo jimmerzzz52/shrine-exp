@@ -135,6 +135,8 @@ class Gesture:
         if left is None and right is not None:
             static_gesture = "No left hand gesture"
 
+        static_gestures: list[str] = [static_gesture]
+
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
             # Compare incoming points with the static gestures.
@@ -144,17 +146,19 @@ class Gesture:
                 )
                 for gesture in self.base_gestures
             }
-            static_gesture = min(
-                errors_gesture, key=errors_gesture.get
-            )  # The identified static gesture is the one with the smallest error.
+            top_most: int = 3
+            static_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
+                :top_most
+            ]  # The identified static gesture is the one with the smallest error.
             # Don't need this in code but it helps debugging.
-            self.past_gestures.append(static_gesture)
+            static_gesture = static_gestures[0]
+            self.past_gestures.append(static_gestures)
             # Update the check points.
             self._update_check_points(static_gesture)
             # Check if there is a movement in the buffer of identified static gestures.
             # This function will have to be able to
         mov_gestures: list[str] = self._identify_gestures_movement()
-        return static_gesture, mov_gestures
+        return static_gestures, mov_gestures
 
     def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """

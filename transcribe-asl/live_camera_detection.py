@@ -96,6 +96,8 @@ def main():
                     [[value.x, value.y, value.z] for value in left_hand_raw]
                 )
 
+            recognition_output_static: list[str] = []
+            recognition_output_mov: list[str] = []
             recognition_output_static, recognition_output_mov = g.predict(right_hand_data, left_hand_data, pose_data)
 
             draw_rotated_left_hand(
@@ -134,9 +136,11 @@ def main():
             #     scale=1,
             # )
 
+            rec_out_static_print = '; '.join([f"{i}" for i in recognition_output_static])
+
             cv2.putText(
                 frame,
-                f"FPS: {int(fps)}   Static: {recognition_output_static}",
+                f"FPS: {int(fps)}   Static: {rec_out_static_print}",
                 (20, 70),
                 cv2.FONT_HERSHEY_PLAIN,
                 3,
