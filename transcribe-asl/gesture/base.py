@@ -212,61 +212,15 @@ class Gesture:
             base_points_in_hand_frame,  # [:, :2],
             incoming_points_in_hand_frame,  # [:, :2]
         )
-        # Get the rotation matrices of the base points and the incoming points.
-        # base_rotation_matrix = hand_frame_of_reference(base_points).T
-        # incoming_rotation_matrix = hand_frame_of_reference(incoming_points).T
-        # print(f"Incoming rotation matrix = {incoming_rotation_matrix}")
-        # Get the Euler angles of the rotation matrices.
-        # base_euler_angles = euler_angles_from_rotation_matrix(base_rotation_matrix)
-        # incoming_euler_angles = euler_angles_from_rotation_matrix(
-        #     incoming_rotation_matrix
-        # )
-        # print(f"Base euler = {base_euler_angles}")
-        # print(f"Incoming euler = {incoming_euler_angles}")
+        # Get the angle indicating of the base and incoming points.
         angle_hand_inc = angle_hand(incoming_points)
         angle_hand_base = angle_hand(base_points)
-        # print(f"Angle hand = {angle_hand_inc}")
-
-        # if np.isclose(theta_inc, np.pi, atol=0.1):
-        #     psi_inc -= np.pi
-
-        # if np.isclose(theta_base, np.pi, atol=0.1):
-        #     psi_base -= np.pi
-
-        # print(
-        #     f"Incoming theta = {theta_inc}\n Incoming psi = {psi_inc}\nIncoming psi crude = {incoming_euler_angles[2]}"
-        # )
-
-        # print(f"Error points = {error_points_distance}")
-        # Mean squared error of the Euler angles.
-        # error_rotation = mean_absolute_error(
-        #     base_euler_angles, incoming_euler_angles
-        # ) / (8 * np.pi)
-        # print(f"Error euler = {error_euler_angles}")
-        # error_rotation = mean_absolute_error(
-        #     base_rotation_matrix / np.abs(base_rotation_matrix).max(),
-        #     incoming_rotation_matrix / np.abs(incoming_rotation_matrix).max(),
-        # )
-        # error_rotation = mean_squared_error(
-        #     base_euler_angles / np.abs(base_euler_angles).max(),
-        #     incoming_euler_angles / np.abs(base_euler_angles).max(),
-        # )
-        # The error is the sum of the errors of the points and the Euler angles.
-        # error_points_sgm = sigmoid(error_points_distance)
-        # error_euler_sgm = sigmoid(error_euler_angles)
-
-        ## WORKS FINE
+        # Mean squared error of the angle of the hand.
         error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
             8 * np.pi
         )
-        ##
-
-        # error = error_points_distance + sigmoid(error_rotation) / (2 * np.pi)
+        # 8 * np.pi is the best tested scaling factor
         error = error_points_distance + error_rotation
-        # print(f"incoming euler= {psi_inc*180/np.pi}")
-        # print(f"Error points = {error_points_sgm} Error euler = {error_euler_sgm} Error = {error}")
-        # NOTE: THIS MIGHT NEED FINETUNING BY APPLYING AN WEIGHTED AVERAGE.
-        # return (error_points_distance + error_euler_angles) / 2
         return error
 
     def _compare_body(
