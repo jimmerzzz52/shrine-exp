@@ -454,7 +454,8 @@ class Gesture:
         the confidence is zero. A meaningfull maximum possible error should is the error A and five.
         """
         max_possible_error: float = self._compare_hand(
-            self.base_gestures["A"], self.base_gestures["five"]
+            self.base_gestures["A"]["right_hand"],
+            self.base_gestures["five"]["right_hand"],
         )
         confidences: np.array = 1 - errors / max_possible_error
         confidence_gesture: dict[str, float] = {
@@ -733,7 +734,7 @@ def sigmoid(x):
 
 
 @dataclass
-class Output():
+class Output:
     """
     The output of the model.
 
