@@ -1,7 +1,7 @@
 import cv2
 import mediapipe as mp
 import time
-from gesture.base import Gesture, to_hand_frame
+from gesture.base import Gesture, to_hand_frame, Output
 import numpy as np
 
 
@@ -96,9 +96,7 @@ def main():
                     [[value.x, value.y, value.z] for value in left_hand_raw]
                 )
 
-            recognition_output_static: list[str] = []
-            recognition_output_mov: list[str] = []
-            recognition_output_static, recognition_output_mov = g.predict(right_hand_data, left_hand_data, pose_data)
+            output: Output = g.predict(right_hand_data, left_hand_data, pose_data)
 
             draw_rotated_left_hand(
                 frame,
@@ -136,7 +134,12 @@ def main():
             #     scale=1,
             # )
 
-            rec_out_static_print = '; '.join([f"{i}" for i in recognition_output_static])
+            rec_out_static_print = "; ".join(
+                [
+                    f"{i}, Confidence: {str(output.static_gestures_confidence[i])}"
+                    for i in output.static_gestures
+                ]
+            )
 
             cv2.putText(
                 frame,
@@ -150,7 +153,7 @@ def main():
 
             cv2.putText(
                 frame,
-                f"Movement: {recognition_output_mov}",
+                f"Movement: {output.movement_gestures}",
                 (20, 110),
                 cv2.FONT_HERSHEY_PLAIN,
                 3,

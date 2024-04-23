@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from typing import Optional
 from datetime import datetime, timedelta
+from dataclasses import dataclass
 
 
 class Gesture:
@@ -108,7 +109,7 @@ class Gesture:
         left: Optional[np.array] = None,
         body: Optional[np.array] = None,
         top_most: Optional[int] = 3,
-    ) -> tuple[str, list[str]]:
+    ) -> tuple[list[str], list[str], dict[str, float]]:
         """
         Predict the gesture.
 
@@ -120,13 +121,17 @@ class Gesture:
             The points of the left hand.
         body: np.array
             The points of the body.
+        top_most: int
+            The number of top most closest gestures to return.
 
         Returns
         -------
-        static_gesture: str
-            The static gesture.
+        static_gestures: list[str]
+            The top most static gestures.
         mov_gesture: list[str]
             The movement gesture.
+        static_gestures_confidence: dict[str, float]
+            The confidence of the static gestures.
         """
         # Reset the check points.
         self._reset_check_points(wait_seconds=5)
@@ -137,6 +142,7 @@ class Gesture:
             static_gesture = "No left hand gesture"
 
         static_gestures: list[str] = [static_gesture]
+        static_gestures_confidence: dict[str, float] = {static_gesture: 0}
 
         # It's a cascade of poses.... First start with one then it drills down into the other ones.
         if right is not None:
@@ -155,10 +161,14 @@ class Gesture:
             self.past_gestures.append(static_gestures)
             # Update the check points.
             self._update_check_points(static_gesture)
-            # Check if there is a movement in the buffer of identified static gestures.
-            # This function will have to be able to
+            # Calculate the confidence of the top most gestures.
+            static_gestures_confidence: dict[str, float] = self._get_confidence(
+                static_gestures, errors_gesture
+            )
+        # Check if there is a movement in the buffer of identified static gestures.
         mov_gestures: list[str] = self._identify_gestures_movement()
-        return static_gestures, mov_gestures
+
+        return Output(static_gestures, mov_gestures, static_gestures_confidence)
 
     def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
         """
@@ -418,6 +428,40 @@ class Gesture:
             if self.check_point[gesture_mov] == len(self.gestures_mov[gesture_mov]):
                 identified_gestures.append(gesture_mov)
         return identified_gestures
+
+    def _get_confidence(
+        self, static_gestures: list[str], errors_gesture: dict[str, float]
+    ) -> dict[str, float]:
+        """
+        Calculate the confidence of the top most gestures.
+
+        Parameters
+        ----------
+        static_gestures: list[str]
+            The top most static gestures.
+        errors_gesture: dict[str, float]
+            The errors of the gestures.
+
+        Returns
+        -------
+        confidence_gesture: dict[str, float]
+            The confidence of the gestures.
+        """
+        errors = np.array([errors_gesture[gesture] for gesture in static_gestures])
+        """
+        To create the confidence, the error is normalized by the maximum possible error.
+        the idea is that if the error is zero, the confidence is 1, and if the error is the maximum possible error,
+        the confidence is zero. A meaningfull maximum possible error should is the error A and five.
+        """
+        max_possible_error: float = self._compare_hand(
+            self.base_gestures["A"], self.base_gestures["five"]
+        )
+        confidences: np.array = 1 - errors / max_possible_error
+        confidence_gesture: dict[str, float] = {
+            gesture: confidence
+            for gesture, confidence in zip(static_gestures, confidences)
+        }
+        return confidence_gesture
 
     @staticmethod
     def get_base_gestures(gestures: list[str]) -> dict[str, dict[str, np.array]]:
@@ -686,3 +730,23 @@ def sigmoid(x):
         The output.
     """
     return 2 / (1 + np.exp(-x)) - 1
+
+
+@dataclass
+class Output():
+    """
+    The output of the model.
+
+    Attributes
+    ----------
+    static_gestures: list[str]
+        The top most static gestures.
+    movement_gestures: list[str]
+        The movement gesture.
+    static_gestures_confidence: dict[str, float]
+        The confidence of the static gestures.
+    """
+
+    static_gestures: list[str]
+    movement_gestures: list[str]
+    static_gestures_confidence: dict[str, float]
