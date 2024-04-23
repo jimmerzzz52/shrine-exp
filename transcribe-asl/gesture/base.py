@@ -212,19 +212,19 @@ class Gesture:
             base_points_in_hand_frame[:, :2], incoming_points_in_hand_frame[:, :2]
         )
         # Get the rotation matrices of the base points and the incoming points.
-        # base_rotation_matrix = hand_frame_of_reference(base_points).T
-        # incoming_rotation_matrix = hand_frame_of_reference(incoming_points).T
+        base_rotation_matrix = hand_frame_of_reference(base_points).T
+        incoming_rotation_matrix = hand_frame_of_reference(incoming_points).T
         # # print(f"Incoming rotation matrix = {incoming_rotation_matrix}")
         # # Get the Euler angles of the rotation matrices.
-        # base_euler_angles = euler_angles_from_rotation_matrix(base_rotation_matrix)
-        # incoming_euler_angles = euler_angles_from_rotation_matrix(
-        #     incoming_rotation_matrix
-        # )
+        base_euler_angles = euler_angles_from_rotation_matrix(base_rotation_matrix)
+        incoming_euler_angles = euler_angles_from_rotation_matrix(
+            incoming_rotation_matrix
+        )
         # print(f"Base euler = {base_euler_angles}")
         # print(f"Incoming euler = {incoming_euler_angles}")
-        angle_hand_inc = angle_hand(incoming_points)
-        angle_hand_base = angle_hand(base_points)
-        print(f"Angle hand = {angle_hand_inc}")
+        # angle_hand_inc = angle_hand(incoming_points)
+        # angle_hand_base = angle_hand(base_points)
+        # print(f"Angle hand = {angle_hand_inc}")
         # print(f"Euler angles = {incoming_euler_angles}")
 
         # if np.isclose(theta_inc, np.pi, atol=0.1):
@@ -239,9 +239,9 @@ class Gesture:
 
         # print(f"Error points = {error_points_distance}")
         # Mean squared error of the Euler angles.
-        # error_rotation = mean_absolute_error(
-        #     base_euler_angles, incoming_euler_angles
-        # ) / (8 * np.pi)
+        error_rotation = mean_absolute_error(
+            base_euler_angles, incoming_euler_angles
+        ) / (8 * np.pi)
         # print(f"Error euler = {error_euler_angles}")
         # error_rotation = mean_absolute_error(
         #     base_rotation_matrix / np.abs(base_rotation_matrix).max(),
@@ -256,9 +256,9 @@ class Gesture:
         # error_euler_sgm = sigmoid(error_euler_angles)
 
         ## WORKS FINE
-        error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
-            8 * np.pi
-        )
+        # error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
+        #     8 * np.pi
+        # )
         ##
         # THIS WORKS perfectly fine in mediapipe but not in mmpose, I can only assume that this is 
         # due to the way the database was created (with mediapipe).
