@@ -13,6 +13,12 @@ def main():
     mp_drawing_styles = mp.solutions.drawing_styles
     mp_holistic = mp.solutions.holistic
 
+    # We could, in theory, use the mediapipe hand module to get the hand landmarks.
+    # if we latter want to use the arms, we could use the human pose module.
+    # I think that the hand landmarks model is better to reliably detect hand keypoints.
+
+    # IDEA2: Kalman filter to smooth the hand landmarks.
+    # A tad more complex, will need a model for the dynamics of the hand.
     # access webcam
     cap = cv2.VideoCapture(0)
     # address = "http://192.168.15.35:8080/video"
