@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "serve": "^14.2.2"
   },
   "devDependencies": {
     "sass": "^1.56.2"

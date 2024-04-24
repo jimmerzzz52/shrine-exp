@@ -10,3 +10,4 @@ teesee/images_of_gestures/*
 trascribe-asl/gesture/__pycache__*
 .env
 .DS_Store
+node_modules

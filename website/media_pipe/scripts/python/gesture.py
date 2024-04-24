@@ -1,4 +1,5 @@
-var base_python = `
+from pyscript import window
+import micropip
 import numpy as np
 # from typing import Optional
 from datetime import datetime, timedelta
@@ -401,7 +402,7 @@ class Gesture:
       A dictionary containing the base gestures.
     """
     # Define the base gestures path
-    base_path: str = "./gesture/base_poses_hf"
+    base_path: str = "./Users/jimmys3/Workspace/shrine-exp/website/gesture/base_poses_hf"
     # Load the base gestures from the database.
     base_gestures: dict[str, dict[str, np.array]] = {}
     for gesture in gestures:
@@ -560,4 +561,7 @@ def match_position_points(base_points: np.array, points: np.array) -> np.array:
   """
 
   return np.allclose(base_points, points, atol=9e-2)
-`
+
+window.gesture = Gesture()
+print("We have loaded a gesture")
+display("We have loaded a gesture!")
