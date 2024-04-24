@@ -2,3 +2,4 @@ transcribe-asl/gestures_data*
 .vscode
 transcribe-asl/images_of_gestures/*
 trascribe-asl/gesture/__pycache__*
+*__pycache__*
