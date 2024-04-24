@@ -1,7 +1,7 @@
 import cv2
 import mediapipe as mp
 import time
-from gesture.base import Gesture, to_hand_frame
+from gesture.base import Gesture, to_hand_frame, Output
 import numpy as np
 from mmpose.apis import MMPoseInferencer
 from mmpose.registry import VISUALIZERS
@@ -74,9 +74,7 @@ def main():
         #         [[value.x, value.y, value.z] for value in left_hand_raw]
         #     )
 
-        recognition_output_static, recognition_output_mov = g.predict(
-            right_hand_data, left_hand_data, pose_data
-        )
+        output: Output = g.predict(right_hand_data, left_hand_data, pose_data)
 
         # draw_rotated_left_hand(frame, left_hand_data)
 
@@ -99,9 +97,24 @@ def main():
         #     scale=1,
         # )
 
+        rec_out_static_print = [
+            f"{i}, Conf: {output.static_gestures_confidence[i]:.3f}"
+            for i in output.static_gestures
+        ]
+
+        for i, rec in enumerate(rec_out_static_print):
+            cv2.putText(
+                frame,
+                rec,
+                (20, 170 + i * 30),
+                cv2.FONT_HERSHEY_PLAIN,
+                1,
+                (0, 255, 0),
+                2,
+            )
         cv2.putText(
             frame,
-            f"FPS: {int(fps)}   Static: {recognition_output_static}",
+            f"FPS: {int(fps)}   Static: {output.static_gestures[0]}",
             (20, 70),
             cv2.FONT_HERSHEY_PLAIN,
             3,
@@ -111,23 +124,13 @@ def main():
 
         cv2.putText(
             frame,
-            f"Movement: {recognition_output_mov}",
+            f"Movement: {output.movement_gestures}",
             (20, 110),
             cv2.FONT_HERSHEY_PLAIN,
             3,
             (0, 255, 0),
             2,
         )
-
-        # cv2.putText(
-        #     frame,
-        #     f"Check point: {g.check_point}",
-        #     (20, 140),
-        #     cv2.FONT_HERSHEY_PLAIN,
-        #     1,
-        #     (0, 255, 0),
-        #     2,
-        # )
 
         cv2.imshow("MediaPipe Holistic", frame)
 

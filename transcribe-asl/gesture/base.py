@@ -220,26 +220,33 @@ class Gesture:
         """
         # Load the base points in the hand frame of reference.
         base_points_zzero: np.array = base_points.copy()
-        # base_points_zzero[:, 2] = 0
+        # base_points_zzero[:, 2] = 1e-6
         base_points_in_hand_frame: np.array = to_hand_frame(base_points_zzero)
         # get the incoming poitns in the hand frame of reference.
         incoming_points_zzero: np.array = incoming_points.copy()
-        # incoming_points_zzero[:, 2] = 0
+        # incoming_points_zzero[:, 2] = 1e-6
         incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points_zzero)
-        # Mean squared error of distance of points.
-        error_points_distance = mean_squared_error(
-            base_points_in_hand_frame,  # [:, :2],
-            incoming_points_in_hand_frame,  # [:, :2]
+        # # Mean squared error of distance of points.
+        # error_points_distance = mean_squared_error(
+        #     base_points_in_hand_frame,  # [:, :2],
+        #     incoming_points_in_hand_frame,  # [:, :2]
+        # )
+        # # Get the angle indicating of the base and incoming points.
+        # angle_hand_inc = angle_hand(incoming_points)
+        # print(angle_hand_inc)
+        # angle_hand_base = angle_hand(base_points)
+        # # Mean squared error of the angle of the hand.
+        # error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
+        #     8 * np.pi
+        # )
+        # # 8 * np.pi is the best tested scaling factor
+        # error = error_points_distance + error_rotation
+        error = cosine_similarity(
+            base_points_in_hand_frame, incoming_points_in_hand_frame, flatten=True
         )
-        # Get the angle indicating of the base and incoming points.
-        angle_hand_inc = angle_hand(incoming_points)
-        angle_hand_base = angle_hand(base_points)
-        # Mean squared error of the angle of the hand.
-        error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
-            8 * np.pi
-        )
-        # 8 * np.pi is the best tested scaling factor
-        error = error_points_distance + error_rotation
+        # error = 1-cosine_similarity(
+        #     base_points_zzero.flatten(), incoming_points_zzero.flatten()
+        # )
         return error
 
     def _compare_body(
@@ -464,7 +471,7 @@ class Gesture:
         )
         # NOTE to self: max_possible error is not actually the max possible error,
         # only a good approximation.
-        # since sometimes the confidence is smaller than zero, only possible if 
+        # since sometimes the confidence is smaller than zero, only possible if
         # the error is larger than the max_possible_error.
         confidences: np.array = 1 - errors / max_possible_error
         for i, confidence in enumerate(confidences):
@@ -743,6 +750,37 @@ def sigmoid(x):
         The output.
     """
     return 2 / (1 + np.exp(-x)) - 1
+
+
+def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
+    """
+    Compute the cosine similarity between two vectors.
+
+    Parameters
+    ----------
+    x: np.array
+        The first vector.
+    y: np.array
+        The second vector.
+    flatten: bool = False
+        A bool indicating if the vectors should be flattened.
+
+    Returns
+    -------
+    cosine_similarity: float
+        The cosine similarity between the two vectors.
+    """
+    if flatten:
+        x = x.flatten()
+        y = y.flatten()
+        return 1 - np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
+    else:
+        cos_sim = 0
+        for x_el, y_el in zip(x, y):
+            cos_sim += 1 - np.dot(x_el, y_el) / (
+                np.linalg.norm(x_el) * np.linalg.norm(y_el) + 1e-6
+            )
+        return cos_sim / len(x)
 
 
 @dataclass
