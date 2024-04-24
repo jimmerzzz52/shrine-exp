@@ -12,7 +12,7 @@ inferencer = MMPoseInferencer("hand")
 
 def main():
 
-    g = Gesture()  # Load outside to prevent reloading base gestures from disk
+    g = Gesture(mmpose=True)  # Load outside to prevent reloading base gestures from disk
 
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles

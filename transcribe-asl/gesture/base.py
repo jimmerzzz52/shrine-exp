@@ -10,6 +10,7 @@ class Gesture:
     def __init__(
         self,
         base_gestures: Optional[dict[str, dict[str, np.array]]] = None,
+        mmpose=False,
     ):
         """
         Initialize the Gesture object.
@@ -20,6 +21,8 @@ class Gesture:
             A dictionary containing the base gestures.
             The keys are the names of the gestures.
             The values are dictionaries containing the base points of the right, left, and body gestures.
+        mmpose: bool
+            A bool indicating if the model is using the mmpose library.
 
         Examples
         --------
@@ -107,6 +110,7 @@ class Gesture:
         self.past_gestures = []
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
+        self.mmpose = mmpose
 
     def predict(
         self,
@@ -219,34 +223,37 @@ class Gesture:
             The error between the base points and the incoming points.
         """
         # Load the base points in the hand frame of reference.
-        base_points_zzero: np.array = base_points.copy()
-        # base_points_zzero[:, 2] = 1e-6
-        base_points_in_hand_frame: np.array = to_hand_frame(base_points_zzero)
-        # get the incoming poitns in the hand frame of reference.
-        incoming_points_zzero: np.array = incoming_points.copy()
-        # incoming_points_zzero[:, 2] = 1e-6
-        incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points_zzero)
+        base_points_in_hand_frame: np.array = to_hand_frame(base_points)
+        # Load the incoming points in the hand frame of reference.
+        incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points)
+        if self.mmpose:
+            base_points_in_hand_frame = base_points_in_hand_frame[:, :2]
+            incoming_points_in_hand_frame = incoming_points_in_hand_frame[:, :2]
         # # Mean squared error of distance of points.
         # error_points_distance = mean_squared_error(
         #     base_points_in_hand_frame,  # [:, :2],
         #     incoming_points_in_hand_frame,  # [:, :2]
         # )
         # # Get the angle indicating of the base and incoming points.
-        # angle_hand_inc = angle_hand(incoming_points)
+        angle_hand_inc = angle_hand(incoming_points)
         # print(angle_hand_inc)
-        # angle_hand_base = angle_hand(base_points)
+        angle_hand_base = angle_hand(base_points)
         # # Mean squared error of the angle of the hand.
-        # error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
-        #     8 * np.pi
-        # )
+        error_rotation = mean_absolute_error(
+            angle_hand_base, angle_hand_inc
+        )/ (8 * np.pi)
+        print(error_rotation)
         # # 8 * np.pi is the best tested scaling factor
-        # error = error_points_distance + error_rotation
-        error = cosine_similarity(
-            base_points_in_hand_frame, incoming_points_in_hand_frame, flatten=True
+
+        error_points_distance = cosine_similarity(
+            base_points_in_hand_frame,
+            incoming_points_in_hand_frame,
+            flatten=True,
         )
         # error = 1-cosine_similarity(
         #     base_points_zzero.flatten(), incoming_points_zzero.flatten()
         # )
+        error = error_points_distance + error_rotation
         return error
 
     def _compare_body(
