@@ -135,7 +135,7 @@ def main():
             # )
 
             rec_out_static_print = [
-                f"{i}, Conf: {str(output.static_gestures_confidence[i])}"
+                f"{i}, Conf: {output.static_gestures_confidence[i]:.3f}"
                 for i in output.static_gestures
             ]
 
