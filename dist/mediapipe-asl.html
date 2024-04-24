@@ -647,9 +647,11 @@ def match_position_points(base_points: np.array, points: np.array) -> np.array:
       
       async function evaluatePython() {
         let pyodide = await pyodideReadyPromise;
+
         try {
-       
+      //  alert('here')
           let outputR = await pyodide.runPython(codeInput);
+          
       
         } catch (err) {
           alert(err)
@@ -665,14 +667,15 @@ def match_position_points(base_points: np.array, points: np.array) -> np.array:
       
 
       async function executePythonCode() {
+        output.value = "";
         codeInput = code.value;
         if(xyz.length==0) {
           output.value = "Please populate landmarks by making a gesture in camera"
         } else {
           codeInput= codeInput.replace('--input here--',JSON.stringify(xyz))
         }
-
-        codeInput = libcode;
+// alert(codeInput)
+        // codeInput = libcode;
        await evaluatePython();
         
   }
