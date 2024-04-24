@@ -194,7 +194,7 @@ class Gesture:
 
         """
         Note: This works pretty consistently for the pointed finger pose.
-        But it's important to undestand what's the orientation of the camera. 
+        But it's important to undestand what's the orientation of the camera.
         """
 
         if index_finger_height == max_limb_height:
