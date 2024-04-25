@@ -147,10 +147,10 @@
   <script type="py">
 
 from pyscript import window
-import micropip
 import numpy as np
 import os
 import json
+import js
 # from typing import Optional
 from datetime import datetime, timedelta
 
@@ -249,11 +249,8 @@ class Gesture:
 
   def predict(
     self,
-    obj_in = None
+    obj_in
   ) -> tuple[str, list[str]]:
-    
-    # Move into its own function b/c other engine 
-    # does not need to know about this..
     right_obj = json.loads(obj_in.right)
     left_obj = json.loads(obj_in.left)
     body_obj = json.loads(obj_in.body)
@@ -261,7 +258,6 @@ class Gesture:
     right = np.array(right_obj)
     left = np.array(left_obj)
     body = np.array(body_obj)
-
     """
     Predict the gesture.
 
@@ -308,8 +304,9 @@ class Gesture:
       # Check if there is a movement in the buffer of identified static gestures.
       # This function will have to be able to
     mov_gestures: list[str] = self._identify_gestures_movement()
-    print("We have recognized a gesture!!")
-    print(static_gesture, mov_gestures)
+    # print(f"We have recognized a gesture: {static_gesture}, {mov_gestures}")
+    window.static_gesture = static_gesture
+    window.movement_gestue = mov_gestures
     return static_gesture, mov_gestures
 
   def _is_pointed_finger(self, right: np.array) -> bool:
@@ -580,7 +577,19 @@ class Gesture:
         ),
       }
     return base_gestures
-
+  
+  def classify(self, obj_in):
+    # Move into its own function b/c other engine 
+    # does not need to know about this..
+    right_obj = json.loads(obj_in.right)
+    left_obj = json.loads(obj_in.left)
+    body_obj = json.loads(obj_in.body)
+  
+    right = np.array(right_obj)
+    left = np.array(left_obj)
+    body = np.array(body_obj)
+  
+    return self.predict(right, left, body)
 
 def concat_or_none(array: list[np.array]) -> np.array:
   """
@@ -731,7 +740,9 @@ window.gesture = Gesture()
 
 <body>
   <div class="container">
-    
+    <div id="gesture_display" style="margin: 10px; font-family: 'Inter,sans-serif'; color: white; font-size: 50px; position: absolute;">
+      ASDF
+    </div>
     <video style="display: none" class="input_video"></video>
     <!-- TODO: Make full screen -->
     <canvas class="output_canvas" width="1280px" height="720px"></canvas>
@@ -745,6 +756,7 @@ window.gesture = Gesture()
 
   const videoElement = document.getElementsByClassName('input_video')[0];
   const canvasElement = document.getElementsByClassName('output_canvas')[0];
+  const gesture_display = document.getElementById('gesture_display')
   const canvasCtx = canvasElement.getContext('2d');
   
   function onResults(results) {
@@ -784,12 +796,15 @@ window.gesture = Gesture()
             let z = results.multiHandLandmarks[2][i].z
             ar3.push([x,y,z])
           }
-        
-        console.log(window.gesture.predict({
+        // For some reason, this is hard to use... 
+        // We instead reference the window object.
+        let gesture_reconition_output = window.gesture.predict({
           "right": JSON.stringify(ar),
           "left": JSON.stringify(ar2),
           "body": JSON.stringify(ar3)
-        }))
+        })
+        gesture_display.innerHTML = static_gesture
+
       }
     }
     canvasCtx.restore();
@@ -815,7 +830,4 @@ window.gesture = Gesture()
   });
   camera.start();
   </script>
-
-
-
 </html>
