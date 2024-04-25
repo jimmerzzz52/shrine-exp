@@ -759,7 +759,11 @@ print("We have loaded the gesture library!!")
         drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
         
         console.log(results.multiHandLandmarks);
-        console.log(window.gesture.predict(results.multiHandLandmarks))
+        console.log(window.gesture.predict({
+          "right": results.multiHandLandmarks[0],
+          "left": results.multiHandLandmarks[1],
+          "pose": results.multiHandLandmarks[1]
+        }))
       }
     }
     canvasCtx.restore();
