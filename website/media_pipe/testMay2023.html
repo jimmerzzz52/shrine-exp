@@ -256,10 +256,18 @@ class Gesture:
 
   def predict(
     self,
-    right: np.array = None,
-    left: np.array = None,
-    body: np.array = None,
+    right = None,
+    left = None,
+    body = None,
   ) -> tuple[str, list[str]]:
+    
+
+    print(right)
+    print(left)
+    print(body)
+    right = np.array(right)
+    left = np.array(left)
+    body = np.array(body)
     """
     Predict the gesture.
 
@@ -761,10 +769,13 @@ print("We have loaded the gesture library!!")
         console.log(results.multiHandLandmarks);
         
         // TODO: Figure out. For some reason the formats are not matching...
+        console.log(results.multiHandLandmarks[0])
+        console.log(results.multiHandLandmarks[1])
+        console.log(results.multiHandLandmarks[2])
         console.log(window.gesture.predict({
           "right": results.multiHandLandmarks[0],
           "left": results.multiHandLandmarks[1],
-          "pose": results.multiHandLandmarks[2]
+          "body": results.multiHandLandmarks[2]
         }))
       }
     }
