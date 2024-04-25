@@ -150,6 +150,7 @@ from pyscript import window
 import micropip
 import numpy as np
 import os
+import json
 # from typing import Optional
 from datetime import datetime, timedelta
 
@@ -256,18 +257,17 @@ class Gesture:
 
   def predict(
     self,
-    right = None,
-    left = None,
-    body = None,
+    obj_in = None
   ) -> tuple[str, list[str]]:
     
+    right = json.loads(obj_in.right)
+    left = json.loads(obj_in.right)
+    body = json.loads(obj_in.right)
 
-    print(right)
-    print(left)
-    print(body)
-    right = np.array(right)
-    left = np.array(left)
-    body = np.array(body)
+    right = np.asArray(right)
+    # Loop through the object... convert to pritives and numpy array
+    left = np.asArray(left)
+    body = np.asArray(body)
     """
     Predict the gesture.
 
@@ -772,10 +772,24 @@ print("We have loaded the gesture library!!")
         console.log(results.multiHandLandmarks[0])
         console.log(results.multiHandLandmarks[1])
         console.log(results.multiHandLandmarks[2])
+
+        let ar = []
+        let ar2 = []
+        let ar3 = []
+        if(results.multiHandLandmarks[0] != undefined)
+          for( var i = 0; i < results.multiHandLandmarks[0].length; i++)
+            ar.push(results.multiHandLandmarks[0][i])
+        if(results.multiHandLandmarks[1] != undefined)
+          for( var i = 0; i < results.multiHandLandmarks[1].length; i++)
+            ar2.push(results.multiHandLandmarks[1][i])
+        if(results.multiHandLandmarks[2] != undefined)
+          for( var i = 0; i < results.multiHandLandmarks[2].length; i++)
+            ar3.push(results.multiHandLandmarks[2][i])
+        
         console.log(window.gesture.predict({
-          "right": results.multiHandLandmarks[0],
-          "left": results.multiHandLandmarks[1],
-          "body": results.multiHandLandmarks[2]
+          "right": JSON.stringify(ar),
+          "left": JSON.stringify(ar2),
+          "body": JSON.stringify(ar3)
         }))
       }
     }
