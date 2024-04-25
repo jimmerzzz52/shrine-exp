@@ -1,5 +1,7 @@
 # import pandas as pd
+# import pandas as pd
 import numpy as np
+# from typing import Optional
 # from typing import Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
@@ -9,6 +11,7 @@ class Gesture:
 
     def __init__(
         self,
+        base_gestures: dict[str, dict[str, np.array]] = None,
         base_gestures: dict[str, dict[str, np.array]] = None,
     ):
         """
@@ -113,6 +116,9 @@ class Gesture:
         right: np.array = None,
         left: np.array = None,
         body: np.array = None,
+        right: np.array = None,
+        left: np.array = None,
+        body: np.array = None,
     ) -> tuple[str, list[str]]:
         """
         Predict the gesture.
@@ -184,7 +190,13 @@ class Gesture:
             A bool indicating if the hand is in the pointed finger pose.
         """
         # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
+        # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
 
+        # print(df)
+        # index_finger_height = df["y"].iloc[8]
+        # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
+        # print(df.nlargest(1, "y"))
+        # print(index_finger_height)
         # print(df)
         # index_finger_height = df["y"].iloc[8]
         # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
@@ -524,6 +536,7 @@ def concat_or_none(array: list[np.array]) -> np.array:
         return None
 
 
+def load_base_gesture(path: str) -> np.array:
 def load_base_gesture(path: str) -> np.array:
     """
     Load the base gesture from a file.

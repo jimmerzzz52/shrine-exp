@@ -41,19 +41,11 @@ def main():
 
         draw_hand_from_kps(frame, result["predictions"][0][0]["keypoints"])
 
-<<<<<<< HEAD
         mp_drawing.draw_axis(
             frame,
             np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]]),
             np.array([0.089, -0.089, 0]),
         )
-=======
-        # mp_drawing.draw_axis(
-        #     frame,
-        #     np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]]),
-        #     np.array([0.089, -0.089, 0]),
-        # )
->>>>>>> f168aae (mmpose_usage)
 
         # This is important, it draws the axis of the camera.
 
