@@ -154,14 +154,6 @@ import json
 # from typing import Optional
 from datetime import datetime, timedelta
 
-print('Root directory contents:')
-files = os.listdir('/home/pyodide')
-print(files)
-
-# gesture/base_poses_hf
-for file in files:
-  print(file)
-
 class Gesture:
 
   def __init__(
@@ -260,14 +252,16 @@ class Gesture:
     obj_in = None
   ) -> tuple[str, list[str]]:
     
-    right = json.loads(obj_in.right)
-    left = json.loads(obj_in.right)
-    body = json.loads(obj_in.right)
+    # Move into its own function b/c other engine 
+    # does not need to know about this..
+    right_obj = json.loads(obj_in.right)
+    left_obj = json.loads(obj_in.left)
+    body_obj = json.loads(obj_in.body)
 
-    right = np.asArray(right)
-    # Loop through the object... convert to pritives and numpy array
-    left = np.asArray(left)
-    body = np.asArray(body)
+    right = np.array(right_obj)
+    left = np.array(left_obj)
+    body = np.array(body_obj)
+
     """
     Predict the gesture.
 
@@ -314,6 +308,8 @@ class Gesture:
       # Check if there is a movement in the buffer of identified static gestures.
       # This function will have to be able to
     mov_gestures: list[str] = self._identify_gestures_movement()
+    print("We have recognized a gesture!!")
+    print(static_gesture, mov_gestures)
     return static_gesture, mov_gestures
 
   def _is_pointed_finger(self, right: np.array) -> bool:
@@ -567,12 +563,10 @@ class Gesture:
     """
     # Define the base gestures path
     base_path: str = "/home/pyodide"
-    files = os.listdir('/home/pyodide')
-    print(files)
-    # Load the base gestures from the database.
+
+    # Load the base gestures from our models file(s)
     base_gestures: dict[str, dict[str, np.array]] = {}
     for gesture in gestures:
-      with open(f"{base_path}/{gesture}_Transcription_Right_Hand.csv") as f: print(f.read())
       
       base_gestures[gesture] = {
         "right_hand": load_base_gesture(
@@ -731,7 +725,6 @@ def match_position_points(base_points: np.array, points: np.array) -> np.array:
   return np.allclose(base_points, points, atol=9e-2)
 
 window.gesture = Gesture()
-print("We have loaded the gesture library!!")
 
   </script>
 </head>
@@ -765,26 +758,32 @@ print("We have loaded the gesture library!!")
         drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
                        {color: '#00FF00', lineWidth: 5});
         drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
-        
-        console.log(results.multiHandLandmarks);
-        
-        // TODO: Figure out. For some reason the formats are not matching...
-        console.log(results.multiHandLandmarks[0])
-        console.log(results.multiHandLandmarks[1])
-        console.log(results.multiHandLandmarks[2])
 
         let ar = []
         let ar2 = []
         let ar3 = []
+        // TODO: Simplify.
         if(results.multiHandLandmarks[0] != undefined)
-          for( var i = 0; i < results.multiHandLandmarks[0].length; i++)
-            ar.push(results.multiHandLandmarks[0][i])
+          for( var i = 0; i < results.multiHandLandmarks[0].length; i++){
+            let x = results.multiHandLandmarks[0][i].x
+            let y = results.multiHandLandmarks[0][i].y
+            let z = results.multiHandLandmarks[0][i].z
+            ar.push([x,y,z])
+          }
         if(results.multiHandLandmarks[1] != undefined)
-          for( var i = 0; i < results.multiHandLandmarks[1].length; i++)
-            ar2.push(results.multiHandLandmarks[1][i])
+          for( var i = 0; i < results.multiHandLandmarks[1].length; i++){
+            let x = results.multiHandLandmarks[1][i].x
+            let y = results.multiHandLandmarks[1][i].y
+            let z = results.multiHandLandmarks[1][i].z
+            ar2.push([x,y,z])
+          }
         if(results.multiHandLandmarks[2] != undefined)
-          for( var i = 0; i < results.multiHandLandmarks[2].length; i++)
-            ar3.push(results.multiHandLandmarks[2][i])
+          for( var i = 0; i < results.multiHandLandmarks[2].length; i++){
+            let x = results.multiHandLandmarks[2][i].x
+            let y = results.multiHandLandmarks[2][i].y
+            let z = results.multiHandLandmarks[2][i].z
+            ar3.push([x,y,z])
+          }
         
         console.log(window.gesture.predict({
           "right": JSON.stringify(ar),
