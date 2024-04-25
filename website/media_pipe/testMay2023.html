@@ -745,7 +745,7 @@ window.gesture = Gesture()
     </div>
     <video style="display: none" class="input_video"></video>
     <!-- TODO: Make full screen -->
-    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    <canvas class="output_canvas" style="height: 100vh; width: 100vw; display: block;"></canvas>
 
   </div>
 </body>
@@ -755,9 +755,15 @@ window.gesture = Gesture()
 <script type="module">
 
   const videoElement = document.getElementsByClassName('input_video')[0];
-  const canvasElement = document.getElementsByClassName('output_canvas')[0];
-  const gesture_display = document.getElementById('gesture_display')
+  let canvasElement = document.getElementsByClassName('output_canvas')[0];
+  const gesture_display = document.getElementById('gesture_display');
   const canvasCtx = canvasElement.getContext('2d');
+
+  const stream = await navigator.mediaDevices.getUserMedia({video: true});
+  const {width, height} = stream.getVideoTracks()[0].getSettings();
+  
+  canvasElement.width = window.innerWidth;
+  canvasElement.height = window.innerHeight;
   
   function onResults(results) {
     
@@ -803,7 +809,7 @@ window.gesture = Gesture()
           "left": JSON.stringify(ar2),
           "body": JSON.stringify(ar3)
         })
-        gesture_display.innerHTML = static_gesture
+        gesture_display.innerHTML = window.static_gesture
 
       }
     }
