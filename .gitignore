@@ -8,10 +8,7 @@ dist/transcribe_asl-*-py3-none-any.whl
 transcribe-asl/images_of_gestures/*
 teesee/images_of_gestures/*
 trascribe-asl/gesture/__pycache__*
-<<<<<<< HEAD
-*__pycache__*
-node_modules/
-=======
 .env
 .DS_Store
->>>>>>> f2070a1 (main logo update)
+
+node_modules

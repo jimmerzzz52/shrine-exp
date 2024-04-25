@@ -1,4 +1,4 @@
-import pandas as pd
+# import pandas as pd
 import numpy as np
 # from typing import Optional
 from datetime import datetime, timedelta
@@ -183,13 +183,13 @@ class Gesture:
         is_pointed_finger: bool
             A bool indicating if the hand is in the pointed finger pose.
         """
-        df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
+        # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
 
-        print(df)
-        index_finger_height = df["y"].iloc[8]
-        max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
-        print(df.nlargest(1, "y"))
-        print(index_finger_height)
+        # print(df)
+        # index_finger_height = df["y"].iloc[8]
+        # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
+        # print(df.nlargest(1, "y"))
+        # print(index_finger_height)
 
         """
         Note: This works pretty consistently for the pointed finger pose.
