@@ -14,7 +14,18 @@
     <link rel="stylesheet" href="css/template-style.css">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,400,600,900&subset=latin-ext" rel="stylesheet"> 
     <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui.min.js"></script>      
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
+    <py-config type="json" src="/media_pipe/gesture/pyscript-config.json"></py-config>
+    <script type="py" src="/media_pipe/gesture/base.py"></script>
+  
   </head>
 
   <body class="size-1140">
@@ -59,6 +70,16 @@
 
             </div>
           </header>
+          <div id="demo">
+            <div class="container">
+              <div id="gesture_display" style="margin: 10px; font-family: 'Inter,sans-serif'; color: white; font-size: 50px; position: absolute;">
+                ASDF
+              </div>
+              <video style="display: none" class="input_video"></video>
+              <!-- TODO: Make full screen -->
+              <canvas class="output_canvas" style="height: 100vh; width: 100vw; display: block;"></canvas>
+            </div>
+          </div>
           <div class="background-white full-width"> 
             <div class="s-12 m-6 l-five">
               <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
@@ -288,5 +309,92 @@
     <script type="text/javascript" src="js/jquery.events.touch.js"></script>
     <script type="text/javascript" src="owl-carousel/owl.carousel.js"></script>
     <script type="text/javascript" src="js/template-scripts.js"></script> 
+    <script type="text/javascript">
+      const module = {};
+    </script>
+    <script type="module">
+    
+      const videoElement = document.getElementsByClassName('input_video')[0];
+      let canvasElement = document.getElementsByClassName('output_canvas')[0];
+      const gesture_display = document.getElementById('gesture_display');
+      const canvasCtx = canvasElement.getContext('2d');
+    
+      const stream = await navigator.mediaDevices.getUserMedia({video: true});
+      const {width, height} = stream.getVideoTracks()[0].getSettings();
+      
+      canvasElement.width = window.innerWidth;
+      canvasElement.height = window.innerHeight;
+      
+      function onResults(results) {
+        
+        canvasCtx.save();
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.drawImage(
+            results.image, 0, 0, canvasElement.width, canvasElement.height);
+        if (results.multiHandLandmarks) {
+          for (const landmarks of results.multiHandLandmarks) {
+            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                           {color: '#00FF00', lineWidth: 5});
+            drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+    
+            let ar = []
+            let ar2 = []
+            let ar3 = []
+            // TODO: Simplify.
+            if(results.multiHandLandmarks[0] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[0].length; i++){
+                let x = results.multiHandLandmarks[0][i].x
+                let y = results.multiHandLandmarks[0][i].y
+                let z = results.multiHandLandmarks[0][i].z
+                ar.push([x,y,z])
+              }
+            if(results.multiHandLandmarks[1] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[1].length; i++){
+                let x = results.multiHandLandmarks[1][i].x
+                let y = results.multiHandLandmarks[1][i].y
+                let z = results.multiHandLandmarks[1][i].z
+                ar2.push([x,y,z])
+              }
+            if(results.multiHandLandmarks[2] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[2].length; i++){
+                let x = results.multiHandLandmarks[2][i].x
+                let y = results.multiHandLandmarks[2][i].y
+                let z = results.multiHandLandmarks[2][i].z
+                ar3.push([x,y,z])
+              }
+            // For some reason, this is hard to use... 
+            // We instead reference the window object.
+            let gesture_reconition_output = window.gesture.predict({
+              "right": JSON.stringify(ar),
+              "left": JSON.stringify(ar2),
+              "body": JSON.stringify(ar3)
+            })
+            gesture_display.innerHTML = window.static_gesture
+    
+          }
+        }
+        canvasCtx.restore();
+      }
+      
+      const hands = new Hands({locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+      }});
+      hands.setOptions({
+        maxNumHands: 2,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+      hands.onResults(onResults);
+      
+      const camera = new Camera(videoElement, {
+        onFrame: async () => {
+          await hands.send({image: videoElement});
+        },
+        width: 1280,
+        height: 720
+      });
+      camera.start();
+      </script>
   </body>
 </html>
