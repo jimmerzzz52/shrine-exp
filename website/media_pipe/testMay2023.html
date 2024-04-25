@@ -759,10 +759,12 @@ print("We have loaded the gesture library!!")
         drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
         
         console.log(results.multiHandLandmarks);
+        
+        // TODO: Figure out. For some reason the formats are not matching...
         console.log(window.gesture.predict({
           "right": results.multiHandLandmarks[0],
           "left": results.multiHandLandmarks[1],
-          "pose": results.multiHandLandmarks[1]
+          "pose": results.multiHandLandmarks[2]
         }))
       }
     }
