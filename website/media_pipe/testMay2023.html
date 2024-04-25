@@ -772,7 +772,7 @@ print("We have loaded the gesture library!!")
         console.log(results.multiHandLandmarks[0])
         console.log(results.multiHandLandmarks[1])
         console.log(results.multiHandLandmarks[2])
-        alert(JSON.stringify(results.multiHandLandmarks[0]))
+        // alert(JSON.stringify(results.multiHandLandmarks[0]))
         console.log(window.gesture.predict({
           "right": JSON.stringify(results.multiHandLandmarks[0]),
           "left": JSON.stringify(results.multiHandLandmarks[1]),

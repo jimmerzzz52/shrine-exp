@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.2/core.css" />
+  <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
+  <script src="./misc/base_python.js"></script>
+  <script>
+    let py_Input = "hello"
+  </script>
+  <py-config type="json">
+    {
+      "packages": [
+          "numpy"
+      ],
+      "files": {
+          "{DOMAIN}": "http://localhost:3000", 
+          "{BASE}": "{DOMAIN}/media_pipe/gesture/base_poses_hf",
+          "{BASE}/A_Transcription_Left_Hand.csv": "",
+          "{BASE}/A_Transcription_Pose.csv": "",
+          "{BASE}/A_Transcription_Right_Hand.csv": "",
+          "{BASE}/B_Transcription_Left_Hand.csv": "",
+          "{BASE}/B_Transcription_Pose.csv": "",
+          "{BASE}/B_Transcription_Right_Hand.csv": "",
+          "{BASE}/C_Transcription_Left_Hand.csv": "",
+          "{BASE}/C_Transcription_Pose.csv": "",
+          "{BASE}/C_Transcription_Right_Hand.csv": "",
+          "{BASE}/D_Transcription_Left_Hand.csv": "",
+          "{BASE}/D_Transcription_Pose.csv": "",
+          "{BASE}/D_Transcription_Right_Hand.csv": "",
+          "{BASE}/E_Transcription_Left_Hand.csv": "",
+          "{BASE}/E_Transcription_Pose.csv": "",
+          "{BASE}/E_Transcription_Right_Hand.csv": "",
+          "{BASE}/F_Transcription_Left_Hand.csv": "",
+          "{BASE}/F_Transcription_Pose.csv": "",
+          "{BASE}/F_Transcription_Right_Hand.csv": "",
+          "{BASE}/G_Transcription_Left_Hand.csv": "",
+          "{BASE}/G_Transcription_Pose.csv": "",
+          "{BASE}/G_Transcription_Right_Hand.csv": "",
+          "{BASE}/H_Transcription_Left_Hand.csv": "",
+          "{BASE}/H_Transcription_Pose.csv": "",
+          "{BASE}/H_Transcription_Right_Hand.csv": "",
+          "{BASE}/I_Transcription_Left_Hand.csv": "",
+          "{BASE}/I_Transcription_Pose.csv": "",
+          "{BASE}/I_Transcription_Right_Hand.csv": "",
+          "{BASE}/K_Transcription_Left_Hand.csv": "",
+          "{BASE}/K_Transcription_Pose.csv": "",
+          "{BASE}/K_Transcription_Right_Hand.csv": "",
+          "{BASE}/L_Transcription_Left_Hand.csv": "",
+          "{BASE}/L_Transcription_Pose.csv": "",
+          "{BASE}/L_Transcription_Right_Hand.csv": "",
+          "{BASE}/M_Transcription_Left_Hand.csv": "",
+          "{BASE}/M_Transcription_Pose.csv": "",
+          "{BASE}/M_Transcription_Right_Hand.csv": "",
+          "{BASE}/N_Transcription_Left_Hand.csv": "",
+          "{BASE}/N_Transcription_Pose.csv": "",
+          "{BASE}/N_Transcription_Right_Hand.csv": "",
+          "{BASE}/O_Transcription_Left_Hand.csv": "",
+          "{BASE}/O_Transcription_Pose.csv": "",
+          "{BASE}/O_Transcription_Right_Hand.csv": "",
+          "{BASE}/P_Transcription_Left_Hand.csv": "",
+          "{BASE}/P_Transcription_Pose.csv": "",
+          "{BASE}/P_Transcription_Right_Hand.csv": "",
+          "{BASE}/Q_Transcription_Left_Hand.csv": "",
+          "{BASE}/Q_Transcription_Pose.csv": "",
+          "{BASE}/Q_Transcription_Right_Hand.csv": "",
+          "{BASE}/R_Transcription_Left_Hand.csv": "",
+          "{BASE}/R_Transcription_Pose.csv": "",
+          "{BASE}/R_Transcription_Right_Hand.csv": "",
+          "{BASE}/S_Transcription_Left_Hand.csv": "",
+          "{BASE}/S_Transcription_Pose.csv": "",
+          "{BASE}/S_Transcription_Right_Hand.csv": "",
+          "{BASE}/T_Transcription_Left_Hand.csv": "",
+          "{BASE}/T_Transcription_Pose.csv": "",
+          "{BASE}/T_Transcription_Right_Hand.csv": "",
+          "{BASE}/U_Transcription_Left_Hand.csv": "",
+          "{BASE}/U_Transcription_Pose.csv": "",
+          "{BASE}/U_Transcription_Right_Hand.csv": "",
+          "{BASE}/V_Transcription_Left_Hand.csv": "",
+          "{BASE}/V_Transcription_Pose.csv": "",
+          "{BASE}/V_Transcription_Right_Hand.csv": "",
+          "{BASE}/W_Transcription_Left_Hand.csv": "",
+          "{BASE}/W_Transcription_Pose.csv": "",
+          "{BASE}/W_Transcription_Right_Hand.csv": "",
+          "{BASE}/X_Transcription_Left_Hand.csv": "",
+          "{BASE}/X_Transcription_Pose.csv": "",
+          "{BASE}/X_Transcription_Right_Hand.csv": "",
+          "{BASE}/Y_Transcription_Left_Hand.csv": "",
+          "{BASE}/Y_Transcription_Pose.csv": "",
+          "{BASE}/Y_Transcription_Right_Hand.csv": "",
+          "{BASE}/closed_fist_Transcription_Left_Hand.csv": "",
+          "{BASE}/closed_fist_Transcription_Pose.csv": "",
+          "{BASE}/closed_fist_Transcription_Right_Hand.csv": "",
+          "{BASE}/eight_Transcription_Left_Hand.csv": "",
+          "{BASE}/eight_Transcription_Pose.csv": "",
+          "{BASE}/eight_Transcription_Right_Hand.csv": "",
+          "{BASE}/five_Transcription_Left_Hand.csv": "",
+          "{BASE}/five_Transcription_Pose.csv": "",
+          "{BASE}/five_Transcription_Right_Hand.csv": "",
+          "{BASE}/four_Transcription_Left_Hand.csv": "",
+          "{BASE}/four_Transcription_Pose.csv": "",
+          "{BASE}/four_Transcription_Right_Hand.csv": "",
+          "{BASE}/i_down_Transcription_Left_Hand.csv": "",
+          "{BASE}/i_down_Transcription_Pose.csv": "",
+          "{BASE}/i_down_Transcription_Right_Hand.csv": "",
+          "{BASE}/i_flipped_Transcription_Left_Hand.csv": "",
+          "{BASE}/i_flipped_Transcription_Pose.csv": "",
+          "{BASE}/i_flipped_Transcription_Right_Hand.csv": "",
+          "{BASE}/left_thumb_right_Transcription_Left_Hand.csv": "",
+          "{BASE}/left_thumb_right_Transcription_Pose.csv": "",
+          "{BASE}/left_thumb_right_Transcription_Right_Hand.csv": "",
+          "{BASE}/nine_Transcription_Left_Hand.csv": "",
+          "{BASE}/nine_Transcription_Pose.csv": "",
+          "{BASE}/nine_Transcription_Right_Hand.csv": "",
+          "{BASE}/one_Transcription_Left_Hand.csv": "",
+          "{BASE}/one_Transcription_Pose.csv": "",
+          "{BASE}/one_Transcription_Right_Hand.csv": "",
+          "{BASE}/seven_Transcription_Left_Hand.csv": "",
+          "{BASE}/seven_Transcription_Pose.csv": "",
+          "{BASE}/seven_Transcription_Right_Hand.csv": "",
+          "{BASE}/six_Transcription_Left_Hand.csv": "",
+          "{BASE}/six_Transcription_Pose.csv": "",
+          "{BASE}/six_Transcription_Right_Hand.csv": "",
+          "{BASE}/ten_1_Transcription_Left_Hand.csv": "",
+          "{BASE}/ten_1_Transcription_Pose.csv": "",
+          "{BASE}/ten_1_Transcription_Right_Hand.csv": "",
+          "{BASE}/ten_2_Transcription_Left_Hand.csv": "",
+          "{BASE}/ten_2_Transcription_Pose.csv": "",
+          "{BASE}/ten_2_Transcription_Right_Hand.csv": "",
+          "{BASE}/ten_3_Transcription_Left_Hand.csv": "",
+          "{BASE}/ten_3_Transcription_Pose.csv": "",
+          "{BASE}/ten_3_Transcription_Right_Hand.csv": "",
+          "{BASE}/three_Transcription_Left_Hand.csv": "",
+          "{BASE}/three_Transcription_Pose.csv": "",
+          "{BASE}/three_Transcription_Right_Hand.csv": "",
+          "{BASE}/two_Transcription_Left_Hand.csv": "",
+          "{BASE}/two_Transcription_Pose.csv": "",
+          "{BASE}/two_Transcription_Right_Hand.csv": "",
+          "{BASE}/zero_Transcription_Left_Hand.csv": "",
+          "{BASE}/zero_Transcription_Pose.csv": "",
+          "{BASE}/zero_Transcription_Right_Hand.csv": ""
+      }
+    }
+  </py-config>
+  <script type="py">
+  
+from pyscript import window
+import micropip
+import numpy as np
+import os
+from js import py_Input
+
+def testParams(test):
+    print(test+' test123')
+
+test = py_Input    
+window.testParams = testParams(test)
+print("We have loaded the gesture library!!")
+
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    
+    <video style="display: none" class="input_video"></video>
+    <!-- TODO: Make full screen -->
+    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+
+  </div>
+</body>
+<script type="text/javascript">
+  const module = {};
+</script>
+<script type="module">
+
+  const videoElement = document.getElementsByClassName('input_video')[0];
+  const canvasElement = document.getElementsByClassName('output_canvas')[0];
+  const canvasCtx = canvasElement.getContext('2d');
+  
+  function onResults(results) {
+    
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.drawImage(
+        results.image, 0, 0, canvasElement.width, canvasElement.height);
+    if (results.multiHandLandmarks) {
+      for (const landmarks of results.multiHandLandmarks) {
+        drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                       {color: '#00FF00', lineWidth: 5});
+        drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+        
+        console.log(results.multiHandLandmarks);
+        
+        // TODO: Figure out. For some reason the formats are not matching...
+        // console.log(results.multiHandLandmarks[0])
+        // console.log(results.multiHandLandmarks[1])
+        // console.log(results.multiHandLandmarks[2])
+        // alert(JSON.stringify(results.multiHandLandmarks[0]))
+        // console.log(window.testParams({
+        //   "right": JSON.stringify(results.multiHandLandmarks[0]),
+        //   "left": JSON.stringify(results.multiHandLandmarks[1]),
+        //   "body": JSON.stringify(results.multiHandLandmarks[2])
+        // }))
+        
+        console.log(window.testParams('hello123'))
+      }
+    }
+    canvasCtx.restore();
+  }
+  
+  const hands = new Hands({locateFile: (file) => {
+    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+  }});
+  hands.setOptions({
+    maxNumHands: 2,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+  });
+  hands.onResults(onResults);
+  
+  const camera = new Camera(videoElement, {
+    onFrame: async () => {
+      await hands.send({image: videoElement});
+    },
+    width: 1280,
+    height: 720
+  });
+  camera.start();
+  </script>
+
+
+
+</html>

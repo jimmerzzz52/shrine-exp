@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.2/core.css" />
+  <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
+  <script src="./misc/base_python.js"></script>
+ 
+  <py-config type="json">
+    {
+      "packages": [
+          "numpy"
+      ],
+      "files": {
+          "{DOMAIN}": "http://localhost:3000", 
+          "{BASE}": "{DOMAIN}/media_pipe/gesture/base_poses_hf",
+          "{BASE}/A_Transcription_Left_Hand.csv": "",
+          "{BASE}/A_Transcription_Pose.csv": "",
+          "{BASE}/A_Transcription_Right_Hand.csv": "",
+          "{BASE}/B_Transcription_Left_Hand.csv": "",
+          "{BASE}/B_Transcription_Pose.csv": "",
+          "{BASE}/B_Transcription_Right_Hand.csv": "",
+          "{BASE}/C_Transcription_Left_Hand.csv": "",
+          "{BASE}/C_Transcription_Pose.csv": "",
+          "{BASE}/C_Transcription_Right_Hand.csv": "",
+          "{BASE}/D_Transcription_Left_Hand.csv": "",
+          "{BASE}/D_Transcription_Pose.csv": "",
+          "{BASE}/D_Transcription_Right_Hand.csv": "",
+          "{BASE}/E_Transcription_Left_Hand.csv": "",
+          "{BASE}/E_Transcription_Pose.csv": "",
+          "{BASE}/E_Transcription_Right_Hand.csv": "",
+          "{BASE}/F_Transcription_Left_Hand.csv": "",
+          "{BASE}/F_Transcription_Pose.csv": "",
+          "{BASE}/F_Transcription_Right_Hand.csv": "",
+          "{BASE}/G_Transcription_Left_Hand.csv": "",
+          "{BASE}/G_Transcription_Pose.csv": "",
+          "{BASE}/G_Transcription_Right_Hand.csv": "",
+          "{BASE}/H_Transcription_Left_Hand.csv": "",
+          "{BASE}/H_Transcription_Pose.csv": "",
+          "{BASE}/H_Transcription_Right_Hand.csv": "",
+          "{BASE}/I_Transcription_Left_Hand.csv": "",
+          "{BASE}/I_Transcription_Pose.csv": "",
+          "{BASE}/I_Transcription_Right_Hand.csv": "",
+          "{BASE}/K_Transcription_Left_Hand.csv": "",
+          "{BASE}/K_Transcription_Pose.csv": "",
+          "{BASE}/K_Transcription_Right_Hand.csv": "",
+          "{BASE}/L_Transcription_Left_Hand.csv": "",
+          "{BASE}/L_Transcription_Pose.csv": "",
+          "{BASE}/L_Transcription_Right_Hand.csv": "",
+          "{BASE}/M_Transcription_Left_Hand.csv": "",
+          "{BASE}/M_Transcription_Pose.csv": "",
+          "{BASE}/M_Transcription_Right_Hand.csv": "",
+          "{BASE}/N_Transcription_Left_Hand.csv": "",
+          "{BASE}/N_Transcription_Pose.csv": "",
+          "{BASE}/N_Transcription_Right_Hand.csv": "",
+          "{BASE}/O_Transcription_Left_Hand.csv": "",
+          "{BASE}/O_Transcription_Pose.csv": "",
+          "{BASE}/O_Transcription_Right_Hand.csv": "",
+          "{BASE}/P_Transcription_Left_Hand.csv": "",
+          "{BASE}/P_Transcription_Pose.csv": "",
+          "{BASE}/P_Transcription_Right_Hand.csv": "",
+          "{BASE}/Q_Transcription_Left_Hand.csv": "",
+          "{BASE}/Q_Transcription_Pose.csv": "",
+          "{BASE}/Q_Transcription_Right_Hand.csv": "",
+          "{BASE}/R_Transcription_Left_Hand.csv": "",
+          "{BASE}/R_Transcription_Pose.csv": "",
+          "{BASE}/R_Transcription_Right_Hand.csv": "",
+          "{BASE}/S_Transcription_Left_Hand.csv": "",
+          "{BASE}/S_Transcription_Pose.csv": "",
+          "{BASE}/S_Transcription_Right_Hand.csv": "",
+          "{BASE}/T_Transcription_Left_Hand.csv": "",
+          "{BASE}/T_Transcription_Pose.csv": "",
+          "{BASE}/T_Transcription_Right_Hand.csv": "",
+          "{BASE}/U_Transcription_Left_Hand.csv": "",
+          "{BASE}/U_Transcription_Pose.csv": "",
+          "{BASE}/U_Transcription_Right_Hand.csv": "",
+          "{BASE}/V_Transcription_Left_Hand.csv": "",
+          "{BASE}/V_Transcription_Pose.csv": "",
+          "{BASE}/V_Transcription_Right_Hand.csv": "",
+          "{BASE}/W_Transcription_Left_Hand.csv": "",
+          "{BASE}/W_Transcription_Pose.csv": "",
+          "{BASE}/W_Transcription_Right_Hand.csv": "",
+          "{BASE}/X_Transcription_Left_Hand.csv": "",
+          "{BASE}/X_Transcription_Pose.csv": "",
+          "{BASE}/X_Transcription_Right_Hand.csv": "",
+          "{BASE}/Y_Transcription_Left_Hand.csv": "",
+          "{BASE}/Y_Transcription_Pose.csv": "",
+          "{BASE}/Y_Transcription_Right_Hand.csv": "",
+          "{BASE}/closed_fist_Transcription_Left_Hand.csv": "",
+          "{BASE}/closed_fist_Transcription_Pose.csv": "",
+          "{BASE}/closed_fist_Transcription_Right_Hand.csv": "",
+          "{BASE}/eight_Transcription_Left_Hand.csv": "",
+          "{BASE}/eight_Transcription_Pose.csv": "",
+          "{BASE}/eight_Transcription_Right_Hand.csv": "",
+          "{BASE}/five_Transcription_Left_Hand.csv": "",
+          "{BASE}/five_Transcription_Pose.csv": "",
+          "{BASE}/five_Transcription_Right_Hand.csv": "",
+          "{BASE}/four_Transcription_Left_Hand.csv": "",
+          "{BASE}/four_Transcription_Pose.csv": "",
+          "{BASE}/four_Transcription_Right_Hand.csv": "",
+          "{BASE}/i_down_Transcription_Left_Hand.csv": "",
+          "{BASE}/i_down_Transcription_Pose.csv": "",
+          "{BASE}/i_down_Transcription_Right_Hand.csv": "",
+          "{BASE}/i_flipped_Transcription_Left_Hand.csv": "",
+          "{BASE}/i_flipped_Transcription_Pose.csv": "",
+          "{BASE}/i_flipped_Transcription_Right_Hand.csv": "",
+          "{BASE}/left_thumb_right_Transcription_Left_Hand.csv": "",
+          "{BASE}/left_thumb_right_Transcription_Pose.csv": "",
+          "{BASE}/left_thumb_right_Transcription_Right_Hand.csv": "",
+          "{BASE}/nine_Transcription_Left_Hand.csv": "",
+          "{BASE}/nine_Transcription_Pose.csv": "",
+          "{BASE}/nine_Transcription_Right_Hand.csv": "",
+          "{BASE}/one_Transcription_Left_Hand.csv": "",
+          "{BASE}/one_Transcription_Pose.csv": "",
+          "{BASE}/one_Transcription_Right_Hand.csv": "",
+          "{BASE}/seven_Transcription_Left_Hand.csv": "",
+          "{BASE}/seven_Transcription_Pose.csv": "",
+          "{BASE}/seven_Transcription_Right_Hand.csv": "",
+          "{BASE}/six_Transcription_Left_Hand.csv": "",
+          "{BASE}/six_Transcription_Pose.csv": "",
+          "{BASE}/six_Transcription_Right_Hand.csv": "",
+          "{BASE}/ten_1_Transcription_Left_Hand.csv": "",
+          "{BASE}/ten_1_Transcription_Pose.csv": "",
+          "{BASE}/ten_1_Transcription_Right_Hand.csv": "",
+          "{BASE}/ten_2_Transcription_Left_Hand.csv": "",
+          "{BASE}/ten_2_Transcription_Pose.csv": "",
+          "{BASE}/ten_2_Transcription_Right_Hand.csv": "",
+          "{BASE}/ten_3_Transcription_Left_Hand.csv": "",
+          "{BASE}/ten_3_Transcription_Pose.csv": "",
+          "{BASE}/ten_3_Transcription_Right_Hand.csv": "",
+          "{BASE}/three_Transcription_Left_Hand.csv": "",
+          "{BASE}/three_Transcription_Pose.csv": "",
+          "{BASE}/three_Transcription_Right_Hand.csv": "",
+          "{BASE}/two_Transcription_Left_Hand.csv": "",
+          "{BASE}/two_Transcription_Pose.csv": "",
+          "{BASE}/two_Transcription_Right_Hand.csv": "",
+          "{BASE}/zero_Transcription_Left_Hand.csv": "",
+          "{BASE}/zero_Transcription_Pose.csv": "",
+          "{BASE}/zero_Transcription_Right_Hand.csv": ""
+      }
+    }
+  </py-config>
+  <!-- <script type="py">
+  
+from pyscript import window
+import micropip
+import numpy as np
+import os
+from js import py_Input
+
+def testParams(test):
+    print(test+' test123')
+
+test = py_Input    
+window.testParams = testParams(test)
+print("We have loaded the gesture library!!")
+
+  </script> -->
+</head>
+
+<body>
+
+
+  <script>
+      name = "Jeff" //A JS variable
+      xyz = JSON.stringify([{"x":0.811155378818512,"y":0.735283374786377,"z":1.0200909628110821e-7},{"x":0.7452882528305054,"y":0.7243611812591553,"z":-0.025270771235227585},{"x":0.6840997934341431,"y":0.6967666149139404,"z":-0.04160487651824951},{"x":0.6376644968986511,"y":0.6670184135437012,"z":-0.05724978446960449},{"x":0.5997833609580994,"y":0.632317066192627,"z":-0.07172304391860962},{"x":0.6883982419967651,"y":0.514641284942627,"z":-0.012635385617613792},{"x":0.6448258757591248,"y":0.4355497360229492,"z":-0.032300639897584915},{"x":0.6230114698410034,"y":0.3985811173915863,"z":-0.05049559846520424},{"x":0.6065469980239868,"y":0.3646608293056488,"z":-0.06382018327713013},{"x":0.7269976735115051,"y":0.4745543599128723,"z":-0.01685100793838501},{"x":0.6908115744590759,"y":0.3718853294849396,"z":-0.029704643413424492},{"x":0.6706483364105225,"y":0.3182721734046936,"z":-0.04325896501541138},{"x":0.6533758640289307,"y":0.271665096282959,"z":-0.054722703993320465},{"x":0.7703605890274048,"y":0.4617924392223358,"z":-0.02635052241384983},{"x":0.7516425848007202,"y":0.359953373670578,"z":-0.04194948077201843},{"x":0.7383355498313904,"y":0.30188512802124023,"z":-0.05123074725270271},{"x":0.7230976223945618,"y":0.2526443600654602,"z":-0.0588119775056839},{"x":0.817374050617218,"y":0.4717704951763153,"z":-0.038756173104047775},{"x":0.8170914649963379,"y":0.39408445358276367,"z":-0.05150642618536949},{"x":0.8103832602500916,"y":0.34621259570121765,"z":-0.054584864526987076},{"x":0.7995339632034302,"y":0.30338025093078613,"z":-0.05724978446960449}])
+      // Define a JS Function
+      function addTwoNumbers(x, y){
+          return x + y;
+      }
+  </script>
+  <py-script>
+      # Import and use JS function in Python
+      from js import xyz
+      import json
+
+      <!-- console.log("Hello " + name + ".Adding 1 and 2 in Javascript: " + str(addTwoNumbers(1, 2))) -->
+    
+      def testArgument(test):
+        print(test)
+      
+      def predict(
+        self,
+        right = None,
+        left = None,
+        body = None,
+      ) -> tuple[str, list[str]]:
+        
+    
+        print(right)
+        print(left)
+        print(body)
+      
+      <!-- testArgument(xyz) -->
+      def predict2(
+       landmarks
+      ) -> tuple[str, list[str]]:
+   
+    
+        print([json.loads(json.dumps(i)) for i in landmarks])
+
+      predict(xyz)
+  
+      
+  </py-script>
+</body>
+
+  
+
+
+</html>
