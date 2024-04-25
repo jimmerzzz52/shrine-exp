@@ -3,3 +3,4 @@ transcribe-asl/gestures_data*
 transcribe-asl/images_of_gestures/*
 trascribe-asl/gesture/__pycache__*
 *__pycache__*
+node_modules/
