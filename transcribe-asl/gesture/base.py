@@ -1,7 +1,6 @@
-# import pandas as pd
+from pyscript import window
 # import pandas as pd
 import numpy as np
-# from typing import Optional
 # from typing import Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
@@ -111,11 +110,23 @@ class Gesture:
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
 
+    # Needed for the web version... Really just sets things to the window object.
+    def classify(
+        self,
+        obj_in
+    ) -> tuple[str, list[str]]:
+        right_obj = json.loads(obj_in.right)
+        left_obj = json.loads(obj_in.left)
+        body_obj = json.loads(obj_in.body)
+
+        right = np.array(right_obj)
+        left = np.array(left_obj)
+        body = np.array(body_obj)
+        
+        return self.predict(right, left, body)
+    
     def predict(
         self,
-        right: np.array = None,
-        left: np.array = None,
-        body: np.array = None,
         right: np.array = None,
         left: np.array = None,
         body: np.array = None,
@@ -177,8 +188,14 @@ class Gesture:
             )
         # Check if there is a movement in the buffer of identified static gestures.
         mov_gestures: list[str] = self._identify_gestures_movement()
-
-        return Output(static_gestures, mov_gestures, static_gestures_confidence)
+        
+        # This may break with local. Sorry...
+        window.static_gesture = static_gesture
+        window.movement_gestue = mov_gestures
+        window.static_gestures_confidence = static_gestures_confidence
+        
+        # Keeping this light for now b/c of frontend.
+        return (static_gestures, mov_gestures, static_gestures_confidence)
 
     def _is_pointed_finger(self, right: np.array) -> bool:
         """
@@ -757,21 +774,21 @@ def sigmoid(x):
     return 2 / (1 + np.exp(-x)) - 1
 
 
-@dataclass
-class Output:
-    """
-    The output of the model.
+# @dataclass
+# class Output:
+#     """
+#     The output of the model.
 
-    Attributes
-    ----------
-    static_gestures: list[str]
-        The top most static gestures.
-    movement_gestures: list[str]
-        The movement gesture.
-    static_gestures_confidence: dict[str, float]
-        The confidence of the static gestures.
-    """
+#     Attributes
+#     ----------
+#     static_gestures: list[str]
+#         The top most static gestures.
+#     movement_gestures: list[str]
+#         The movement gesture.
+#     static_gestures_confidence: dict[str, float]
+#         The confidence of the static gestures.
+#     """
 
-    static_gestures: list[str]
-    movement_gestures: list[str]
-    static_gestures_confidence: dict[str, float]
+#     static_gestures: list[str]
+#     movement_gestures: list[str]
+#     static_gestures_confidence: dict[str, float]
