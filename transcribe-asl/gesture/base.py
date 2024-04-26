@@ -11,7 +11,6 @@ class Gesture:
     def __init__(
         self,
         base_gestures: dict[str, dict[str, np.array]] = None,
-        base_gestures: dict[str, dict[str, np.array]] = None,
     ):
         """
         Initialize the Gesture object.
@@ -515,7 +514,7 @@ class Gesture:
             A dictionary containing the base gestures.
         """
         # Define the base gestures path
-        base_path: str = "./gesture/base_poses_hf"
+        base_path: str = ""
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
         for gesture in gestures:
@@ -553,7 +552,6 @@ def concat_or_none(array: list[np.array]) -> np.array:
         return None
 
 
-def load_base_gesture(path: str) -> np.array:
 def load_base_gesture(path: str) -> np.array:
     """
     Load the base gesture from a file.

@@ -4,12 +4,7 @@ import numpy as np
 # from typing import Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
-import os
 
-dir_list = os.listdir('/home/pyodide')
-print(dir_list)
-dir_list = os.listdir('./')
-print(dir_list)
 
 class Gesture:
 
@@ -519,8 +514,7 @@ class Gesture:
             A dictionary containing the base gestures.
         """
         # Define the base gestures path
-        
-        base_path: str = "."
+        base_path: str = ""
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
         for gesture in gestures:
