@@ -4,12 +4,7 @@ import numpy as np
 # from typing import Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
-import os
-
-dir_list = os.listdir('/home/pyodide')
-print(dir_list)
-dir_list = os.listdir('./')
-print(dir_list)
+import json
 
 class Gesture:
 
@@ -113,7 +108,6 @@ class Gesture:
         self.past_gestures = []
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
-
     # Needed for the web version... Really just sets things to the window object.
     def classify(
         self,
@@ -131,10 +125,9 @@ class Gesture:
     
     def predict(
         self,
-        right: np.array = None,
-        left: np.array = None,
-        body: np.array = None,
+        obj_in
     ) -> tuple[str, list[str]]:
+        top_most = 3
         """
         Predict the gesture.
 
@@ -158,6 +151,14 @@ class Gesture:
         static_gestures_confidence: dict[str, float]
             The confidence of the static gestures.
         """
+        
+        right_obj = json.loads(obj_in.right)
+        left_obj = json.loads(obj_in.left)
+        body_obj = json.loads(obj_in.body)
+
+        right = np.array(right_obj)
+        left = np.array(left_obj)
+        body = np.array(body_obj)
         # Reset the check points.
         self._reset_check_points(wait_seconds=5)
         # For The pose one, all we need is the right hand.
@@ -251,11 +252,12 @@ class Gesture:
             The error between the base points and the incoming points.
         """
         # Load the base points in the hand frame of reference.
-        base_points_zzero: np.array = base_points.copy()
+        # For some reason the copy function was failing... Not sure if we need to copy.
+        base_points_zzero: np.array = base_points
         # base_points_zzero[:, 2] = 0
         base_points_in_hand_frame: np.array = to_hand_frame(base_points_zzero)
         # get the incoming poitns in the hand frame of reference.
-        incoming_points_zzero: np.array = incoming_points.copy()
+        incoming_points_zzero: np.array = incoming_points
         # incoming_points_zzero[:, 2] = 0
         incoming_points_in_hand_frame: np.array = to_hand_frame(incoming_points_zzero)
         # Mean squared error of distance of points.
@@ -519,8 +521,7 @@ class Gesture:
             A dictionary containing the base gestures.
         """
         # Define the base gestures path
-        
-        base_path: str = "."
+        base_path: str = "./"
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
         for gesture in gestures:
