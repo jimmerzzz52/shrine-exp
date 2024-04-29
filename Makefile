@@ -13,5 +13,4 @@ website-build: pyscript-config
 	echo "window.gesture = Gesture()" >> ./website/media_pipe/gesture/base.py
 
 website-test:
-	cd ./website
-	serve
+	cd ./website && serve
