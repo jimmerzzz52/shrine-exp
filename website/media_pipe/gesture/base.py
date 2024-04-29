@@ -196,9 +196,12 @@ class Gesture:
         
         # This may break with local. Sorry...
         window.static_gesture = static_gesture
-        window.movement_gestue = mov_gestures
+        window.movement_gesture = mov_gestures
         window.static_gestures_confidence = static_gestures_confidence
         
+        print(static_gestures_confidence)
+        print(mov_gestures)
+        print(static_gesture)
         # Keeping this light for now b/c of frontend.
         return (static_gestures, mov_gestures, static_gestures_confidence)
 
