@@ -373,13 +373,14 @@
               }
             // For some reason, this is hard to use... 
             // We instead reference the window object.
-            let gesture_reconition_output = window.gesture.predict({
-              "right": JSON.stringify(ar),
-              "left": JSON.stringify(ar2),
-              "body": JSON.stringify(ar3)
-            })
-            gesture_display.innerHTML = window.static_gesture
-    
+            if(window.gesture != undefined){
+              let gesture_reconition_output = window.gesture.predict({
+                "right": JSON.stringify(ar),
+                "left": JSON.stringify(ar2),
+                "body": JSON.stringify(ar3)
+              })
+              gesture_display.innerHTML = window.static_gesture
+            }
           }
         }
         canvasCtx.restore();
