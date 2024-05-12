@@ -20,6 +20,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
+    <py-config type="json" src="/media_pipe/gesture/pyscript-config.json"></py-config>
+    <script type="py" src="/media_pipe/gesture/base.py"></script>
+  
   </head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJ1F1KKQDF"></script>
@@ -62,20 +68,29 @@
       <main role="main">
         <!-- Content -->
         <article>
-          <header class="section background-white">
+          <!-- <header class="section background-white">
             <div class="line text-center">        
-              <h1 class="text-dark text-s-size-30 text-m-size-40 text-l-size-headline text-thin text-line-height-1"><b>Gesture</b> is Gesture Recognition Technology.</h1>
+              <h1 class="text-dark text-s-size-30 text-m-size-40 text-l-size-headline text-thin text-line-height-1">Gesture Recognition Technology is the Future.</h1>
               <p class="margin-bottom-0 text-size-16 text-dark">
-                <br>
-                We build gesture applications<br>
-                Founded in 2024, we have started building business to consumer and business to business applications.
-                Currently, we have sign language learning applications remotely teaching people the alphbet and 1-10<br>
-                We plan on extending this to names and poses.<br>
-                In the next phase, we plan doing exercise applications<br>
+              Try experimenting below with gesture recognition.<br>
+              Below is a proof of concept of what we are creating. It can recognize poses, and teach you the sign language number system, 1 through 10.<br>
+              So start interacting and learning sign language today!<br>
             </p>
 
             </div>
-          </header>
+          </header> -->
+          <div id="demo">
+            <div class="container">
+              <div id="gesture_display" style="width: 30%; background-color: grey; font-size: 3em; opacity: 0.5; margin: 50px; font-family: 'Inter,sans-serif'; position: absolute;">
+                <div id="gesture-guide-title" style="opacity: 1;">Make the pose below </div>
+                <div id="gesture-guide-percent" style="opacity: 1;"><span id="gesture-guide-percent">0</span>%</div>
+                <div style="opacity: 1;"><img id="gesture-guide-image" src="img/asl-poses/ASL-Alphabet-0.png" alt="" style="width: 100%"/></div>
+              </div>
+              <video style="display: none" class="input_video"></video>
+              <!-- TODO: Make full screen -->
+              <canvas class="output_canvas" style="display: block; width: 100%"></canvas>
+            </div>
+          </div>
           <div class="background-white full-width"> 
             <div class="s-12 m-6 l-five">
               <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
@@ -303,5 +318,121 @@
     <script type="text/javascript" src="js/jquery.events.touch.js"></script>
     <script type="text/javascript" src="owl-carousel/owl.carousel.js"></script>
     <script type="text/javascript" src="js/template-scripts.js"></script> 
+    <script type="text/javascript">
+      const module = {};
+    </script>
+    <script type="module">
+    
+      // TODO: move into it's own script.
+      var query = window.location.search.substring(1);
+      var qs = parse_query_string(query);
+      
+      console.log(qs.asl_chars);
+      
+      const videoElement = document.getElementsByClassName('input_video')[0];
+      let canvasElement = document.getElementsByClassName('output_canvas')[0];
+      const gesture_display = document.getElementById('gesture_display');
+      const canvasCtx = canvasElement.getContext('2d');
+    
+      const stream = await navigator.mediaDevices.getUserMedia({video: true});
+      const {width, height} = stream.getVideoTracks()[0].getSettings();
+      
+      canvasElement.width = window.innerWidth;
+      canvasElement.height = window.innerHeight;
+      
+      function onResults(results) {
+        
+        canvasCtx.save();
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.drawImage(
+            results.image, 0, 0, canvasElement.width, canvasElement.height);
+        if (results.multiHandLandmarks) {
+          for (const landmarks of results.multiHandLandmarks) {
+            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                           {color: '#00FF00', lineWidth: 5});
+            drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+    
+            let ar = []
+            let ar2 = []
+            let ar3 = []
+            // TODO: Simplify.
+            if(results.multiHandLandmarks[0] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[0].length; i++){
+                let x = results.multiHandLandmarks[0][i].x
+                let y = results.multiHandLandmarks[0][i].y
+                let z = results.multiHandLandmarks[0][i].z
+                ar.push([x,y,z])
+              }
+            if(results.multiHandLandmarks[1] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[1].length; i++){
+                let x = results.multiHandLandmarks[1][i].x
+                let y = results.multiHandLandmarks[1][i].y
+                let z = results.multiHandLandmarks[1][i].z
+                ar2.push([x,y,z])
+              }
+            if(results.multiHandLandmarks[2] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[2].length; i++){
+                let x = results.multiHandLandmarks[2][i].x
+                let y = results.multiHandLandmarks[2][i].y
+                let z = results.multiHandLandmarks[2][i].z
+                ar3.push([x,y,z])
+              }
+            // For some reason, this is hard to use... 
+            // We instead reference the window object.
+            if(window.gesture != undefined){
+              let gesture_reconition_output = window.gesture.predict({
+                "right": JSON.stringify(ar),
+                "left": JSON.stringify(ar2),
+                "body": JSON.stringify(ar3)
+              })
+              gesture_display.innerHTML = window.static_gesture
+            }
+          }
+        }
+        canvasCtx.restore();
+      }
+      
+      const hands = new Hands({locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+      }});
+      hands.setOptions({
+        maxNumHands: 2,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+      hands.onResults(onResults);
+      
+      const camera = new Camera(videoElement, {
+        onFrame: async () => {
+          await hands.send({image: videoElement});
+        },
+        width: 1280,
+        height: 720
+      });
+      camera.start();
+
+      function parse_query_string(query) {
+        var vars = query.split("&");
+        var query_string = {};
+        for (var i = 0; i < vars.length; i++) {
+          var pair = vars[i].split("=");
+          var key = decodeURIComponent(pair.shift());
+          var value = decodeURIComponent(pair.join("="));
+          // If first entry with this name
+          if (typeof query_string[key] === "undefined") {
+            query_string[key] = value;
+            // If second entry with this name
+          } else if (typeof query_string[key] === "string") {
+            var arr = [query_string[key], value];
+            query_string[key] = arr;
+            // If third or later entry with this name
+          } else {
+            query_string[key].push(value);
+          }
+        }
+        return query_string;
+      }
+      </script>
   </body>
 </html>
