@@ -82,8 +82,8 @@
           <div id="demo">
             <div class="container">
               <div id="gesture_display" style="width: 30%; background-color: grey; font-size: 3em; opacity: 0.5; margin: 50px; font-family: 'Inter,sans-serif'; position: absolute;">
-                <div id="gesture-guide-title" style="opacity: 1;">Make the pose below </div>
-                <div id="gesture-guide-percent" style="opacity: 1;"><span id="gesture-guide-percent">0</span>%</div>
+                <div id="gesture-guide-title" style="opacity: 1;">Make the <span id="gesture-guide-name">0</span> Gesture</div>
+                <!-- <div id="gesture-guide-percent" style="opacity: 1;"><span id="gesture-guide-percent">0</span>%</div> -->
                 <div style="opacity: 1;"><img id="gesture-guide-image" src="img/asl-poses/ASL-Alphabet-0.png" alt="" style="width: 100%"/></div>
               </div>
               <video style="display: none" class="input_video"></video>
@@ -119,19 +119,19 @@
               <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
                 <div class="image-hover-overlay background-primary"> 
                   <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Exercise Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Go through a yoga flow. Remotely!</p>                  
+                    <h3 class="text-white text-size-20 margin-bottom-10">Exercise Application (Under Construction!)</h3>
+                    <p class="text-white text-size-14 margin-bottom-20">(Under construction) Go through a yoga flow. Remotely!</p>                  
                   </div> 
                 </div> 
                 <img class="full-img" src="img/portfolio/thumb-03.jpg" alt=""/>
-              </a>	
+              </a>
             </div>
             <div class="s-12 m-6 l-five">
               <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
                 <div class="image-hover-overlay background-primary"> 
                   <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">TBD.. Your app could be next!</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Talk to us about it!</p>  
+                    <h3 class="text-white text-size-20 margin-bottom-10">ASL A-Z</h3>
+                    <p class="text-white text-size-14 margin-bottom-20">learn american sign language letters</p>  
                   </div> 
                 </div> 
                 <img class="full-img" src="img/portfolio/thumb-04.jpg" alt=""/>
@@ -141,8 +141,8 @@
               <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
                 <div class="image-hover-overlay background-primary"> 
                   <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">TBD.. Your app could be next!</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Talk to us about it!</p>  
+                    <h3 class="text-white text-size-20 margin-bottom-10">ASL 0-10</h3>
+                    <p class="text-white text-size-14 margin-bottom-20">learn american sign language numbers</p>  
                   </div> 
                 </div> 
                 <img class="full-img" src="img/portfolio/thumb-05.jpg" alt=""/>
@@ -327,7 +327,10 @@
       var query = window.location.search.substring(1);
       var qs = parse_query_string(query);
       
-      console.log(qs.asl_chars);
+      var char_pointer = 0;
+      var cur_char = qs.asl_chars[char_pointer]
+      
+      changeChar(cur_char, 0);
       
       const videoElement = document.getElementsByClassName('input_video')[0];
       let canvasElement = document.getElementsByClassName('output_canvas')[0];
@@ -344,8 +347,8 @@
         
         canvasCtx.save();
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        canvasCtx.drawImage(
-            results.image, 0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+        
         if (results.multiHandLandmarks) {
           for (const landmarks of results.multiHandLandmarks) {
             drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
@@ -355,6 +358,7 @@
             let ar = []
             let ar2 = []
             let ar3 = []
+            
             // TODO: Simplify.
             if(results.multiHandLandmarks[0] != undefined)
               for( var i = 0; i < results.multiHandLandmarks[0].length; i++){
@@ -377,15 +381,19 @@
                 let z = results.multiHandLandmarks[2][i].z
                 ar3.push([x,y,z])
               }
-            // For some reason, this is hard to use... 
-            // We instead reference the window object.
+            
             if(window.gesture != undefined){
               let gesture_reconition_output = window.gesture.predict({
                 "right": JSON.stringify(ar),
                 "left": JSON.stringify(ar2),
                 "body": JSON.stringify(ar3)
               })
-              gesture_display.innerHTML = window.static_gesture
+              //gesture_display.innerHTML = window.static_gesture
+              if(window.static_gesture == cur_char){
+                char_pointer = ( char_pointer + 1 ) % qs.asl_chars.length;
+                cur_char = qs.asl_chars[char_pointer]
+                changeChar(cur_char, true)
+              }
             }
           }
         }
@@ -396,13 +404,20 @@
         return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
       }});
       hands.setOptions({
-        maxNumHands: 2,
+        maxNumHands: 1,
         modelComplexity: 1,
         minDetectionConfidence: 0.5,
         minTrackingConfidence: 0.5
       });
       hands.onResults(onResults);
       
+      function changeChar(cur_char, percent){
+        window.cur_char = cur_char;
+        document.getElementById("gesture-guide-name").innerHTML = cur_char;
+        //document.getElementById("gesture-guide-percent").innerHTML = percent;
+        document.getElementById("gesture-guide-image").setAttribute("src", "img/asl-poses/ASL-Alphabet-" + cur_char + ".png");
+      }
+      // TODO: figure out if these values are correct.. Mobile compliance..
       const camera = new Camera(videoElement, {
         onFrame: async () => {
           await hands.send({image: videoElement});

@@ -29,6 +29,8 @@ class Gesture:
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
         # Define the gestures.
+        
+            
         self.gestures: np.array[str] = np.array(
             [
                 "one",
@@ -84,6 +86,7 @@ class Gesture:
             #     "seven",
             # ]
         )
+        
         # Define the gestures with movements.
         self.gestures_mov: dict[str, list[str]] = {
             "ten": ["ten_1", "ten_2", "ten_3"],
@@ -108,6 +111,14 @@ class Gesture:
         self.past_gestures = []
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
+    
+    def set_gestures(self, gestures: np.array) -> bool:
+        self.gestures = gestures
+        self.base_gestures: dict[str, dict[str, np.array]] = (
+            Gesture.get_base_gestures(self.gestures)
+        )
+        return True
+        
     # Needed for the web version... Really just sets things to the window object.
     def classify(
         self,
@@ -512,6 +523,10 @@ class Gesture:
             for gesture, confidence in zip(static_gestures, confidences)
         }
         return confidence_gesture
+    
+    def set_model_search(ar_models: list[str]) -> bool:
+        # set the models arr input.
+        return True
 
     @staticmethod
     def get_base_gestures(gestures: list[str]) -> dict[str, dict[str, np.array]]:
@@ -527,6 +542,9 @@ class Gesture:
         base_path: str = "./"
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
+        
+        
+        
         for gesture in gestures:
             base_gestures[gesture] = {
                 "right_hand": load_base_gesture(
@@ -780,7 +798,6 @@ def sigmoid(x):
         The output.
     """
     return 2 / (1 + np.exp(-x)) - 1
-
 
 # @dataclass
 # class Output:
