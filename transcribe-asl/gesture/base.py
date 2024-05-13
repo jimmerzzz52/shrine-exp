@@ -199,18 +199,20 @@ class Gesture:
             # Update the check points.
             self._update_check_points(static_gesture)
             # Calculate the confidence of the top most gestures.
-            static_gestures_confidence: dict[str, float] = self._get_confidence(
-                static_gestures, errors_gesture
-            )
+            
+            # TODO: reimplement this.
+            # static_gestures_confidence: dict[str, float] = self._get_confidence(
+            #     static_gestures, errors_gesture
+            # )
         # Check if there is a movement in the buffer of identified static gestures.
         mov_gestures: list[str] = self._identify_gestures_movement()
         
         # This may break with local. Sorry...
         window.static_gesture = static_gesture
         window.movement_gesture = mov_gestures
-        window.static_gestures_confidence = static_gestures_confidence
+        # window.static_gestures_confidence = static_gestures_confidence
         
-        print(static_gestures_confidence)
+        # print(static_gestures_confidence)
         print(mov_gestures)
         print(static_gesture)
         # Keeping this light for now b/c of frontend.
