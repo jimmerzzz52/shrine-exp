@@ -819,3 +819,4 @@ def sigmoid(x):
 #     static_gestures: list[str]
 #     movement_gestures: list[str]
 #     static_gestures_confidence: dict[str, float]
+window.gesture = Gesture()
