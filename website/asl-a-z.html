@@ -21,7 +21,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.2/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
     <py-config type="json" src="/media_pipe/gesture/pyscript-config.json"></py-config>
     <script type="py" src="/media_pipe/gesture/base.py"></script>
@@ -81,6 +80,9 @@
           </header> -->
           <div id="demo">
             <div class="container">
+              <div class="button-confirm" style="display: none"> 
+                <button type="button" name="myButton">Learn ASL</button>
+              </div>
               <div id="gesture_display" style="width: 30%; background-color: grey; font-size: 3em; opacity: 0.5; margin: 50px; font-family: 'Inter,sans-serif'; position: absolute;">
                 <div id="gesture-guide-title" style="opacity: 1;">Make the <span id="gesture-guide-name">0</span> Gesture</div>
                 <!-- <div id="gesture-guide-percent" style="opacity: 1;"><span id="gesture-guide-percent">0</span>%</div> -->

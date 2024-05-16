@@ -196,6 +196,24 @@ ul.chevron .submenu > a:after, ul.chevron .sub-submenu > a:after,ul.chevron .asi
     width:100%;
   } 
 }
+@media only screen and (max-width: 767px) {
+  /* We need to show button when we are on an iphone. */
+  .button-confirm {
+     display:block;
+  }
+  button {
+    color: #ffffff;
+    background-color: #2d63c8;
+    font-size: 19px;
+    border: 1px solid #2d63c8;
+    padding: 15px 50px;
+    cursor: pointer
+  }
+  button:hover {
+    color: #2d63c8;
+    background-color: #ffffff;
+  }
+}
 .nav-text,.aside-nav-text {display:none;}
 .aside-nav a,.aside-nav a:link,.aside-nav a:visited,.aside-nav li > ul,.top-nav a,.top-nav a:link,.top-nav a:visited {
   transition:background 0.20s linear 0s;

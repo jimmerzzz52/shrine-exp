@@ -212,9 +212,6 @@ class Gesture:
         window.movement_gesture = mov_gestures
         # window.static_gestures_confidence = static_gestures_confidence
         
-        # print(static_gestures_confidence)
-        print(mov_gestures)
-        print(static_gesture)
         # Keeping this light for now b/c of frontend.
         return (static_gestures, mov_gestures, static_gestures_confidence)
 
@@ -230,16 +227,16 @@ class Gesture:
         # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
         # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
 
-        # print(df)
+
         # index_finger_height = df["y"].iloc[8]
         # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
-        # print(df.nlargest(1, "y"))
-        # print(index_finger_height)
-        # print(df)
+
+
+
         # index_finger_height = df["y"].iloc[8]
         # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
-        # print(df.nlargest(1, "y"))
-        # print(index_finger_height)
+
+
 
         """
         Note: This works pretty consistently for the pointed finger pose.
