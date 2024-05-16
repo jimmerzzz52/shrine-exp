@@ -1,10 +1,13 @@
 from pyscript import window
+
 # import pandas as pd
 import numpy as np
+
 # from typing import Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 import json
+
 
 class Gesture:
 
@@ -108,26 +111,57 @@ class Gesture:
         self.past_gestures = []
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
-    # Needed for the web version... Really just sets things to the window object.
-    def classify(
-        self,
-        obj_in
-    ) -> tuple[str, list[str]]:
-        right_obj = json.loads(obj_in.right)
-        left_obj = json.loads(obj_in.left)
-        body_obj = json.loads(obj_in.body)
 
-        right = np.array(right_obj)
-        left = np.array(left_obj)
-        body = np.array(body_obj)
-        
-        return self.predict(right, left, body)
-    
+    # Needed for the web version... Really just sets things to the window object.
+    def classify(self, obj_in) -> tuple[str, list[str]]:
+        """
+
+        Wrapper for the predict function. This is needed for the web version.
+
+        Parameters
+        ----------
+        obj_in
+            The input obj with obj.right, left, and body points.
+
+        Returns
+        -------
+        static_gestures: list[str]
+            The top most static gestures.
+        mov_gesture: list[str]
+            The movement gesture.
+        static_gestures_confidence: dict[str, float]
+            The confidence of the static gestures.
+        """
+        # Loads the json object.
+        right_obj: list = json.loads(obj_in.right)
+        left_obj: list = json.loads(obj_in.left)
+        body_obj: list = json.loads(obj_in.body)
+        # Converts the list to np.array
+        right: np.array = np.array(right_obj)
+        left: np.array = np.array(left_obj)
+        body: np.array = np.array(body_obj)
+        # Just types
+        static_gestures: list[str]
+        mov_gestures: list[str]
+        static_gestures_confidence: dict[str, float]
+        # Calls the predict function.
+        static_gestures, mov_gestures, static_gestures_confidence = self.predict(
+            right, left, body
+        )
+        # Updates the window object.
+        window.static_gesture = static_gestures[0]
+        window.movement_gesture = mov_gestures[0]
+        window.static_gestures_confidence = static_gestures_confidence[0]
+        # Returns the values.
+        return (static_gestures, mov_gestures, static_gestures_confidence)
+
     def predict(
         self,
-        obj_in
-    ) -> tuple[str, list[str]]:
-        top_most = 3
+        right: np.array,
+        left: np.array,
+        body: np.array,
+        top_most: int = 3,
+    ) -> tuple[list[str], list[str], dict[str, float]]:
         """
         Predict the gesture.
 
@@ -151,14 +185,6 @@ class Gesture:
         static_gestures_confidence: dict[str, float]
             The confidence of the static gestures.
         """
-        
-        right_obj = json.loads(obj_in.right)
-        left_obj = json.loads(obj_in.left)
-        body_obj = json.loads(obj_in.body)
-
-        right = np.array(right_obj)
-        left = np.array(left_obj)
-        body = np.array(body_obj)
         # Reset the check points.
         self._reset_check_points(wait_seconds=5)
         # For The pose one, all we need is the right hand.
@@ -193,47 +219,42 @@ class Gesture:
             )
         # Check if there is a movement in the buffer of identified static gestures.
         mov_gestures: list[str] = self._identify_gestures_movement()
-        
-        # This may break with local. Sorry...
-        window.static_gesture = static_gesture
-        window.movement_gestue = mov_gestures
-        window.static_gestures_confidence = static_gestures_confidence
-        
+
         # Keeping this light for now b/c of frontend.
         return (static_gestures, mov_gestures, static_gestures_confidence)
 
-    def _is_pointed_finger(self, right: np.array) -> bool:
-        """
-        Check if the hand is in the pointed finger pose.
+    # def _is_pointed_finger(self, right: np.array) -> bool:
+    #     """
+    #     Check if the hand is in the pointed finger pose.
 
-        Returns
-        -------
-        is_pointed_finger: bool
-            A bool indicating if the hand is in the pointed finger pose.
-        """
-        # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
-        # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
+    #     Returns
+    #     -------
+    #     is_pointed_finger: bool
+    #         A bool indicating if the hand is in the pointed finger pose.
+    #     """
+    #     df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
+    #     df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
 
-        # print(df)
-        # index_finger_height = df["y"].iloc[8]
-        # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
-        # print(df.nlargest(1, "y"))
-        # print(index_finger_height)
-        # print(df)
-        # index_finger_height = df["y"].iloc[8]
-        # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
-        # print(df.nlargest(1, "y"))
-        # print(index_finger_height)
+    #     print(df)
+    #     index_finger_height = df["y"].iloc[8]
+    #     max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
+    #     print(df.nlargest(1, "y"))
+    #     print(index_finger_height)
+    #     print(df)
+    #     index_finger_height = df["y"].iloc[8]
+    #     max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
+    #     print(df.nlargest(1, "y"))
+    #     print(index_finger_height)
 
-        """
-        Note: This works pretty consistently for the pointed finger pose.
-        But it's important to undestand what's the orientation of the camera. 
-        """
+    #     """
+    #     Note: This works pretty consistently for the pointed finger pose.
+    #     But it's important to undestand what's the orientation of the camera. 
+    #     """
 
-        if index_finger_height == max_limb_height:
-            return True
-        else:
-            return False
+    #     if index_finger_height == max_limb_height:
+    #         return True
+    #     else:
+    #         return False
 
     def _compare_hand(self, base_points: np.array, incoming_points: np.array) -> float:
         """
@@ -498,7 +519,7 @@ class Gesture:
         )
         # NOTE to self: max_possible error is not actually the max possible error,
         # only a good approximation.
-        # since sometimes the confidence is smaller than zero, only possible if 
+        # since sometimes the confidence is smaller than zero, only possible if
         # the error is larger than the max_possible_error.
         confidences: np.array = 1 - errors / max_possible_error
         for i, confidence in enumerate(confidences):
