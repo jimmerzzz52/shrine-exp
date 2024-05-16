@@ -1,4 +1,4 @@
-import pandas as pd
+# import pandas as pd
 import numpy as np
 from typing import Optional
 from datetime import datetime, timedelta
@@ -179,32 +179,32 @@ class Gesture:
 
         return Output(static_gestures, mov_gestures, static_gestures_confidence)
 
-    def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
-        """
-        Check if the hand is in the pointed finger pose.
+    # def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
+    #     """
+    #     Check if the hand is in the pointed finger pose.
 
-        Returns
-        -------
-        is_pointed_finger: bool
-            A bool indicating if the hand is in the pointed finger pose.
-        """
-        df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
+    #     Returns
+    #     -------
+    #     is_pointed_finger: bool
+    #         A bool indicating if the hand is in the pointed finger pose.
+    #     """
+    #     df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
 
-        print(df)
-        index_finger_height = df["y"].iloc[8]
-        max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
-        print(df.nlargest(1, "y"))
-        print(index_finger_height)
+    #     print(df)
+    #     index_finger_height = df["y"].iloc[8]
+    #     max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
+    #     print(df.nlargest(1, "y"))
+    #     print(index_finger_height)
 
-        """
-        Note: This works pretty consistently for the pointed finger pose.
-        But it's important to undestand what's the orientation of the camera.
-        """
+    #     """
+    #     Note: This works pretty consistently for the pointed finger pose.
+    #     But it's important to undestand what's the orientation of the camera.
+    #     """
 
-        if index_finger_height == max_limb_height:
-            return True
-        else:
-            return False
+    #     if index_finger_height == max_limb_height:
+    #         return True
+    #     else:
+    #         return False
 
     def _compare_hand(self, base_points: np.array, incoming_points: np.array) -> float:
         """
@@ -239,9 +239,9 @@ class Gesture:
         # print(angle_hand_inc)
         angle_hand_base = angle_hand(base_points)
         # # Mean squared error of the angle of the hand.
-        error_rotation = mean_absolute_error(
-            angle_hand_base, angle_hand_inc
-        )/ (8 * np.pi)
+        error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
+            8 * np.pi
+        )
         print(error_rotation)
         # # 8 * np.pi is the best tested scaling factor
 
