@@ -370,7 +370,10 @@
         if((a == 'nine' || a == 'F' || a == 9) && (b == 9 || b == "F") ){
           return true;
         }
-        // TODO: 10 which is a movement...
+
+        // This model needs some help.
+        if(a == 'Q' && b == 'G')
+          return true;
 
         return false;
         // more complex logic for other stuff.
