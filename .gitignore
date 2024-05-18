@@ -1,5 +1,14 @@
-transcribe-asl/gestures_data*
+transcribe-asl/gesture_data/
+teesee/gesture_data/*
+transcribe-asl/gestures_data/*
+teesee/gestures_data/*
+dist/transcribe_asl-*.tar.gz
+dist/transcribe_asl-*-py3-none-any.whl
 .vscode
 transcribe-asl/images_of_gestures/*
+teesee/images_of_gestures/*
 trascribe-asl/gesture/__pycache__*
-*__pycache__*
+.env
+.DS_Store
+node_modules
+*.pyc

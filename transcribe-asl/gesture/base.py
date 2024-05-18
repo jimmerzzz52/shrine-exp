@@ -1,17 +1,20 @@
+from pyscript import window
+
 # import pandas as pd
 import numpy as np
-from typing import Optional
+
+# from typing import Optional
 from datetime import datetime, timedelta
 
 # from dataclasses import dataclass
+import json
 
 
 class Gesture:
 
     def __init__(
         self,
-        base_gestures: Optional[dict[str, dict[str, np.array]]] = None,
-        mmpose=False,
+        base_gestures: dict[str, dict[str, np.array]] = None,
     ):
         """
         Initialize the Gesture object.
@@ -57,15 +60,28 @@ class Gesture:
         self.past_gestures = []
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
-        self.mmpose = mmpose
 
-    def predict(
-        self,
-        right: Optional[np.array] = None,
-        left: Optional[np.array] = None,
-        body: Optional[np.array] = None,
-        top_most: int = 3,
-    ) -> tuple[list[str], list[str], dict[str, float]]:
+    def set_gestures(self, gestures: np.array) -> bool:
+        self.gestures = gestures
+        self.base_gestures: dict[str, dict[str, np.array]] = Gesture.get_base_gestures(
+            self.gestures
+        )
+        return True
+
+    # Needed for the web version... Really just sets things to the window object.
+    def classify(self, obj_in) -> tuple[str, list[str]]:
+        right_obj = json.loads(obj_in.right)
+        left_obj = json.loads(obj_in.left)
+        body_obj = json.loads(obj_in.body)
+
+        right = np.array(right_obj)
+        left = np.array(left_obj)
+        body = np.array(body_obj)
+
+        return self.predict(right, left, body)
+
+    def predict(self, obj_in) -> tuple[str, list[str]]:
+        top_most = 3
         """
         Predict the gesture.
 
@@ -91,14 +107,30 @@ class Gesture:
         static_gestures_confidence: dict[str, float]
             The confidence of the static gestures.
         """
-        return self._predict(right, left, body, top_most)
+        right_obj = json.loads(obj_in.right)
+        left_obj = json.loads(obj_in.left)
+        body_obj = json.loads(obj_in.body)
+
+        right = np.array(right_obj)
+        left = np.array(left_obj)
+        body = np.array(body_obj)
+
+        static_gestures, mov_gestures, static_gestures_confidence = self._predict(
+            right, left, body, top_most
+        )
+        static_gestures_confidence = []
+        # This may break with local. Sorry...
+        window.static_gesture = static_gestures[0]
+        window.movement_gesture = mov_gestures
+        # window.static_gestures_confidence = static_gestures_confidence
+        return (static_gestures, mov_gestures, static_gestures_confidence)
 
     def _predict(
         self,
-        right: Optional[np.array] = None,
-        left: Optional[np.array] = None,
-        body: Optional[np.array] = None,
-        top_most: Optional[int] = 3,
+        right: np.array = None,
+        left: np.array = None,
+        body: np.array = None,
+        top_most: int = 3,
     ) -> tuple[list[str], list[str], dict[str, float]]:
         """
         Predict the gesture.
@@ -154,30 +186,33 @@ class Gesture:
             # Update the check points.
             self._update_check_points(static_gesture)
             # Calculate the confidence of the top most gestures.
+
+            # TODO: reimplement this.
             static_gestures_confidence: dict[str, float] = self._get_confidence(
                 static_gestures, errors_gesture
             )
         # Check if there is a movement in the buffer of identified static gestures.
         mov_gestures: list[str] = self._identify_gestures_movement()
+        # Keeping this light for now b/c of frontend.
+        return (static_gestures, mov_gestures, static_gestures_confidence)
 
-        return static_gestures, mov_gestures, static_gestures_confidence
+    def _is_pointed_finger(self, right: np.array) -> bool:
+        """
+        Check if the hand is in the pointed finger pose.
 
-    # def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
-    #     """
-    #     Check if the hand is in the pointed finger pose.
+        Returns
+        -------
+        is_pointed_finger: bool
+            A bool indicating if the hand is in the pointed finger pose.
+        """
+        # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
+        # df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
 
-    #     Returns
-    #     -------
-    #     is_pointed_finger: bool
-    #         A bool indicating if the hand is in the pointed finger pose.
-    #     """
-    #     df = pd.DataFrame(right, columns=["x", "y", "z"])  # isn't this x, y, z? YES!
+        # index_finger_height = df["y"].iloc[8]
+        # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
 
-    #     print(df)
-    #     index_finger_height = df["y"].iloc[8]
-    #     max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
-    #     print(df.nlargest(1, "y"))
-    #     print(index_finger_height)
+        # index_finger_height = df["y"].iloc[8]
+        # max_limb_height = df.nlargest(1, "y")["y"].iloc[0]
 
     #     """
     #     Note: This works pretty consistently for the pointed finger pose.
@@ -362,7 +397,7 @@ class Gesture:
         Assumptions:
         5 - The speed of the movement is not important.
         4 - The number of check points is determined by the user, there can be as many as desired.
-        3 - As soon as the first check point is captured, a clock starts. 
+        3 - As soon as the first check point is captured, a clock starts.
             If the next check point is not captured within a certain time, it resets.
         2 - See 3.
         1 - See 3.
@@ -473,6 +508,10 @@ class Gesture:
         }
         return confidence_gesture
 
+    def set_model_search(ar_models: list[str]) -> bool:
+        # set the models arr input.
+        return True
+
     @staticmethod
     def get_gestures_names() -> np.array:
         """
@@ -556,6 +595,7 @@ class Gesture:
         """
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
+
         for gesture in gestures:
             base_gestures[gesture] = {
                 "right_hand": load_base_gesture(
@@ -571,7 +611,7 @@ class Gesture:
         return base_gestures
 
 
-def concat_or_none(array: list[np.array]) -> Optional[np.array]:
+def concat_or_none(array: list[np.array]) -> np.array:
     """
     Concatenate a list of arrays or return None if the list is empty.
 
@@ -591,7 +631,7 @@ def concat_or_none(array: list[np.array]) -> Optional[np.array]:
         return None
 
 
-def load_base_gesture(path: str) -> Optional[np.array]:
+def load_base_gesture(path: str) -> np.array:
     """
     Load the base gesture from a file.
 
@@ -860,3 +900,4 @@ def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
 #     static_gestures: list[str]
 #     movement_gestures: list[str]
 #     static_gestures_confidence: dict[str, float]
+window.gesture = Gesture()

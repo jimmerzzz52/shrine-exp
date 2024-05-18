@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gesture - Making gesture recognition as easy as a wave of your hand.</title>
+    <link rel="stylesheet" type="text/css" href="css/components.css">
+    <link rel="stylesheet" type="text/css" href="css/icons.css">
+    <link rel="stylesheet" type="text/css" href="css/responsee.css">
+    <link rel="stylesheet" type="text/css" href="owl-carousel/owl.carousel.css">
+    <link rel="stylesheet" type="text/css" href="owl-carousel/owl.theme.css">
+    <link rel="stylesheet" type="text/css" href="css/lightcase.css">
+    <!-- CUSTOM STYLE -->      
+    <link rel="stylesheet" href="css/template-style.css">
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,400,600,900&subset=latin-ext" rel="stylesheet"> 
+    <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.3.2/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.3.2/core.js"></script>
+    <py-config type="json" src="/media_pipe/gesture/pyscript-config.json"></py-config>
+    <script type="py" src="/media_pipe/gesture/base.py"></script>
+  
+  </head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJ1F1KKQDF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GJ1F1KKQDF');
+  </script>
+
+  <body class="size-1140">
+    <div id="page-wrapper">
+      <!-- HEADER -->
+      <header role="banner" class="position-absolute margin-top-30 margin-m-top-0 margin-s-top-0">    
+        <!-- Top Navigation -->
+        <nav class="background-transparent background-transparent-hightlight full-width sticky">
+          <div class="s-12 l-2">
+            <a href="index.html" class="logo">
+              <!-- Logo version before sticky nav -->
+              <img class="logo-before" src="img/logo-dark.png" alt="">
+              <!-- Logo version after sticky nav -->
+              <img class="logo-after" src="img/logo-dark.png" alt="">
+            </a>
+          </div>
+          <div class="s-12 l-10">
+            <div class="top-nav right">
+              <p class="nav-text"></p>
+              <ul class="right chevron">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about-us.html">About Us</a></li>             
+                <li><a href="contact.html">Contact</a></li>
+              </ul>
+            </div>
+          </div>  
+        </nav>
+      </header>
+      
+      <!-- MAIN -->
+      <main role="main">
+        <!-- Content -->
+        <article>
+          <!-- <header class="section background-white">
+            <div class="line text-center">        
+              <h1 class="text-dark text-s-size-30 text-m-size-40 text-l-size-headline text-thin text-line-height-1">Gesture Recognition Technology is the Future.</h1>
+              <p class="margin-bottom-0 text-size-16 text-dark">
+              Try experimenting below with gesture recognition.<br>
+              Below is a proof of concept of what we are creating. It can recognize poses, and teach you the sign language number system, 1 through 10.<br>
+              So start interacting and learning sign language today!<br>
+            </p>
+
+            </div>
+          </header> -->
+          <div id="demo">
+            <div class="container">
+              <div id="gesture_display" style="margin: 60px; border-radius: 25px; font-family: 'Inter,sans-serif'; background-color: grey; opacity: 0.5; color: white; font-size: 5em; position: absolute;">
+                Raise your hand to the camera!
+              </div>
+              <video style="display: none" class="input_video"></video>
+              <!-- TODO: Make full screen -->
+              <canvas class="output_canvas" style="height: 100%; width: 100%; display: block;"></canvas>
+            </div>
+          </div>
+          <div class="background-white full-width">
+            <div class="s-12 m-6 l-five">
+              <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
+                <div class="image-hover-overlay background-primary"> 
+                  <div class="image-hover-overlay-content text-center padding-2x">
+                    <h3 class="text-white text-size-20 margin-bottom-10">Speech to Text</h3>
+                    <p class="text-white text-size-14 margin-bottom-20">This application listens to your speech, then gives you stats on it. It also looks for proverbs in your speech.</p>  
+                  </div> 
+                </div> 
+                <img class="full-img" src="img/portfolio/thumb-01.jpg" alt=""/>
+
+              </a>	
+            </div>
+            <div class="s-12 m-6 l-five">
+              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-poc.html" title="Portfolio Image">
+                <div class="image-hover-overlay background-primary"> 
+                  <div class="image-hover-overlay-content text-center padding-2x">
+                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
+                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet anywhere, anytime!</p>
+                  </div> 
+                </div> 
+                <img class="full-img" src="img/ASL-Blur.png" alt=""/>
+              </a>	
+            </div>
+            <div class="s-12 m-6 l-five">
+              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-a-z?asl_chars=ABCDEF" title="Portfolio Image">
+                <div class="image-hover-overlay background-primary"> 
+                  <div class="image-hover-overlay-content text-center padding-2x">
+                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
+                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet A - F!</p>
+                  </div> 
+                </div> 
+                <img class="full-img" src="img/ABC.png" alt="ABC ASL"/>
+              </a>	
+            </div>
+            <div class="s-12 m-6 l-five">
+              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-a-z?asl_chars=0123456789" title="Portfolio Image">
+                <div class="image-hover-overlay background-primary">
+                  <div class="image-hover-overlay-content text-center padding-2x">
+                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
+                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet 0 - 9!</p>
+                  </div> 
+                </div> 
+                <img class="full-img" src="img/0-9.png" alt="0123456789 ASL"/>
+              </a>	
+            </div>
+            <div class="s-12 m-6 l-five">
+              <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
+                <div class="image-hover-overlay background-primary"> 
+                  <div class="image-hover-overlay-content text-center padding-2x">
+                    <h3 class="text-white text-size-20 margin-bottom-10">Exercise Application</h3>
+                    <p class="text-white text-size-14 margin-bottom-20">Go through a yoga flow. Remotely!</p>                  
+                  </div> 
+                </div> 
+                <img class="full-img" src="img/under_construction.png" alt=""/>
+              </a>	
+            </div>
+          </div>  
+        </article>
+      </main>
+      
+      <!-- FOOTER -->
+      <footer>
+        <!-- Contact Us -->
+        <div class="background-dark padding text-center footer-social">
+          <a class="margin-right-10" target="_blank" href="https://www.facebook.com"><i class="icon-facebook_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">FACEBOOK</span></a>
+          <a class="margin-right-10" target="_blank" href="https://www.twitter.com"><i class="icon-twitter_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">TWITTER</span></a>
+          <a class="margin-right-10" target="_blank" href="https://www.instagram.com"><i class="icon-instagram_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">INSTAGRAM</span></a>
+          <a target="_blank" href="https://www.linkedin.com"><i class="icon-linked_in_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">LINKEDIN</span></a>                                                                         
+        </div>
+
+        <!-- Main Footer -->
+        <section class="section-small-padding text-center background-dark full-width">
+          <div class="line">
+            <div class="margin">
+              <!-- Collumn 1 -->              
+              <div class="s-12 m-12 l-4 margin-m-bottom-30">
+                <h3 class="text-size-16">222 W Merchandise Mart Plaza</h3>
+                <p class="text-size-14">
+                  #1212<br>
+                  Chicago, IL<br> 
+                  60654
+                </p>               
+              </div>
+              <!-- Collumn 2 -->
+              <div class="s-12 m-12 l-4 margin-m-bottom-30">
+                <h3 class="text-size-16">E-mail</h3>
+                <p class="text-size-14">
+                   jimmy@gesture.world<br>
+                   bella@gesture.world
+                </p>              
+              </div>
+              <!-- Collumn 3 -->
+              <div class="s-12 m-12 l-4 ">
+                <h3 class="text-size-16">Phone Numbers</h3>
+                <p class="text-size-14">
+                   415 455 6951<br>
+                </p>             
+              </div>
+            </div>
+          </div>  
+        </section>
+        <hr class="break margin-top-bottom-0" style="border-color: rgba(0, 0, 0, 0.80);">
+        
+        <!-- Bottom Footer -->
+        <section class="padding background-dark full-width">
+          <div class="text-center">
+            <p class="text-size-12"></p>
+            <p class="text-size-12"></p>
+          </div>
+        </section>
+      </footer>
+    </div>
+    <script type="text/javascript" src="js/responsee.js"></script>
+    <script type="text/javascript" src="js/jquery.events.touch.js"></script>
+    <script type="text/javascript" src="owl-carousel/owl.carousel.js"></script>
+    <script type="text/javascript" src="js/template-scripts.js"></script> 
+    <script type="text/javascript">
+      const module = {};
+    </script>
+    <script type="module">
+    
+      const videoElement = document.getElementsByClassName('input_video')[0];
+      let canvasElement = document.getElementsByClassName('output_canvas')[0];
+      const gesture_display = document.getElementById('gesture_display');
+      const canvasCtx = canvasElement.getContext('2d');
+    
+      const stream = await navigator.mediaDevices.getUserMedia({video: true});
+      const {width, height} = stream.getVideoTracks()[0].getSettings();
+      
+      canvasElement.width = window.innerWidth;
+      canvasElement.height = window.innerHeight;
+      
+      function onResults(results) {
+        
+        canvasCtx.save();
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.drawImage(
+            results.image, 0, 0, canvasElement.width, canvasElement.height);
+        if (results.multiHandLandmarks) {
+          for (const landmarks of results.multiHandLandmarks) {
+            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                           {color: '#00FF00', lineWidth: 5});
+            drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+    
+            let ar = []
+            let ar2 = []
+            let ar3 = []
+            // TODO: Simplify.
+            if(results.multiHandLandmarks[0] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[0].length; i++){
+                let x = results.multiHandLandmarks[0][i].x
+                let y = results.multiHandLandmarks[0][i].y
+                let z = results.multiHandLandmarks[0][i].z
+                ar.push([x,y,z])
+              }
+            if(results.multiHandLandmarks[1] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[1].length; i++){
+                let x = results.multiHandLandmarks[1][i].x
+                let y = results.multiHandLandmarks[1][i].y
+                let z = results.multiHandLandmarks[1][i].z
+                ar2.push([x,y,z])
+              }
+            if(results.multiHandLandmarks[2] != undefined)
+              for( var i = 0; i < results.multiHandLandmarks[2].length; i++){
+                let x = results.multiHandLandmarks[2][i].x
+                let y = results.multiHandLandmarks[2][i].y
+                let z = results.multiHandLandmarks[2][i].z
+                ar3.push([x,y,z])
+              }
+            // For some reason, this is hard to use... 
+            // We instead reference the window object.
+            if(window.gesture != undefined){
+              let gesture_reconition_output = window.gesture.predict({
+                "right": JSON.stringify(ar),
+                "left": JSON.stringify(ar2),
+                "body": JSON.stringify(ar3)
+              })
+              gesture_display.innerHTML = window.static_gesture
+            }
+          }
+        }
+        canvasCtx.restore();
+      }
+      
+      const hands = new Hands({locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+      }});
+      hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+      hands.onResults(onResults);
+      
+      const camera = new Camera(videoElement, {
+        onFrame: async () => {
+          await hands.send({image: videoElement});
+        },
+        width: 1280,
+        height: 720
+      });
+      camera.start();
+      </script>
+  </body>
+</html>
