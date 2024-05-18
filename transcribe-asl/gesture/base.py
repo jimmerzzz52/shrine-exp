@@ -219,10 +219,10 @@ class Gesture:
     #     But it's important to undestand what's the orientation of the camera.
     #     """
 
-    #     if index_finger_height == max_limb_height:
-    #         return True
-    #     else:
-    #         return False
+        # if index_finger_height == max_limb_height:
+        #     return True
+        # else:
+        #     return False
 
     def _compare_hand(self, base_points: np.array, incoming_points: np.array) -> float:
         """
