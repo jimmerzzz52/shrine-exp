@@ -64,10 +64,46 @@ class Gesture:
         right: Optional[np.array] = None,
         left: Optional[np.array] = None,
         body: Optional[np.array] = None,
+        top_most: int = 3,
+    ) -> tuple[list[str], list[str], dict[str, float]]:
+        """
+        Predict the gesture.
+
+        A _predict wrapper function to be used on the frontend.
+
+        Parameters
+        ----------
+        right: np.array
+            The points of the right hand.
+        left: np.array
+            The points of the left hand.
+        body: np.array
+            The points of the body.
+        top_most: int
+            The number of top most closest gestures to return.
+
+        Returns
+        -------
+        static_gestures: list[str]
+            The top most static gestures.
+        mov_gesture: list[str]
+            The movement gesture.
+        static_gestures_confidence: dict[str, float]
+            The confidence of the static gestures.
+        """
+        return self._predict(right, left, body, top_most)
+
+    def _predict(
+        self,
+        right: Optional[np.array] = None,
+        left: Optional[np.array] = None,
+        body: Optional[np.array] = None,
         top_most: Optional[int] = 3,
     ) -> tuple[list[str], list[str], dict[str, float]]:
         """
         Predict the gesture.
+
+        The main function to predict the gesture.
 
         Parameters
         ----------
