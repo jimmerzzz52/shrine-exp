@@ -1,13 +1,19 @@
 import cv2
 import mediapipe as mp
 import time
-from gesture.base import Gesture, to_hand_frame, Output
+from gesture.base import Gesture, to_hand_frame
 import numpy as np
 
 
 def main():
 
-    g = Gesture()  # Load outside to prevent reloading base gestures from disk
+    # Define the base gestures path
+    base_path: str = "./gesture/base_poses_hf"
+    gestures_names: np.array = Gesture.get_gestures_names()
+    base_gestures = Gesture.get_base_gestures(gestures_names, base_path)
+    g = Gesture(
+        base_gestures=base_gestures
+    )  # Load outside to prevent reloading base gestures from disk
 
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
@@ -96,7 +102,9 @@ def main():
                     [[value.x, value.y, value.z] for value in left_hand_raw]
                 )
 
-            output: Output = g.predict(right_hand_data, left_hand_data, pose_data)
+            static_gestures, movement_gestures, static_gestures_confidence = g.predict(
+                right_hand_data, left_hand_data, pose_data
+            )
 
             draw_rotated_left_hand(
                 frame,
@@ -135,8 +143,8 @@ def main():
             # )
 
             rec_out_static_print = [
-                f"{i}, Conf: {output.static_gestures_confidence[i]:.3f}"
-                for i in output.static_gestures
+                f"{i}, Conf: {static_gestures_confidence[i]:.3f}"
+                for i in static_gestures
             ]
 
             for i, rec in enumerate(rec_out_static_print):
@@ -151,7 +159,7 @@ def main():
                 )
             cv2.putText(
                 frame,
-                f"FPS: {int(fps)}   Static: {output.static_gestures[0]}",
+                f"FPS: {int(fps)}   Static: {static_gestures[0]}",
                 (20, 70),
                 cv2.FONT_HERSHEY_PLAIN,
                 3,
@@ -161,7 +169,7 @@ def main():
 
             cv2.putText(
                 frame,
-                f"Movement: {output.movement_gestures}",
+                f"Movement: {movement_gestures}",
                 (20, 110),
                 cv2.FONT_HERSHEY_PLAIN,
                 3,

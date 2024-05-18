@@ -2,7 +2,8 @@
 import numpy as np
 from typing import Optional
 from datetime import datetime, timedelta
-from dataclasses import dataclass
+
+# from dataclasses import dataclass
 
 
 class Gesture:
@@ -31,61 +32,7 @@ class Gesture:
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
         # Define the gestures.
-        self.gestures: np.array[str] = np.array(
-            [
-                "one",
-                "one_inv",
-                "two",
-                "two_inv",
-                "three",
-                "three_inv",
-                "four",
-                "four_inv",
-                "five",
-                "five_inv",
-                "six",
-                "seven",
-                "eight",
-                "nine",
-                "ten_1",
-                "ten_2",
-                "ten_3",
-                "closed_fist",
-                "left_thumb_right",
-                "zero",
-                "A",
-                "B",
-                "C",
-                "D",
-                "E",
-                "F",
-                "G",
-                "H",
-                "I",
-                "i_down",
-                "i_flipped",
-                "K",
-                "L",
-                "M",
-                "N",
-                "O",
-                "P",
-                "Q",
-                "R",
-                "S",
-                "T",
-                "U",
-                "V",
-                "W",
-                "X",
-                "Y",
-            ]
-            # [
-            #     "two",
-            #     "P",
-            #     "seven",
-            # ]
-        )
+        self.gestures: np.array[str] = Gesture.get_gestures_names()
         # Define the gestures with movements.
         self.gestures_mov: dict[str, list[str]] = {
             "ten": ["ten_1", "ten_2", "ten_3"],
@@ -177,7 +124,7 @@ class Gesture:
         # Check if there is a movement in the buffer of identified static gestures.
         mov_gestures: list[str] = self._identify_gestures_movement()
 
-        return Output(static_gestures, mov_gestures, static_gestures_confidence)
+        return static_gestures, mov_gestures, static_gestures_confidence
 
     # def _is_pointed_finger(self, right: Optional[np.array]) -> bool:
     #     """
@@ -491,17 +438,86 @@ class Gesture:
         return confidence_gesture
 
     @staticmethod
-    def get_base_gestures(gestures: list[str]) -> dict[str, dict[str, np.array]]:
+    def get_gestures_names() -> np.array:
+        """
+        Get the names of the gestures.
+
+        Returns
+        -------
+        gestures: np.array
+            An array containing the names of the gestures.
+        """
+        return np.array(
+            [
+                "one",
+                "one_inv",
+                "two",
+                "two_inv",
+                "three",
+                "three_inv",
+                "four",
+                "four_inv",
+                "five",
+                "five_inv",
+                "six",
+                "seven",
+                "eight",
+                "nine",
+                "ten_1",
+                "ten_2",
+                "ten_3",
+                "closed_fist",
+                "left_thumb_right",
+                "zero",
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "i_down",
+                "i_flipped",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+            ]
+        )
+
+    @staticmethod
+    def get_base_gestures(
+        gestures: list[str],
+        base_path: str = "./",
+    ) -> dict[str, dict[str, np.array]]:
         """
         Get the base gestures.
+
+        Parameters
+        ----------
+        gestures: list[str]
+            A list containing the names of the gestures to load.
+        base_path: str
+            The path to the base gestures files.
 
         Returns
         -------
         base_gestures: dict[str,dict[str,np.array]]
             A dictionary containing the base gestures.
         """
-        # Define the base gestures path
-        base_path: str = "./gesture/base_poses_hf"
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
         for gesture in gestures:
@@ -790,21 +806,21 @@ def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
         return cos_sim / len(x)
 
 
-@dataclass
-class Output:
-    """
-    The output of the model.
+# @dataclass
+# class Output:
+#     """
+#     The output of the model.
 
-    Attributes
-    ----------
-    static_gestures: list[str]
-        The top most static gestures.
-    movement_gestures: list[str]
-        The movement gesture.
-    static_gestures_confidence: dict[str, float]
-        The confidence of the static gestures.
-    """
+#     Attributes
+#     ----------
+#     static_gestures: list[str]
+#         The top most static gestures.
+#     movement_gestures: list[str]
+#         The movement gesture.
+#     static_gestures_confidence: dict[str, float]
+#         The confidence of the static gestures.
+#     """
 
-    static_gestures: list[str]
-    movement_gestures: list[str]
-    static_gestures_confidence: dict[str, float]
+#     static_gestures: list[str]
+#     movement_gestures: list[str]
+#     static_gestures_confidence: dict[str, float]
