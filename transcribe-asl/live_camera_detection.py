@@ -102,7 +102,7 @@ def main():
                     [[value.x, value.y, value.z] for value in left_hand_raw]
                 )
 
-            static_gestures, movement_gestures, static_gestures_confidence = g.predict(
+            static_gestures, movement_gestures, static_gestures_confidence = g._predict(
                 right_hand_data, left_hand_data, pose_data
             )
 

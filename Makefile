@@ -1,6 +1,6 @@
 # Dev dependencies go here...
 dev:
-	pip install glob
+	# pip install glob
 	# sudo apt get install npm
 	npm install -g serve
 

@@ -60,6 +60,7 @@ class Gesture:
         self.past_gestures = []
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
+        self.mmpose: bool = False
 
     def set_gestures(self, gestures: np.array) -> bool:
         self.gestures = gestures
@@ -260,7 +261,7 @@ class Gesture:
         error_rotation = mean_absolute_error(angle_hand_base, angle_hand_inc) / (
             8 * np.pi
         )
-        print(error_rotation)
+        # print(error_rotation)
         # # 8 * np.pi is the best tested scaling factor
 
         error_points_distance = cosine_similarity(
