@@ -12,10 +12,10 @@ def main():
     gestures_names: np.array = Gesture.get_gestures_names()
     base_gestures = Gesture.get_base_gestures(gestures_names, base_path)
     # Is the whole body to be detected?
-    whole_body_det: bool = False
+    whole_body_det: bool = True
     g = Gesture(
         base_gestures=base_gestures,
-        whole_body_det=whole_body_det,
+        # whole_body_det=whole_body_det,
     )  # Load outside to prevent reloading base gestures from disk
 
     mp_drawing = mp.solutions.drawing_utils
@@ -110,24 +110,31 @@ def main():
                 right_hand_data, left_hand_data, pose_data
             )
 
-            draw_rotated_left_hand(
-                frame,
-                left_hand_data,
-                mp_drawing,
-                results.left_hand_landmarks,
-                mp_holistic.HAND_CONNECTIONS,
-                mp_drawing_styles.get_default_pose_landmarks_style(),
-            )
+            if not whole_body_det:
+                draw_rotated_left_hand(
+                    frame,
+                    left_hand_data,
+                    mp_drawing,
+                    results.left_hand_landmarks,
+                    mp_holistic.HAND_CONNECTIONS,
+                    mp_drawing_styles.get_default_pose_landmarks_style(),
+                )
 
-            draw_rotated_right_hand(
-                frame,
-                right_hand_data,
-                mp_drawing,
-                results.right_hand_landmarks,
-                mp_holistic.HAND_CONNECTIONS,
-                mp_drawing_styles.get_default_pose_landmarks_style(),
-                # scale=1,
-            )
+                draw_rotated_right_hand(
+                    frame,
+                    right_hand_data,
+                    mp_drawing,
+                    results.right_hand_landmarks,
+                    mp_holistic.HAND_CONNECTIONS,
+                    mp_drawing_styles.get_default_pose_landmarks_style(),
+                    # scale=1,
+                )
+
+            if whole_body_det:
+                draw_body_points_with_names(
+                    frame,
+                    results.pose_landmarks,
+                )
 
             # base_points_in_hand_frame: np.array = to_hand_frame(
             #     np.genfromtxt(
@@ -198,6 +205,24 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
 
+
+def draw_body_points_with_names(frame, pose_landmarks):
+    """
+    Draw the body points with their names on the frame.
+    """
+    if pose_landmarks:
+        for i, landmark in enumerate(pose_landmarks.landmark):
+            x = int(landmark.x * frame.shape[1])
+            y = int(landmark.y * frame.shape[0])
+            cv2.putText(
+                frame,
+                f"{i}",
+                (x, y),
+                cv2.FONT_HERSHEY_PLAIN,
+                1,
+                (0, 255, 0),
+                2,
+            )
 
 def draw_rotated_left_hand(
     frame,
