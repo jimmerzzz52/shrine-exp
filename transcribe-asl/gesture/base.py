@@ -711,7 +711,23 @@ def body_frame_of_reference(coordinates: np.array) -> np.array:
     body_frame: np.array
         A 2D array containing the base vectors of the body frame of reference in global coordinates.
     """
-    pass
+    body_frame = np.zeros((3, 3))
+    # The plane passes through the points 0, 5, and 17
+    points_in_plane = coordinates[[0, 5, 17]].astype(float)
+    # The z vector is the cross product of the vectors formed by the points 0-5 and 0-17
+    # It's a vector normal to the plane.
+    z_vec = np.cross(
+        points_in_plane[1] - points_in_plane[0], points_in_plane[2] - points_in_plane[0]
+    )
+    # The z base vector is the normalized z vector
+    body_frame[2] = z_vec / np.linalg.norm(z_vec)
+    # The y vector is the vector formed by the points 0 and 5
+    y_vec = points_in_plane[2] - points_in_plane[0]
+    # The y base vector is the normalized y vector
+    body_frame[1] = y_vec / np.linalg.norm(y_vec)
+    # The x base vector is the cross product of the y and z base vectors
+    body_frame[0] = np.cross(body_frame[2], body_frame[1])
+    return body_frame.T
 
 
 def concat_or_none(array: list[np.array]) -> np.array:
