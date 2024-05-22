@@ -318,7 +318,19 @@ class Gesture:
         error: float
             The error between the base points and the incoming points.
         """
-        pass
+        # Load the base points in the body frame of reference.
+        body_base_points_in_body_frame: np.array = to_body_frame(body_base_points)
+        # Load the incoming points in the body frame of reference.
+        body_incoming_points_in_body_frame: np.array = to_body_frame(
+            body_incoming_points
+        )
+        # Cosine similarity of the base and incoming points.
+        error = cosine_similarity(
+            body_base_points_in_body_frame,
+            body_incoming_points_in_body_frame,
+            flatten=True,
+        )
+        return error
 
     def _compare_both_hands(
         self,
@@ -647,6 +659,59 @@ class Gesture:
                 ),
             }
         return base_gestures
+
+
+def to_body_frame(coordinates: np.array, norm: bool = True) -> np.array:
+    """Rotate and translates the coordinates to the body frame of reference.
+
+    Parameters
+    ----------
+    coordinates: np.array
+        A 2D array containing the coordinates of the points to rotate.
+    norm: bool
+        A bool indicating if the coordinates should be normalized.
+
+    Returns
+    -------
+    coordinates_body_frame: np.array
+        A 2D array containing the coordinates of the points in the body frame of reference.
+    """
+    coordinates = coordinates.astype(float)
+    # The body frame of reference is obtained by the body_frame_of_reference function.
+    body_frame = body_frame_of_reference(coordinates)
+    # The rotation matrix is the transpose of the body frame of reference.
+    rotation_matrix = body_frame.T
+    # The coordinates in the body frame of reference are obtained by multiplying the rotation matrix by the coordinates.
+    coordinates_body_frame = np.zeros_like(coordinates)
+    for i in range(coordinates.shape[0]):
+        coordinates_body_frame[i] = np.dot(
+            rotation_matrix, coordinates[i] - coordinates[0]
+        )
+    if norm:
+        # The coordinates are normalized by dividing them by the maximum absolute value of the coordinates.
+        coordinates_body_frame = coordinates_body_frame / np.abs(
+            coordinates_body_frame
+        ).max(axis=0)
+    return coordinates_body_frame
+
+
+def body_frame_of_reference(coordinates: np.array) -> np.array:
+    """
+
+    Get the body frame of reference.
+
+    Parameters
+    ----------
+    coordinates: np.array
+        A 2D array containing the coordinates of the points.
+        Coordinates are expected to be sorted according to their index.
+
+    Returns
+    -------
+    body_frame: np.array
+        A 2D array containing the base vectors of the body frame of reference in global coordinates.
+    """
+    pass
 
 
 def concat_or_none(array: list[np.array]) -> np.array:
