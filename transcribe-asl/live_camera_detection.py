@@ -12,7 +12,7 @@ def main():
     gestures_names: np.array = Gesture.get_gestures_names()
     base_gestures = Gesture.get_base_gestures(gestures_names, base_path)
     # Is the whole body to be detected?
-    whole_body_det: bool = True
+    whole_body_det: bool = False
     g = Gesture(
         base_gestures=base_gestures,
         whole_body_det=whole_body_det,

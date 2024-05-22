@@ -201,8 +201,8 @@ class Gesture:
                 static_gestures, errors_gesture
             )
 
-            # Check if there is a movement in the buffer of identified static gestures.
-            mov_gestures: list[str] = self._identify_gestures_movement()
+        # Check if there is a movement in the buffer of identified static gestures.
+        mov_gestures: list[str] = self._identify_gestures_movement()
 
         # If the one wants to identify the whole body gesture.
         # Static gestures is overwritten by the whole body gesture.
