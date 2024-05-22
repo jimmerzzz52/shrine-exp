@@ -710,18 +710,35 @@ def body_frame_of_reference(coordinates: np.array) -> np.array:
     -------
     body_frame: np.array
         A 2D array containing the base vectors of the body frame of reference in global coordinates.
+
+    TODO: This function only differs from the hand_frame_of_reference in the points used to define the plane.
+    If there's a future need to implement leg FOR or head FOR, it would be better to have a function that
+    receives the points to define the plane.
     """
     body_frame = np.zeros((3, 3))
-    # The plane passes through the points 0, 5, and 17
-    points_in_plane = coordinates[[0, 5, 17]].astype(float)
-    # The z vector is the cross product of the vectors formed by the points 0-5 and 0-17
+    # The plane passes through the points
+    """
+    This one is a little more complex than the hand frame of reference.
+    A simple human body model can be defined by adding a rotation point in the
+    connection of the torso to the legs. selecting the torso points as the base
+    would imply that the rotation of the legs, in relation to the torso would be
+    poorly represented. The same goes for the head. The main positions affected
+    are the Marichyasana C and the Marichyasana D.
+
+    I think that one possible solution would be to compare the points using two or three 
+    frames of reference, one for legs, another for the torso and another for the head.
+    Let's try first using only the torso, if it doesn't work, we can try the other approach.
+    """
+    # The torso frame of reference has the normal plane crossing ponts 12, 23, 24
+    points_in_plane = coordinates[[12, 23, 24]].astype(float)
+    # The z vector is the cross product of the vectors formed by the points 12-23 and 12-24
     # It's a vector normal to the plane.
     z_vec = np.cross(
         points_in_plane[1] - points_in_plane[0], points_in_plane[2] - points_in_plane[0]
     )
     # The z base vector is the normalized z vector
     body_frame[2] = z_vec / np.linalg.norm(z_vec)
-    # The y vector is the vector formed by the points 0 and 5
+    # The y vector is the vector formed by the points 12 and 24
     y_vec = points_in_plane[2] - points_in_plane[0]
     # The y base vector is the normalized y vector
     body_frame[1] = y_vec / np.linalg.norm(y_vec)
