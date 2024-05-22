@@ -15,6 +15,7 @@ class Gesture:
     def __init__(
         self,
         base_gestures: dict[str, dict[str, np.array]] = None,
+        whole_body_det: bool = False,
     ):
         """
         Initialize the Gesture object.
@@ -25,8 +26,8 @@ class Gesture:
             A dictionary containing the base gestures.
             The keys are the names of the gestures.
             The values are dictionaries containing the base points of the right, left, and body gestures.
-        mmpose: bool
-            A bool indicating if the model is using the mmpose library.
+        whole_body_det: bool
+            A bool indicating if the whole body is to be detected.
 
         Examples
         --------
@@ -34,22 +35,28 @@ class Gesture:
         base_gestures["one"]["left"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
-        # Define the gestures.
-        self.gestures: np.array[str] = Gesture.get_gestures_names()
-        # Define the gestures with movements.
-        self.gestures_mov: dict[str, list[str]] = {
-            "ten": ["ten_1", "ten_2", "ten_3"],
-            "eleven": ["one", "closed_fist", "one"],
-            "twelve": ["two", "closed_fist", "two"],
-            "thirteen": ["three", "left_thumb_right", "three"],
-            "fourteen": ["four", "closed_fist", "four"],
-            "fifteen": ["five", "left_thumb_right", "five"],
-            "sixteen": ["closed_fist", "six"],
-            "seventeen": ["left_thumb_right", "seven"],
-            "eighteen": ["left_thumb_right", "eight"],
-            "nineteen": ["left_thumb_right", "nine"],
-            "J": ["I", "i_down", "i_flipped"],
-        }
+        if not whole_body_det:
+            # Define the gestures.
+            self.gestures: np.array[str] = Gesture.get_gestures_names()
+            # Define the gestures with movements.
+            self.gestures_mov: dict[str, list[str]] = {
+                "ten": ["ten_1", "ten_2", "ten_3"],
+                "eleven": ["one", "closed_fist", "one"],
+                "twelve": ["two", "closed_fist", "two"],
+                "thirteen": ["three", "left_thumb_right", "three"],
+                "fourteen": ["four", "closed_fist", "four"],
+                "fifteen": ["five", "left_thumb_right", "five"],
+                "sixteen": ["closed_fist", "six"],
+                "seventeen": ["left_thumb_right", "seven"],
+                "eighteen": ["left_thumb_right", "eight"],
+                "nineteen": ["left_thumb_right", "nine"],
+                "J": ["I", "i_down", "i_flipped"],
+            }
+        if whole_body_det:
+            # Define the gestures for the whole body.
+            self.gestures: np.array[str] = Gesture.get_gestures_body_names()
+            self.gestures_mov: dict[str, list[str]] = {}
+
         if base_gestures is None:
             self.base_gestures: dict[str, dict[str, np.array]] = (
                 Gesture.get_base_gestures(self.gestures)
@@ -61,6 +68,7 @@ class Gesture:
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
         self.mmpose: bool = False
+        self.whole_body_det: bool = whole_body_det
 
     def set_gestures(self, gestures: np.array) -> bool:
         self.gestures = gestures
@@ -192,8 +200,25 @@ class Gesture:
             static_gestures_confidence: dict[str, float] = self._get_confidence(
                 static_gestures, errors_gesture
             )
-        # Check if there is a movement in the buffer of identified static gestures.
-        mov_gestures: list[str] = self._identify_gestures_movement()
+
+            # Check if there is a movement in the buffer of identified static gestures.
+            mov_gestures: list[str] = self._identify_gestures_movement()
+
+        # If the one wants to identify the whole body gesture.
+        # Static gestures is overwritten by the whole body gesture.
+        if self.whole_body_det:
+            # Compare incoming points with the static gestures.
+            errors_gesture: dict[str, float] = {
+                gesture: self._compare_body(self.base_gestures[gesture]["body"], body)
+                for gesture in self.base_gestures
+            }
+            static_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
+                :top_most
+            ]
+            mov_gestures = []
+            static_gestures_confidence: dict[str, float] = self._get_confidence(
+                static_gestures, errors_gesture
+            )
         # Keeping this light for now b/c of frontend.
         return (static_gestures, mov_gestures, static_gestures_confidence)
 
@@ -220,10 +245,10 @@ class Gesture:
     #     But it's important to undestand what's the orientation of the camera.
     #     """
 
-        # if index_finger_height == max_limb_height:
-        #     return True
-        # else:
-        #     return False
+    # if index_finger_height == max_limb_height:
+    #     return True
+    # else:
+    #     return False
 
     def _compare_hand(self, base_points: np.array, incoming_points: np.array) -> float:
         """
@@ -512,6 +537,18 @@ class Gesture:
     def set_model_search(ar_models: list[str]) -> bool:
         # set the models arr input.
         return True
+
+    @staticmethod
+    def get_gestures_body_names() -> np.array:
+        """
+        Get the names of the gestures for the whole body.
+
+        Returns
+        -------
+        gestures: np.array
+            An array containing the names of the gestures.
+        """
+        pass
 
     @staticmethod
     def get_gestures_names() -> np.array:

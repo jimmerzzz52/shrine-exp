@@ -11,8 +11,11 @@ def main():
     base_path: str = "./gesture/base_poses_hf"
     gestures_names: np.array = Gesture.get_gestures_names()
     base_gestures = Gesture.get_base_gestures(gestures_names, base_path)
+    # Is the whole body to be detected?
+    whole_body_det: bool = True
     g = Gesture(
-        base_gestures=base_gestures
+        base_gestures=base_gestures,
+        whole_body_det=whole_body_det,
     )  # Load outside to prevent reloading base gestures from disk
 
     mp_drawing = mp.solutions.drawing_utils
@@ -50,12 +53,13 @@ def main():
             # Draw landmark annotation on the frame.
             frame.flags.writeable = True
             # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            # mp_drawing.draw_landmarks(
-            #     frame,
-            #     results.pose_landmarks,
-            #     mp_holistic.POSE_CONNECTIONS,
-            #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
-            # )
+            if whole_body_det:
+                mp_drawing.draw_landmarks(
+                    frame,
+                    results.pose_landmarks,
+                    mp_holistic.POSE_CONNECTIONS,
+                    landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
+                )
             mp_drawing.draw_landmarks(
                 frame,
                 results.left_hand_landmarks,
