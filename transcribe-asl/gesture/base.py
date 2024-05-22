@@ -1,4 +1,4 @@
-from pyscript import window
+# from pyscript import window
 
 # import pandas as pd
 import numpy as np
@@ -901,4 +901,4 @@ def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
 #     static_gestures: list[str]
 #     movement_gestures: list[str]
 #     static_gestures_confidence: dict[str, float]
-window.gesture = Gesture()
+# window.gesture = Gesture()
