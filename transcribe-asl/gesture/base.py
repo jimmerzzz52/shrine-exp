@@ -220,10 +220,10 @@ class Gesture:
     #     But it's important to undestand what's the orientation of the camera.
     #     """
 
-        # if index_finger_height == max_limb_height:
-        #     return True
-        # else:
-        #     return False
+    # if index_finger_height == max_limb_height:
+    #     return True
+    # else:
+    #     return False
 
     def _compare_hand(self, base_points: np.array, incoming_points: np.array) -> float:
         """
@@ -398,10 +398,9 @@ class Gesture:
         Assumptions:
         5 - The speed of the movement is not important.
         4 - The number of check points is determined by the user, there can be as many as desired.
-        3 - As soon as the first check point is captured, a clock starts.
-            If the next check point is not captured within a certain time, it resets.
-        2 - See 3.
-        1 - See 3.
+        3 - All identified poses are added to a buffer of 120 gestures, i.e., 2 s @ 60fps.
+        2 - After a new gesture is identified, the buffer is analyzed to see if there is a movement.
+        which prevents having to wait for the clock to reset the buffer.
         """
         # Lets try the second approach first.
 
@@ -508,6 +507,32 @@ class Gesture:
             for gesture, confidence in zip(static_gestures, confidences)
         }
         return confidence_gesture
+
+    def seqs_in_buff(self):
+        """
+        Check if the sequences are in the buffer.
+
+        Returns
+        -------
+        identified: dict[str, int]
+            A dictionary indicating if the sequences are in the buffer.
+        """
+        check_points = {key: 0 for key in self.gestures_mov.keys()}
+        len_gesture_movies = [
+            len(self.gestures_mov[key]) for key in self.gestures_mov.keys()
+        ]
+        for el in self.buffer:
+            for key in self.gestures_mov.keys():
+                if (
+                    check_points[key] < len_gesture_movies[key]
+                    and el == self.gestures_mov[key][check_points[key]]
+                ):
+                    check_points[key] += 1
+        identified = {key: 0 for key in self.gestures_mov.keys()}
+        for key in self.gestures_mov.keys():
+            if check_points[key] == len_gesture_movies[key]:
+                identified[key] = 1
+        return identified
 
     def set_model_search(ar_models: list[str]) -> bool:
         # set the models arr input.
