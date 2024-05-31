@@ -4,10 +4,11 @@
 import numpy as np
 
 # from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # from dataclasses import dataclass
 import json
+from collections import deque
 
 
 class Gesture:
@@ -57,9 +58,9 @@ class Gesture:
         else:
             self.base_gestures = base_gestures
 
-        self.past_gestures = []
+        self.buffer: deque[str] = deque(maxlen=120)
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
-        self.check_point_time = datetime.now() - timedelta(seconds=60)
+        self.identified_mov_gestures: deque[str] = deque(maxlen=3)
         self.mmpose: bool = False
 
     def set_gestures(self, gestures: np.array) -> bool:
@@ -159,7 +160,8 @@ class Gesture:
             The confidence of the static gestures.
         """
         # Reset the check points.
-        self._reset_check_points(wait_seconds=5)
+        self._reset_check_points()
+        # CHECKPOINTS ARE RESETED AFTER EVERY FRAME.
         # For The pose one, all we need is the right hand.
         static_gesture: str = "Nothing recognized"
 
@@ -183,17 +185,22 @@ class Gesture:
             ]  # The identified static gesture is the one with the smallest error.
             # Don't need this in code but it helps debugging.
             static_gesture = static_gestures[0]
-            self.past_gestures.append(static_gestures)
+            # self.past_gestures.append(static_gestures)
+            self.buffer.append(static_gesture)
             # Update the check points.
-            self._update_check_points(static_gesture)
+            # self._update_check_points(static_gesture)
             # Calculate the confidence of the top most gestures.
-
             # TODO: reimplement this.
             static_gestures_confidence: dict[str, float] = self._get_confidence(
                 static_gestures, errors_gesture
             )
-        # Check if there is a movement in the buffer of identified static gestures.
-        mov_gestures: list[str] = self._identify_gestures_movement()
+        # Check if there is a movement gesture in the buffer.
+        for gesture in self.buffer:
+            self._update_check_points(gesture)
+        # And now identify the movement gestures.
+        self._identify_gestures_movement()
+        # Get the movement gestures as a list.
+        mov_gestures: list[str] = list(self.identified_mov_gestures)
         # Keeping this light for now b/c of frontend.
         return (static_gestures, mov_gestures, static_gestures_confidence)
 
@@ -437,34 +444,25 @@ class Gesture:
                 and gesture
                 == self.gestures_mov[gesture_mov][self.check_point[gesture_mov]]
             ):
-                if np.sum([self.check_point[key] for key in self.check_point]) == 0:
-                    self.check_point_time = datetime.now()  # ?
                 self.check_point[gesture_mov] += 1
 
-    def _reset_check_points(self, wait_seconds: int = 5):
+    def _reset_check_points(self):
         """
         Reset the check points.
         """
-        # Reset the check point if it's been too long.
-        if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
-            self.check_point = {gesture: 0 for gesture in self.gestures_mov}
-            self.check_point_time = datetime.now() - timedelta(seconds=60)
-            self.past_gestures = []
+        # Reset the check points.
+        self.check_point = {gesture: 0 for gesture in self.gestures_mov}
 
-    def _identify_gestures_movement(self) -> str:
+    def _identify_gestures_movement(self) -> None:
         """
         Identify if there is a gesture in the buffer of identified static gestures.
 
-        Returns
-        -------
-        gesture_movement: str
-            The identified gesture.
+        Note: Updates the identified gestures buffer.
         """
-        identified_gestures: list[str] = []
         for gesture_mov in self.gestures_mov:
             if self.check_point[gesture_mov] == len(self.gestures_mov[gesture_mov]):
-                identified_gestures.append(gesture_mov)
-        return identified_gestures
+                if gesture_mov not in self.identified_mov_gestures:
+                    self.identified_mov_gestures.appendleft(gesture_mov)
 
     def _get_confidence(
         self, static_gestures: list[str], errors_gesture: dict[str, float]
@@ -507,32 +505,6 @@ class Gesture:
             for gesture, confidence in zip(static_gestures, confidences)
         }
         return confidence_gesture
-
-    def seqs_in_buff(self):
-        """
-        Check if the sequences are in the buffer.
-
-        Returns
-        -------
-        identified: dict[str, int]
-            A dictionary indicating if the sequences are in the buffer.
-        """
-        check_points = {key: 0 for key in self.gestures_mov.keys()}
-        len_gesture_movies = [
-            len(self.gestures_mov[key]) for key in self.gestures_mov.keys()
-        ]
-        for el in self.buffer:
-            for key in self.gestures_mov.keys():
-                if (
-                    check_points[key] < len_gesture_movies[key]
-                    and el == self.gestures_mov[key][check_points[key]]
-                ):
-                    check_points[key] += 1
-        identified = {key: 0 for key in self.gestures_mov.keys()}
-        for key in self.gestures_mov.keys():
-            if check_points[key] == len_gesture_movies[key]:
-                identified[key] = 1
-        return identified
 
     def set_model_search(ar_models: list[str]) -> bool:
         # set the models arr input.
