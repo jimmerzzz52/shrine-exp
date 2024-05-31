@@ -82,7 +82,7 @@
             <div class="container">
               <div class="hide-l hide-xl sm-12"> 
                 <!-- TODO: Change to loading when libraries have not started... -->
-                <button type="button" id="button" name="myButton">Start Learning ASL</button>
+                <button type="button" id="button" name="myButton">Start Your Camera<br />and<br />Start Learning ASL</button>
               </div>
               <div id="gesture_display" class="sm-12 m-4 l-2" style="background-color: grey; font-size: 3em; opacity: 0.5; margin: 50px; font-family: 'Inter,sans-serif'; position: absolute;">
                 <div id="gesture-guide-title" style="opacity: 1;">Make the <span id="gesture-guide-name">0</span> Gesture</div>
@@ -289,6 +289,10 @@
               }
             
             if(window.gesture != undefined){
+              
+              // TODO: Change to only execute once..
+              window.gesture.set_base_path_web();
+
               let gesture_reconition_output = window.gesture.predict({
                 "right": JSON.stringify(ar),
                 "left": JSON.stringify(ar2),

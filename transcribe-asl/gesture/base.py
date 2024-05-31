@@ -30,7 +30,9 @@ class Gesture:
         """
         # Define the gestures.
         
-            
+        # ./ for web and gesture/base_poses_hf for local
+        self.base_path = "./gesture/base_poses_hf"
+        
         self.gestures: np.array[str] = np.array(
             [
                 "one",
@@ -163,6 +165,7 @@ class Gesture:
             The confidence of the static gestures.
         """
         
+        # TODO: move into other function.
         right_obj = json.loads(obj_in.right)
         left_obj = json.loads(obj_in.left)
         body_obj = json.loads(obj_in.body)
@@ -538,7 +541,7 @@ class Gesture:
             A dictionary containing the base gestures.
         """
         # Define the base gestures path
-        base_path: str = "./"
+        self.base_path: str = "./"
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
         
@@ -558,6 +561,8 @@ class Gesture:
             }
         return base_gestures
 
+    def set_base_path_web():
+        self.base_path = './'
 
 def concat_or_none(array: list[np.array]) -> np.array:
     """
