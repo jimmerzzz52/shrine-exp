@@ -12,3 +12,4 @@ trascribe-asl/gesture/__pycache__*
 .DS_Store
 node_modules
 *.pyc
+transcribe-asl/references/*
