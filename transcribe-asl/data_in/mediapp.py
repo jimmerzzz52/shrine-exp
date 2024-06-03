@@ -188,6 +188,10 @@ def transcribe_word(word):
 
 words = [
     {
+        "id" : "ONE_YT_2",
+        "video_url": "https://www.youtube.com/watch?v=frNyrr7RRWU",
+    },
+    {
         "id": "ONE_YT",
         "video_url": "https://www.youtube.com/watch?v=DZK886Tz1aQ",
     },
