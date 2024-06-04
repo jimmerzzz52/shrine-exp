@@ -96,11 +96,10 @@ def transcribe_word(word):
                 # 5 times in the csv. So it doesn't seem adequate to record one set of angles for each node.
                 # It seems better to record the angles for each limb, and then the position of the nodes.
 
-
                 # TODO: Move this into a module of some type.
                 if results.pose_landmarks:
                     for index, data_point in enumerate(results.pose_landmarks.landmark):
-                        
+
                         pose_csv = (
                             pose_csv
                             + f"{timeOfEvent - start_time},"
@@ -112,7 +111,7 @@ def transcribe_word(word):
                         )
 
                 if results.right_hand_landmarks:
-                    
+
                     data = list(results.right_hand_landmarks.landmark)
                     for index, value in enumerate(data):
 
@@ -124,9 +123,9 @@ def transcribe_word(word):
                             + f"{value.y},"
                             + f"{value.z} \n"
                         )
-                        
+
                 if results.left_hand_landmarks:
-                    
+
                     data = list(results.left_hand_landmarks.landmark)
                     for index, value in enumerate(data):
 
@@ -138,10 +137,10 @@ def transcribe_word(word):
                             + f"{value.y},"
                             + f"{value.z} \n"
                         )
-                        
+
                 image.flags.writeable = True
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-                
+
                 # For testing, if you want to see this....
                 # mp_drawing.draw_landmarks(
                 #     image,
@@ -188,7 +187,11 @@ def transcribe_word(word):
 
 words = [
     {
-        "id" : "ONE_YT_2",
+        "id": "TWO",
+        "video_url": "https://www.handspeak.com/word/t/two/two.mp4",
+    },
+    {
+        "id": "ONE_YT_2",
         "video_url": "https://www.youtube.com/watch?v=frNyrr7RRWU",
     },
     {
