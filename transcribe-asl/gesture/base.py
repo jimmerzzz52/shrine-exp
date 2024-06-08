@@ -32,6 +32,7 @@ class Gesture:
         
         # ./ for web and gesture/base_poses_hf for local
         self.base_path = "./gesture/base_poses_hf"
+        self.base_path = './'
         
         self.gestures: np.array[str] = np.array(
             [
