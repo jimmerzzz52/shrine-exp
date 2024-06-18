@@ -187,6 +187,110 @@ def transcribe_word(word):
 
 words = [
     {
+        "id": "ELEVEN",
+        "video_url": "https://www.handspeak.com/word/e/ele/eleven.mp4",
+    },
+    {
+        "id": "TEN",
+        "video_url": "https://www.handspeak.com/word/t/ten/ten.mp4",
+    },
+    {
+        "id": "TWELVE",
+        "video_url": "https://www.handspeak.com/word/t/twe/twelve.mp4",
+    },
+    {
+        "id": "THIRTEEN",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirteen.mp4",
+    },
+    {
+        "id": "FOURTEEN",
+        "video_url": "https://www.handspeak.com/word/f/fou/fourteen.mp4",
+    },
+    {
+        "id": "FIFTEEN",
+        "video_url": "https://www.handspeak.com/word/f/fif/fifteen.mp4",
+    },
+    {
+        "id": "SIXTEEN",
+        "video_url": "https://www.handspeak.com/word/s/six/sixteen.mp4",
+    },
+    {
+        "id": "SEVENTEEN",
+        "video_url": "https://www.handspeak.com/word/s/sev/seventeen.mp4",
+    },
+    {
+        "id": "EIGHTEEN",
+        "video_url": "https://www.handspeak.com/word/e/eig/eighteen.mp4",
+    },
+    {
+        "id": "NINETEEN",
+        "video_url": "https://www.handspeak.com/word/n/nin/nineteen.mp4",
+    },
+    {
+        "id": "TWENTY",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty.mp4",
+    },
+    {
+        "id": "J",
+        "video_url": "https://www.handspeak.com/word/j/j-abc.mp4",
+    },
+    {
+        "id": "Z",
+        "video_url": "https://www.handspeak.com/word/z/z-abc.mp4",
+    },
+    {
+        "id": "TEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26506.mp4",
+    },
+    {
+        "id": "ELEVEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26507.mp4",
+    },
+    {
+        "id": "TWELVE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26508.mp4",
+    },
+    {
+        "id": "THIRTEEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26509.mp4",
+    },
+    {
+        "id": "FOURTEEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26510.mp4",
+    },
+    {
+        "id": "FIFTEEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26511.mp4",
+    },
+    {
+        "id": "SIXTEEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26512.mp4",
+    },
+    {
+        "id": "SEVENTEEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26514.mp4",
+    },
+    {
+        "id": "EIGHTEEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26517.mp4",
+    },
+    {
+        "id": "NINETEEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26518.mp4",
+    },
+    {
+        "id": "TWENTY_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26519.mp4",
+    },
+    {
+        "id": "J_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26719.mp4",
+    },
+    {
+        "id": "Z_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26735.mp4",
+    },
+    {
         "id": "TWO",
         "video_url": "https://www.handspeak.com/word/t/two/two.mp4",
     },
