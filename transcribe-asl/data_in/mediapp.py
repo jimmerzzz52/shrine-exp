@@ -231,6 +231,86 @@ words = [
         "video_url": "https://www.handspeak.com/word/t/twe/twenty.mp4",
     },
     {
+        "id": "TWENTY_ONE",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-one.mp4",
+    },
+    {
+        "id": "TWENTY_TWO",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-two.mp4",
+    },
+    {
+        "id": "TWENTY_THREE",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-three.mp4",
+    },
+    {
+        "id": "TWENTY_FOUR",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-four.mp4",
+    },
+    {
+        "id": "TWENTY_FIVE",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-five.mp4",
+    },
+    {
+        "id": "TWENTY_SIX",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-six.mp4",
+    },
+    {
+        "id": "TWENTY_SEVEN",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-seven.mp4",
+    },
+    {
+        "id": "TWENTY_EIGHT",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-eight.mp4",
+    },
+    {
+        "id": "TWENTY_NINE",
+        "video_url": "https://www.handspeak.com/word/t/twe/twenty-nine.mp4",
+    },
+    {
+        "id": "THIRTY",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty.mp4",
+    },
+    {
+        "id": "THIRTY_ONE",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-one.mp4",
+    },
+    {
+        "id": "THIRTY_TWO",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-two.mp4",
+    },
+    {
+        "id": "THIRTY_THREE",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-three.mp4",
+    },
+    {
+        "id": "THIRTY_FOUR",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-four.mp4",
+    },
+    {
+        "id": "THIRTY_FIVE",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-five.mp4",
+    },
+    {
+        "id": "THIRTY_SIX",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-six.mp4",
+    },
+    {
+        "id": "THIRTY_SEVEN",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-seven.mp4",
+    },
+    {
+        "id": "THIRTY_EIGHT",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-eight.mp4",
+    },
+    {
+        "id": "THIRTY_NINE",
+        "video_url": "https://www.handspeak.com/word/t/thi/thirty-nine.mp4",
+    },
+    {
+        "id": "FORTY",
+        "video_url": "https://www.handspeak.com/word/f/for/forty.mp4",
+    },
+    {
         "id": "J",
         "video_url": "https://www.handspeak.com/word/j/j-abc.mp4",
     },
@@ -281,6 +361,86 @@ words = [
     {
         "id": "TWENTY_1",
         "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26519.mp4",
+    },
+    {
+        "id": "TWENTY_ONE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26520.mp4",
+    },
+    {
+        "id": "TWENTY_TWO_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26521.mp4",
+    },
+    {
+        "id": "TWENTY_THREE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26522.mp4",
+    },
+    {
+        "id": "TWENTY_FOUR_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26525.mp4",
+    },
+    {
+        "id": "TWENTY_FIVE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26527.mp4",
+    },
+    {
+        "id": "TWENTY_SIX_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/34/34122.mp4",
+    },
+    {
+        "id": "TWENTY_SEVEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26532.mp4",
+    },
+    {
+        "id": "TWENTY_EIGHT_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26534.mp4",
+    },
+    {
+        "id": "TWENTY_NINE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26536.mp4",
+    },
+    {
+        "id": "THIRTY_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26538.mp4",
+    },
+    {
+        "id": "THIRTY_ONE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26539.mp4",
+    },
+    {
+        "id": "THIRTY_TWO_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26540.mp4",
+    },
+    {
+        "id": "THIRTY_THREE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26541.mp4",
+    },
+    {
+        "id": "THIRTY_FOUR_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26542.mp4",
+    },
+    {
+        "id": "THIRTY_FIVE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26543.mp4",
+    },
+    {
+        "id": "THIRTY_SIX_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26544.mp4",
+    },
+    {
+        "id": "THIRTY_SEVEN_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26545.mp4",
+    },
+    {
+        "id": "THIRTY_EIGHT_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26546.mp4",
+    },
+    {
+        "id": "THIRTY_NINE_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26547.mp4",
+    },
+    {
+        "id": "FORTY_1",
+        "video_url": "https://www.signingsavvy.com/media2/mp4-ld/26/26548.mp4",
     },
     {
         "id": "J_1",
