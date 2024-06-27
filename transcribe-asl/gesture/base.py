@@ -516,6 +516,31 @@ class Gesture:
         )
         return static_gestures, static_gestures_confidence
 
+    def _accumulate_hand(self, method: str = "power_mean") -> np.array:
+        """
+        Accumulate the hand.
+
+        Parameters
+        ----------
+        method: str
+            The method to accumulate the hand. Can be either power_mean or
+            sum.
+
+        Returns
+        -------
+        accumulated_hand: np.array
+            The accumulated hand.
+        """
+        # Get the accumulated hand.
+        match method:
+            case "power_mean":
+                accumulated_hand = power_mean_frames(self.buffer_hand)
+            case "sum":
+                accumulated_hand = sum_frames(self.buffer_hand)
+            case _:
+                raise ValueError("Invalid method.")
+        return accumulated_hand
+
     def _get_confidence(
         self, static_gestures: list[str], errors_gesture: dict[str, float]
     ) -> dict[str, float]:
@@ -930,6 +955,32 @@ def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
                 np.linalg.norm(x_el) * np.linalg.norm(y_el) + 1e-6
             )
         return cos_sim / len(x)
+
+
+def sum_frames(hand_data: np.array, norm: bool = True) -> np.array:
+    """
+    Sum the frames of the hand data.
+
+    Parameters
+    ----------
+    hand_data: np.array
+        A 3D array containing the hand data video.
+    norm: bool = True
+        A bool indicating if the sum should be normalized.
+
+    Returns
+    -------
+    summed: np.array
+        A 2D array containing the sum of the frames.
+    """
+    summed = np.zeros((hand_data.shape[0], 3))
+    for frame in range(hand_data.shape[2]):
+        if norm:
+            hand_data_hand_frame = to_hand_frame(hand_data[:, :3, frame])
+        else:
+            hand_data_hand_frame = hand_data[:, :3, frame]
+        summed += hand_data_hand_frame
+    return summed
 
 
 # @dataclass
