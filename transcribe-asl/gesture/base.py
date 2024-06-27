@@ -58,6 +58,7 @@ class Gesture:
         else:
             self.base_gestures = base_gestures
 
+        #TODO: Implement the buffer
         self.past_gestures = [] # This need to be a buffer.
         self.buffer_hand: list[np.array] = [] # This need to be a buffer.
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
