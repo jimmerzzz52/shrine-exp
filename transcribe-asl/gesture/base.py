@@ -193,7 +193,8 @@ class Gesture:
                 static_gestures, errors_gesture
             )
         # Check if there is a movement in the buffer of identified static gestures.
-        mov_gestures: list[str] = self._identify_gestures_movement()
+        # mov_gestures: list[str] = self._identify_gestures_movement()
+        mov_gestures: list[str] = self._iden_gest_mov_acc(top_most)
         # Keeping this light for now b/c of frontend.
         return (static_gestures, mov_gestures, static_gestures_confidence)
 
@@ -220,10 +221,10 @@ class Gesture:
     #     But it's important to undestand what's the orientation of the camera.
     #     """
 
-        # if index_finger_height == max_limb_height:
-        #     return True
-        # else:
-        #     return False
+    # if index_finger_height == max_limb_height:
+    #     return True
+    # else:
+    #     return False
 
     def _compare_hand(self, base_points: np.array, incoming_points: np.array) -> float:
         """
@@ -466,6 +467,54 @@ class Gesture:
             if self.check_point[gesture_mov] == len(self.gestures_mov[gesture_mov]):
                 identified_gestures.append(gesture_mov)
         return identified_gestures
+
+    def _iden_gest_mov_acc(self, top_most: int) -> tuple(list[str], list[float]):
+        """
+        Identify if there is a gesture in the buffer of hand positions.
+
+        This method uses the accumulation approach to identify the gesture.
+        The idea is to accumulate the positions of the interest points in
+        the hand into a single modified hand, that is then used for compari-
+        son with the base gestures, created using the same approach.
+
+        This approach is based on the ideas of the paper [1].
+
+        Parameters
+        ----------
+        top_most: int
+            The number of top most closest gestures to return.
+
+        Returns
+        -------
+        gesture_movement: list[str]
+            The top identified gesture movements.
+        gesture_movement_confidence: list[float]
+            The confidence of the identified gesture movements.
+
+        References
+        ----------
+        [1] - Caliwag, Angela C., et al. "Movement-in-a-video detection scheme
+        for sign language gesture recognition using neural network." Applied
+        Sciences 12.20 (2022): 10542.
+        """
+        # Get the accumulated hand.
+        accumulated_hand = self._accumulate_hand()
+        # Compare the accumulated hand with the base gestures.
+        errors_gesture: dict[str, float] = {
+            gesture: self._compare_hand(
+                self.base_acc_gestures[gesture]["right_hand"], accumulated_hand
+            )
+            for gesture in self.base_acc_gestures
+        }
+        # Get the top most closest gestures.
+        static_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
+            :top_most
+        ]
+        # Calculate the confidence of the top most gestures.
+        static_gestures_confidence: dict[str, float] = self._get_confidence(
+            static_gestures, errors_gesture
+        )
+        return static_gestures, static_gestures_confidence
 
     def _get_confidence(
         self, static_gestures: list[str], errors_gesture: dict[str, float]
