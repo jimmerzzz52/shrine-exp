@@ -58,7 +58,8 @@ class Gesture:
         else:
             self.base_gestures = base_gestures
 
-        self.past_gestures = []
+        self.past_gestures = [] # This need to be a buffer.
+        self.buffer_hand: list[np.array] = [] # This need to be a buffer.
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.check_point_time = datetime.now() - timedelta(seconds=60)
         self.mmpose: bool = False
@@ -184,6 +185,7 @@ class Gesture:
             ]  # The identified static gesture is the one with the smallest error.
             # Don't need this in code but it helps debugging.
             static_gesture = static_gestures[0]
+            self.buffer_hand.append(right)
             self.past_gestures.append(static_gestures)
             # Update the check points.
             self._update_check_points(static_gesture)
