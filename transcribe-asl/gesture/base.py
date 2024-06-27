@@ -468,7 +468,7 @@ class Gesture:
                 identified_gestures.append(gesture_mov)
         return identified_gestures
 
-    def _iden_gest_mov_acc(self, top_most: int) -> tuple(list[str], list[float]):
+    def _iden_gest_mov_acc(self, top_most: int) -> tuple[list[str], list[float]]:
         """
         Identify if there is a gesture in the buffer of hand positions.
 
