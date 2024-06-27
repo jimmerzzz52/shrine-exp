@@ -2,6 +2,7 @@
 
 # import pandas as pd
 import numpy as np
+from scipy.stats import pmean
 
 # from typing import Optional
 from datetime import datetime, timedelta
@@ -955,6 +956,31 @@ def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
                 np.linalg.norm(x_el) * np.linalg.norm(y_el) + 1e-6
             )
         return cos_sim / len(x)
+
+
+def power_mean_frames(hand: np.array, p: float = 0) -> np.array:
+    """
+    Calculate the power mean of the hand.
+
+    Parameters
+    ----------
+    hand: np.array
+        The hand to calculate the power mean.
+    p: float
+        The power to calculate the power mean.
+
+    Returns
+    -------
+    power_mean: np.array
+        The power mean of the hand.
+    """
+    # Get the data in the hand frame of reference.
+    hand_data_hand_frame = np.zeros_like(hand)
+    for i in range(hand.shape[2]):
+        hand_data_hand_frame[:, :, i] = np.abs(to_hand_frame(hand[:, :, i]))
+    power_mean = pmean(hand_data_hand_frame, p, axis=2)
+    # Is the best so far with p=0
+    return power_mean
 
 
 def sum_frames(hand_data: np.array, norm: bool = True) -> np.array:
