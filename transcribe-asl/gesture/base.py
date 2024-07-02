@@ -59,7 +59,8 @@ class Gesture:
         else:
             self.base_gestures = base_gestures
 
-        self.buffer: deque[str] = deque(maxlen=120)
+        self.past_gestures: deque[str] = deque(maxlen=120)
+        self.buffer_hand: deque[np.array] = deque(maxlen=120)
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.identified_mov_gestures: deque[str] = deque(maxlen=3)
         self.mmpose: bool = False
@@ -500,14 +501,15 @@ class Gesture:
             for gesture in self.base_acc_gestures
         }
         # Get the top most closest gestures.
-        static_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
+        mov_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
             :top_most
         ]
+        self.identified_mov_gestures.appendleft(mov_gestures[0])
         # Calculate the confidence of the top most gestures.
-        static_gestures_confidence: dict[str, float] = self._get_confidence(
-            static_gestures, errors_gesture
+        mov_gestures_confidence: dict[str, float] = self._get_confidence(
+            mov_gestures, errors_gesture
         )
-        return static_gestures, static_gestures_confidence
+        return mov_gestures, mov_gestures_confidence
 
     def _accumulate_hand(self, method: str = "power_mean") -> np.array:
         """
