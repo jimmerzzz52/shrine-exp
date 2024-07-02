@@ -39,21 +39,7 @@ class Gesture:
         """
         # Define the gestures.
         self.gestures: np.array[str] = Gesture.get_gestures_names()
-        self.gestures_mov_names: np.array[str] = np.array(
-            [
-                "ten",
-                "eleven",
-                "twelve",
-                "thirteen",
-                "fourteen",
-                "fifteen",
-                "sixteen",
-                "seventeen",
-                "eighteen",
-                "nineteen",
-                "J",
-            ]
-        )
+        self.gestures_mov_names: np.array[str] = Gesture.get_gestures_names_mov()
         # Define the gestures with movements.
         self.gestures_mov: dict[str, list[str]] = {
             "ten": ["ten_1", "ten_2", "ten_3"],
@@ -664,6 +650,33 @@ class Gesture:
                 "Y",
             ]
         )
+    
+    @staticmethod
+    def get_gestures_names_mov() -> np.array:
+        """
+        Get the names of the gestures with movements.
+
+        Returns
+        -------
+        gestures: np.array
+            An array containing the names of the gestures with movements.
+        """
+        return np.array(
+            [
+                "ten",
+                "eleven",
+                "twelve",
+                "thirteen",
+                "fourteen",
+                "fifteen",
+                "sixteen",
+                "seventeen",
+                "eighteen",
+                "nineteen",
+                "J",
+            ]
+        )
+
 
     @staticmethod
     def get_base_gestures(
