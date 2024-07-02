@@ -2,6 +2,7 @@
 
 # import pandas as pd
 import numpy as np
+from scipy.stats import pmean
 
 # from typing import Optional
 from datetime import datetime
@@ -185,8 +186,8 @@ class Gesture:
             ]  # The identified static gesture is the one with the smallest error.
             # Don't need this in code but it helps debugging.
             static_gesture = static_gestures[0]
-            # self.past_gestures.append(static_gestures)
-            self.buffer.append(static_gesture)
+            self.buffer_hand.append(right)
+            self.past_gestures.append(static_gestures)
             # Update the check points.
             # self._update_check_points(static_gesture)
             # Calculate the confidence of the top most gestures.
@@ -194,13 +195,9 @@ class Gesture:
             static_gestures_confidence: dict[str, float] = self._get_confidence(
                 static_gestures, errors_gesture
             )
-        # Check if there is a movement gesture in the buffer.
-        for gesture in self.buffer:
-            self._update_check_points(gesture)
-        # And now identify the movement gestures.
-        self._identify_gestures_movement()
-        # Get the movement gestures as a list.
-        mov_gestures: list[str] = list(self.identified_mov_gestures)
+        # Check if there is a movement in the buffer of identified static gestures.
+        # mov_gestures: list[str] = self._identify_gestures_movement()
+        mov_gestures: list[str] = self._iden_gest_mov_acc(top_most)
         # Keeping this light for now b/c of frontend.
         return (static_gestures, mov_gestures, static_gestures_confidence)
 
@@ -463,6 +460,152 @@ class Gesture:
             if self.check_point[gesture_mov] == len(self.gestures_mov[gesture_mov]):
                 if gesture_mov not in self.identified_mov_gestures:
                     self.identified_mov_gestures.appendleft(gesture_mov)
+
+    def _iden_gest_mov_acc(self, top_most: int) -> tuple[list[str], list[float]]:
+        """
+        Identify if there is a gesture in the buffer of hand positions.
+
+        This method uses the accumulation approach to identify the gesture.
+        The idea is to accumulate the positions of the interest points in
+        the hand into a single modified hand, that is then used for compari-
+        son with the base gestures, created using the same approach.
+
+        This approach is based on the ideas of the paper [1].
+
+        Parameters
+        ----------
+        top_most: int
+            The number of top most closest gestures to return.
+
+        Returns
+        -------
+        gesture_movement: list[str]
+            The top identified gesture movements.
+        gesture_movement_confidence: list[float]
+            The confidence of the identified gesture movements.
+
+        References
+        ----------
+        [1] - Caliwag, Angela C., et al. "Movement-in-a-video detection scheme
+        for sign language gesture recognition using neural network." Applied
+        Sciences 12.20 (2022): 10542.
+        """
+        # Get the accumulated hand.
+        accumulated_hand = self._accumulate_hand()
+        # Compare the accumulated hand with the base gestures.
+        errors_gesture: dict[str, float] = {
+            gesture: self._compare_hand(
+                self.base_acc_gestures[gesture]["right_hand"], accumulated_hand
+            )
+            for gesture in self.base_acc_gestures
+        }
+        # Get the top most closest gestures.
+        static_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
+            :top_most
+        ]
+        # Calculate the confidence of the top most gestures.
+        static_gestures_confidence: dict[str, float] = self._get_confidence(
+            static_gestures, errors_gesture
+        )
+        return static_gestures, static_gestures_confidence
+
+    def _accumulate_hand(self, method: str = "power_mean") -> np.array:
+        """
+        Accumulate the hand.
+
+        Parameters
+        ----------
+        method: str
+            The method to accumulate the hand. Can be either power_mean or
+            sum.
+
+        Returns
+        -------
+        accumulated_hand: np.array
+            The accumulated hand.
+        """
+        # Get the accumulated hand.
+        match method:
+            case "power_mean":
+                accumulated_hand = power_mean_frames(self.buffer_hand)
+            case "sum":
+                accumulated_hand = sum_frames(self.buffer_hand)
+            case _:
+                raise ValueError("Invalid method.")
+        return accumulated_hand
+
+    def _iden_gest_mov_acc(self, top_most: int) -> tuple[list[str], list[float]]:
+        """
+        Identify if there is a gesture in the buffer of hand positions.
+
+        This method uses the accumulation approach to identify the gesture.
+        The idea is to accumulate the positions of the interest points in
+        the hand into a single modified hand, that is then used for compari-
+        son with the base gestures, created using the same approach.
+
+        This approach is based on the ideas of the paper [1].
+
+        Parameters
+        ----------
+        top_most: int
+            The number of top most closest gestures to return.
+
+        Returns
+        -------
+        gesture_movement: list[str]
+            The top identified gesture movements.
+        gesture_movement_confidence: list[float]
+            The confidence of the identified gesture movements.
+
+        References
+        ----------
+        [1] - Caliwag, Angela C., et al. "Movement-in-a-video detection scheme
+        for sign language gesture recognition using neural network." Applied
+        Sciences 12.20 (2022): 10542.
+        """
+        # Get the accumulated hand.
+        accumulated_hand = self._accumulate_hand()
+        # Compare the accumulated hand with the base gestures.
+        errors_gesture: dict[str, float] = {
+            gesture: self._compare_hand(
+                self.base_acc_gestures[gesture]["right_hand"], accumulated_hand
+            )
+            for gesture in self.base_acc_gestures
+        }
+        # Get the top most closest gestures.
+        static_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
+            :top_most
+        ]
+        # Calculate the confidence of the top most gestures.
+        static_gestures_confidence: dict[str, float] = self._get_confidence(
+            static_gestures, errors_gesture
+        )
+        return static_gestures, static_gestures_confidence
+
+    def _accumulate_hand(self, method: str = "power_mean") -> np.array:
+        """
+        Accumulate the hand.
+
+        Parameters
+        ----------
+        method: str
+            The method to accumulate the hand. Can be either power_mean or
+            sum.
+
+        Returns
+        -------
+        accumulated_hand: np.array
+            The accumulated hand.
+        """
+        # Get the accumulated hand.
+        match method:
+            case "power_mean":
+                accumulated_hand = power_mean_frames(self.buffer_hand)
+            case "sum":
+                accumulated_hand = sum_frames(self.buffer_hand)
+            case _:
+                raise ValueError("Invalid method.")
+        return accumulated_hand
 
     def _get_confidence(
         self, static_gestures: list[str], errors_gesture: dict[str, float]
@@ -878,6 +1021,57 @@ def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
                 np.linalg.norm(x_el) * np.linalg.norm(y_el) + 1e-6
             )
         return cos_sim / len(x)
+
+
+def power_mean_frames(hand: np.array, p: float = 0) -> np.array:
+    """
+    Calculate the power mean of the hand.
+
+    Parameters
+    ----------
+    hand: np.array
+        The hand to calculate the power mean.
+    p: float
+        The power to calculate the power mean.
+
+    Returns
+    -------
+    power_mean: np.array
+        The power mean of the hand.
+    """
+    # Get the data in the hand frame of reference.
+    hand_data_hand_frame = np.zeros_like(hand)
+    for i in range(hand.shape[2]):
+        hand_data_hand_frame[:, :, i] = np.abs(to_hand_frame(hand[:, :, i]))
+    power_mean = pmean(hand_data_hand_frame, p, axis=2)
+    # Is the best so far with p=0
+    return power_mean
+
+
+def sum_frames(hand_data: np.array, norm: bool = True) -> np.array:
+    """
+    Sum the frames of the hand data.
+
+    Parameters
+    ----------
+    hand_data: np.array
+        A 3D array containing the hand data video.
+    norm: bool = True
+        A bool indicating if the sum should be normalized.
+
+    Returns
+    -------
+    summed: np.array
+        A 2D array containing the sum of the frames.
+    """
+    summed = np.zeros((hand_data.shape[0], 3))
+    for frame in range(hand_data.shape[2]):
+        if norm:
+            hand_data_hand_frame = to_hand_frame(hand_data[:, :3, frame])
+        else:
+            hand_data_hand_frame = hand_data[:, :3, frame]
+        summed += hand_data_hand_frame
+    return summed
 
 
 # @dataclass
