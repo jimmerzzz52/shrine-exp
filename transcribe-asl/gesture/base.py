@@ -63,7 +63,7 @@ class Gesture:
             self.base_gestures = base_gestures
         if base_acc_gestures is None:
             self.base_acc_gestures: dict[str, dict[str, np.array]] = (
-                Gesture.get_base_gestures(
+                Gesture.get_base_gestures_accumulated(
                     self.gestures_mov_names, accumulate_hand_method=self.method_acc_hand
                 )
             )
@@ -687,7 +687,6 @@ class Gesture:
     def get_base_gestures(
         gestures: list[str],
         base_path: str = "./",
-        accumulate_hand_method: Optional[str] = None,
     ) -> dict[str, dict[str, np.array]]:
         """
         Get the base gestures.
@@ -719,23 +718,57 @@ class Gesture:
                     f"{base_path}/{gesture}_Transcription_Pose.csv"
                 ),
             }
-        if accumulate_hand_method is not None:
-            for gesture in gestures:
-                base_gestures[gesture] = {
-                    "right_hand": Gesture._accumulate_hand(
-                        base_gestures[gesture]["right_hand"],
-                        accumulate_hand_method,
+
+    def get_base_gestures_accumulated(
+        gestures: list[str],
+        base_path: str = "./",
+        accumulate_hand_method: str = "power_mean",
+    ) -> dict[str, dict[str, np.array]]:
+
+        # Load the base gestures from the database.
+        base_gestures: dict[str, dict[str, np.array]] = {}
+        for gesture in gestures:
+            base_gestures[gesture] = {
+                "right_hand": Gesture._accumulate_hand(
+                    load_base_gesture_from_npy(
+                        f"{base_path}/{gesture}_Transcription_Right_Hand.npy"
                     ),
-                    "left_hand": Gesture._accumulate_hand(
-                        base_gestures[gesture]["left_hand"],
-                        accumulate_hand_method,
+                    accumulate_hand_method,
+                ),
+                "left_hand": Gesture._accumulate_hand(
+                    load_base_gesture_from_npy(
+                        f"{base_path}/{gesture}_Transcription_Left_Hand.npy"
                     ),
-                    "pose": Gesture._accumulate_hand(
-                        base_gestures[gesture]["pose"],
-                        accumulate_hand_method,
+                    accumulate_hand_method,
+                ),
+                "pose": Gesture._accumulate_hand(
+                    load_base_gesture_from_npy(
+                        f"{base_path}/{gesture}_Transcription_Pose.npy"
                     ),
-                }
+                    accumulate_hand_method,
+                ),
+            }
         return base_gestures
+
+
+def load_base_gesture_from_npy(path: str) -> np.array:
+    """
+    Load the base gesture from a numpy file.
+
+    Parameters
+    ----------
+    path: str
+        The path to the file.
+
+    Returns
+    -------
+    base_gesture: Optional[np.array]
+        The base gesture if exists.
+    """
+    try:
+        return np.load(path)
+    except FileNotFoundError:
+        return None
 
 
 def concat_or_none(array: list[np.array]) -> np.array:
