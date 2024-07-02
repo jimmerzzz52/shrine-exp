@@ -78,6 +78,8 @@ class Gesture:
             self.base_acc_gestures: dict[str, dict[str, np.array]] = (
                 Gesture.get_base_gestures(self.gestures_mov_names)
             )
+        else:
+            self.base_acc_gestures = base_acc_gestures
 
         self.past_gestures: deque[str] = deque(maxlen=120)
         self.buffer_hand: deque[np.array] = deque(maxlen=120)
