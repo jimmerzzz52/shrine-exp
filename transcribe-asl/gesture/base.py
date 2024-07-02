@@ -4,7 +4,7 @@
 import numpy as np
 from scipy.stats import pmean
 
-# from typing import Optional
+from typing import Optional
 from datetime import datetime
 
 # from dataclasses import dataclass
@@ -37,6 +37,7 @@ class Gesture:
         base_gestures["one"]["left"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
+        self.method_acc_hand: str = "power_mean"
         # Define the gestures.
         self.gestures: np.array[str] = Gesture.get_gestures_names()
         self.gestures_mov_names: np.array[str] = Gesture.get_gestures_names_mov()
@@ -62,7 +63,9 @@ class Gesture:
             self.base_gestures = base_gestures
         if base_acc_gestures is None:
             self.base_acc_gestures: dict[str, dict[str, np.array]] = (
-                Gesture.get_base_gestures(self.gestures_mov_names)
+                Gesture.get_base_gestures(
+                    self.gestures_mov_names, accumulate_hand_method=self.method_acc_hand
+                )
             )
         else:
             self.base_acc_gestures = base_acc_gestures
@@ -500,7 +503,7 @@ class Gesture:
         Sciences 12.20 (2022): 10542.
         """
         # Get the accumulated hand.
-        accumulated_hand = self._accumulate_hand()
+        accumulated_hand = self._accumulate_hand(self.buffer_hand, self.method_acc_hand)
         # Compare the accumulated hand with the base gestures.
         errors_gesture: dict[str, float] = {
             gesture: self._compare_hand(
@@ -518,31 +521,6 @@ class Gesture:
             mov_gestures, errors_gesture
         )
         return mov_gestures, mov_gestures_confidence
-
-    def _accumulate_hand(self, method: str = "power_mean") -> np.array:
-        """
-        Accumulate the hand.
-
-        Parameters
-        ----------
-        method: str
-            The method to accumulate the hand. Can be either power_mean or
-            sum.
-
-        Returns
-        -------
-        accumulated_hand: np.array
-            The accumulated hand.
-        """
-        # Get the accumulated hand.
-        match method:
-            case "power_mean":
-                accumulated_hand = power_mean_frames(self.buffer_hand)
-            case "sum":
-                accumulated_hand = sum_frames(self.buffer_hand)
-            case _:
-                raise ValueError("Invalid method.")
-        return accumulated_hand
 
     def _get_confidence(
         self, static_gestures: list[str], errors_gesture: dict[str, float]
@@ -589,6 +567,34 @@ class Gesture:
     def set_model_search(ar_models: list[str]) -> bool:
         # set the models arr input.
         return True
+
+    @staticmethod
+    def _accumulate_hand(hand: np.array, method: str = "power_mean") -> np.array:
+        """
+        Accumulate the hand.
+
+        Parameters
+        ----------
+        hand: np.array
+            The hand to accumulate.
+        method: str
+            The method to accumulate the hand. Can be either power_mean or
+            sum.
+
+        Returns
+        -------
+        accumulated_hand: np.array
+            The accumulated hand.
+        """
+        # Get the accumulated hand.
+        match method:
+            case "power_mean":
+                accumulated_hand = power_mean_frames(hand)
+            case "sum":
+                accumulated_hand = sum_frames(hand)
+            case _:
+                raise ValueError("Invalid method.")
+        return accumulated_hand
 
     @staticmethod
     def get_gestures_names() -> np.array:
@@ -650,7 +656,7 @@ class Gesture:
                 "Y",
             ]
         )
-    
+
     @staticmethod
     def get_gestures_names_mov() -> np.array:
         """
@@ -681,6 +687,7 @@ class Gesture:
     def get_base_gestures(
         gestures: list[str],
         base_path: str = "./",
+        accumulate_hand_method: Optional[str] = None,
     ) -> dict[str, dict[str, np.array]]:
         """
         Get the base gestures.
@@ -712,6 +719,22 @@ class Gesture:
                     f"{base_path}/{gesture}_Transcription_Pose.csv"
                 ),
             }
+        if accumulate_hand_method is not None:
+            for gesture in gestures:
+                base_gestures[gesture] = {
+                    "right_hand": Gesture._accumulate_hand(
+                        base_gestures[gesture]["right_hand"],
+                        accumulate_hand_method,
+                    ),
+                    "left_hand": Gesture._accumulate_hand(
+                        base_gestures[gesture]["left_hand"],
+                        accumulate_hand_method,
+                    ),
+                    "pose": Gesture._accumulate_hand(
+                        base_gestures[gesture]["pose"],
+                        accumulate_hand_method,
+                    ),
+                }
         return base_gestures
 
 
