@@ -5,10 +5,11 @@ import numpy as np
 from scipy.stats import pmean
 
 # from typing import Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # from dataclasses import dataclass
 import json
+from collections import deque
 
 
 class Gesture:
@@ -58,11 +59,9 @@ class Gesture:
         else:
             self.base_gestures = base_gestures
 
-        #TODO: Implement the buffer
-        self.past_gestures = [] # This need to be a buffer.
-        self.buffer_hand: list[np.array] = [] # This need to be a buffer.
+        self.buffer: deque[str] = deque(maxlen=120)
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
-        self.check_point_time = datetime.now() - timedelta(seconds=60)
+        self.identified_mov_gestures: deque[str] = deque(maxlen=3)
         self.mmpose: bool = False
 
     def set_gestures(self, gestures: np.array) -> bool:
@@ -162,7 +161,8 @@ class Gesture:
             The confidence of the static gestures.
         """
         # Reset the check points.
-        self._reset_check_points(wait_seconds=5)
+        self._reset_check_points()
+        # CHECKPOINTS ARE RESETED AFTER EVERY FRAME.
         # For The pose one, all we need is the right hand.
         static_gesture: str = "Nothing recognized"
 
@@ -189,9 +189,8 @@ class Gesture:
             self.buffer_hand.append(right)
             self.past_gestures.append(static_gestures)
             # Update the check points.
-            self._update_check_points(static_gesture)
+            # self._update_check_points(static_gesture)
             # Calculate the confidence of the top most gestures.
-
             # TODO: reimplement this.
             static_gestures_confidence: dict[str, float] = self._get_confidence(
                 static_gestures, errors_gesture
@@ -403,10 +402,9 @@ class Gesture:
         Assumptions:
         5 - The speed of the movement is not important.
         4 - The number of check points is determined by the user, there can be as many as desired.
-        3 - As soon as the first check point is captured, a clock starts.
-            If the next check point is not captured within a certain time, it resets.
-        2 - See 3.
-        1 - See 3.
+        3 - All identified poses are added to a buffer of 120 gestures, i.e., 2 s @ 60fps.
+        2 - After a new gesture is identified, the buffer is analyzed to see if there is a movement.
+        which prevents having to wait for the clock to reset the buffer.
         """
         # Lets try the second approach first.
 
@@ -443,34 +441,25 @@ class Gesture:
                 and gesture
                 == self.gestures_mov[gesture_mov][self.check_point[gesture_mov]]
             ):
-                if np.sum([self.check_point[key] for key in self.check_point]) == 0:
-                    self.check_point_time = datetime.now()  # ?
                 self.check_point[gesture_mov] += 1
 
-    def _reset_check_points(self, wait_seconds: int = 5):
+    def _reset_check_points(self):
         """
         Reset the check points.
         """
-        # Reset the check point if it's been too long.
-        if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
-            self.check_point = {gesture: 0 for gesture in self.gestures_mov}
-            self.check_point_time = datetime.now() - timedelta(seconds=60)
-            self.past_gestures = []
+        # Reset the check points.
+        self.check_point = {gesture: 0 for gesture in self.gestures_mov}
 
-    def _identify_gestures_movement(self) -> str:
+    def _identify_gestures_movement(self) -> None:
         """
         Identify if there is a gesture in the buffer of identified static gestures.
 
-        Returns
-        -------
-        gesture_movement: str
-            The identified gesture.
+        Note: Updates the identified gestures buffer.
         """
-        identified_gestures: list[str] = []
         for gesture_mov in self.gestures_mov:
             if self.check_point[gesture_mov] == len(self.gestures_mov[gesture_mov]):
-                identified_gestures.append(gesture_mov)
-        return identified_gestures
+                if gesture_mov not in self.identified_mov_gestures:
+                    self.identified_mov_gestures.appendleft(gesture_mov)
 
     def _iden_gest_mov_acc(self, top_most: int) -> tuple[list[str], list[float]]:
         """
