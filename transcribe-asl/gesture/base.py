@@ -669,16 +669,16 @@ class Gesture:
         """
         return np.array(
             [
-                "ten",
-                "eleven",
-                "twelve",
-                "thirteen",
-                "fourteen",
-                "fifteen",
-                "sixteen",
-                "seventeen",
-                "eighteen",
-                "nineteen",
+                "TEN",
+                "ELEVEN",
+                "TWELVE",
+                "THIRTEEN",
+                "FOURTEEN",
+                "FIFTEEN",
+                "SIXTEEN",
+                "SEVENTEEN",
+                "EIGHTEEN",
+                "NINETEEN",
                 "J",
             ]
         )
