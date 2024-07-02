@@ -677,7 +677,6 @@ class Gesture:
             ]
         )
 
-
     @staticmethod
     def get_base_gestures(
         gestures: list[str],
