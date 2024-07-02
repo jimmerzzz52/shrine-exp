@@ -17,6 +17,7 @@ class Gesture:
     def __init__(
         self,
         base_gestures: dict[str, dict[str, np.array]] = None,
+        base_acc_gestures: dict[str, dict[str, np.array]] = None,
     ):
         """
         Initialize the Gesture object.
@@ -38,6 +39,21 @@ class Gesture:
         """
         # Define the gestures.
         self.gestures: np.array[str] = Gesture.get_gestures_names()
+        self.gestures_mov_names: np.array[str] = np.array(
+            [
+                "ten",
+                "eleven",
+                "twelve",
+                "thirteen",
+                "fourteen",
+                "fifteen",
+                "sixteen",
+                "seventeen",
+                "eighteen",
+                "nineteen",
+                "J",
+            ]
+        )
         # Define the gestures with movements.
         self.gestures_mov: dict[str, list[str]] = {
             "ten": ["ten_1", "ten_2", "ten_3"],
@@ -58,6 +74,10 @@ class Gesture:
             )
         else:
             self.base_gestures = base_gestures
+        if base_acc_gestures is None:
+            self.base_acc_gestures: dict[str, dict[str, np.array]] = (
+                Gesture.get_base_gestures(self.gestures_mov_names)
+            )
 
         self.past_gestures: deque[str] = deque(maxlen=120)
         self.buffer_hand: deque[np.array] = deque(maxlen=120)
