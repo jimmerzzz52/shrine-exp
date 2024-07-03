@@ -961,9 +961,9 @@ def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
     #     coordinates_hand_frame[i] = coordinates[i] - coordinates[0]
     if norm:
         # The coordinates are normalized by dividing them by the maximum absolute value of the coordinates.
-        coordinates_hand_frame = coordinates_hand_frame / np.abs(
-            coordinates_hand_frame
-        ).max(axis=0)
+        coord_maxs: np.array = np.abs(coordinates_hand_frame).max(axis=0)
+        coord_maxs = np.where(coord_maxs == 0, 1, coord_maxs)  # Avoid division by zero
+        coordinates_hand_frame = coordinates_hand_frame / coord_maxs
     return coordinates_hand_frame
 
 
@@ -1058,6 +1058,27 @@ def sigmoid(x):
     return 2 / (1 + np.exp(-x)) - 1
 
 
+def norm_or_one(x: np.array) -> float:
+    """
+    Calculate the norm of the vector, returns one in case of zero normed vectros.
+
+    Parameters
+    ----------
+    x: np.array
+        The vector to normalize.
+
+    Returns
+    -------
+    norm: float
+        The norm of the vector.
+    """
+    norm = np.linalg.norm(x)
+    if norm == 0:
+        return 1
+    else:
+        return norm
+
+
 def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
     """
     Compute the cosine similarity between two vectors.
@@ -1079,12 +1100,12 @@ def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
     if flatten:
         x = x.flatten()
         y = y.flatten()
-        return 1 - np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
+        return 1 - np.dot(x, y) / (norm_or_one(x) * norm_or_one(y))
     else:
         cos_sim = 0
         for x_el, y_el in zip(x, y):
             cos_sim += 1 - np.dot(x_el, y_el) / (
-                np.linalg.norm(x_el) * np.linalg.norm(y_el) + 1e-6
+                norm_or_one(x_el) * norm_or_one(y_el) + 1e-6
             )
         return cos_sim / len(x)
 
