@@ -71,7 +71,7 @@ class Gesture:
             self.base_acc_gestures = base_acc_gestures
 
         self.past_gestures: deque[str] = deque(maxlen=120)
-        self.buffer_hand: deque[np.array] = deque(maxlen=120)
+        self.buffer_hand: deque[np.array] = deque(maxlen=60)
         self.buffer_hand.append(np.zeros((21, 3)))
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.identified_mov_gestures: deque[str] = deque(maxlen=3)
@@ -131,7 +131,7 @@ class Gesture:
         left = np.array(left_obj)
         body = np.array(body_obj)
 
-        static_gestures, mov_gestures, static_gestures_confidence = self._predict(
+        static_gestures, mov_gestures, static_gestures_confidence, _ = self._predict(
             right, left, body, top_most
         )
         static_gestures_confidence = []
@@ -210,9 +210,11 @@ class Gesture:
             )
         # Check if there is a movement in the buffer of identified static gestures.
         # mov_gestures: list[str] = self._identify_gestures_movement()
-        mov_gestures: list[str] = self._iden_gest_mov_acc(top_most)
+        mov_gestures: list[str] 
+        mov_gestures_confidence: dict[str, float]
+        mov_gestures, mov_gestures_confidence = self._iden_gest_mov_acc(top_most)
         # Keeping this light for now b/c of frontend.
-        return (static_gestures, mov_gestures, static_gestures_confidence)
+        return (static_gestures, mov_gestures, static_gestures_confidence, mov_gestures_confidence)
 
     def _is_pointed_finger(self, right: np.array) -> bool:
         """

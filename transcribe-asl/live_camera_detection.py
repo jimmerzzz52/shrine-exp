@@ -107,7 +107,7 @@ def main():
                     [[value.x, value.y, value.z] for value in left_hand_raw]
                 )
 
-            static_gestures, movement_gestures, static_gestures_confidence = g._predict(
+            static_gestures, movement_gestures, static_gestures_confidence, movement_gestures_confidence = g._predict(
                 right_hand_data, left_hand_data, pose_data
             )
 
@@ -151,12 +151,26 @@ def main():
                 f"{i}, Conf: {static_gestures_confidence[i]:.3f}"
                 for i in static_gestures
             ]
+            rec_out_mov_print = [
+                f"{i}, Conf: {movement_gestures_confidence[i]:.3f}"
+                for i in movement_gestures
+            ]
 
             for i, rec in enumerate(rec_out_static_print):
                 cv2.putText(
                     frame,
                     rec,
                     (20, 170 + i * 30),
+                    cv2.FONT_HERSHEY_PLAIN,
+                    1,
+                    (0, 255, 0),
+                    2,
+                )
+            for i, rec in enumerate(rec_out_mov_print):
+                cv2.putText(
+                    frame,
+                    rec,
+                    (20, 170 + i * 30 + len(rec_out_static_print) * 30),
                     cv2.FONT_HERSHEY_PLAIN,
                     1,
                     (0, 255, 0),
@@ -174,7 +188,7 @@ def main():
 
             cv2.putText(
                 frame,
-                f"Movement: {movement_gestures}",
+                f"Movement: {movement_gestures[0]}",
                 (20, 110),
                 cv2.FONT_HERSHEY_PLAIN,
                 3,
