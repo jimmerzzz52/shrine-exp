@@ -38,6 +38,7 @@ class Gesture:
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
         self.method_acc_hand: str = "power_mean"
+        # self.method_acc_hand: str = "sum"
         # Define the gestures.
         self.gestures: np.array[str] = Gesture.get_gestures_names()
         self.gestures_mov_names: np.array[str] = Gesture.get_gestures_names_mov()
@@ -70,8 +71,8 @@ class Gesture:
         else:
             self.base_acc_gestures = base_acc_gestures
 
-        self.past_gestures: deque[str] = deque(maxlen=120)
-        self.buffer_hand: deque[np.array] = deque(maxlen=60)
+        self.past_gestures: deque[str] = deque(maxlen=30)
+        self.buffer_hand: deque[np.array] = deque(maxlen=30)
         self.buffer_hand.append(np.zeros((21, 3)))
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.identified_mov_gestures: deque[str] = deque(maxlen=3)
@@ -685,7 +686,29 @@ class Gesture:
                 "SEVENTEEN",
                 "EIGHTEEN",
                 "NINETEEN",
+                "TWENTY",
+                "TWENTY_ONE",
+                "TWENTY_TWO",
+                "TWENTY_THREE",
+                "TWENTY_FOUR",
+                "TWENTY_FIVE",
+                "TWENTY_SIX",
+                "TWENTY_SEVEN",
+                "TWENTY_EIGHT",
+                "TWENTY_NINE",
+                "THIRTY",
+                "THIRTY_ONE",
+                "THIRTY_TWO",
+                "THIRTY_THREE",
+                "THIRTY_FOUR",
+                "THIRTY_FIVE",
+                "THIRTY_SIX",
+                "THIRTY_SEVEN",
+                "THIRTY_EIGHT",
+                "THIRTY_NINE",
+                "FORTY",
                 "J",
+                "Z",
             ]
         )
 
