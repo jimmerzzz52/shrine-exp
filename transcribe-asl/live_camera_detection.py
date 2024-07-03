@@ -11,8 +11,13 @@ def main():
     base_path: str = "./gesture/base_poses_hf"
     gestures_names: np.array = Gesture.get_gestures_names()
     base_gestures = Gesture.get_base_gestures(gestures_names, base_path)
+    gestures_names_movements: np.array = Gesture.get_gestures_names_mov()
+    base_gestures_movements = Gesture.get_base_gestures_accumulated(
+        gestures_names_movements, base_path
+    )
     g = Gesture(
-        base_gestures=base_gestures
+        base_gestures=base_gestures,
+        base_acc_gestures=base_gestures_movements,
     )  # Load outside to prevent reloading base gestures from disk
 
     mp_drawing = mp.solutions.drawing_utils

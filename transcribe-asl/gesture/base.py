@@ -72,6 +72,7 @@ class Gesture:
 
         self.past_gestures: deque[str] = deque(maxlen=120)
         self.buffer_hand: deque[np.array] = deque(maxlen=120)
+        self.buffer_hand.append(np.zeros((21, 3)))
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
         self.identified_mov_gestures: deque[str] = deque(maxlen=3)
         self.mmpose: bool = False
@@ -503,7 +504,10 @@ class Gesture:
         Sciences 12.20 (2022): 10542.
         """
         # Get the accumulated hand.
-        accumulated_hand = self._accumulate_hand(self.buffer_hand, self.method_acc_hand)
+        accumulated_hand = self._accumulate_hand(
+            np.stack(self.buffer_hand, axis=2),
+            self.method_acc_hand,
+        )
         # Compare the accumulated hand with the base gestures.
         errors_gesture: dict[str, float] = {
             gesture: self._compare_hand(
@@ -589,9 +593,9 @@ class Gesture:
         # Get the accumulated hand.
         match method:
             case "power_mean":
-                accumulated_hand = power_mean_frames(hand)
+                accumulated_hand = power_mean_frames(hand[:, :3])
             case "sum":
-                accumulated_hand = sum_frames(hand)
+                accumulated_hand = sum_frames(hand[:, :3])
             case _:
                 raise ValueError("Invalid method.")
         return accumulated_hand
@@ -718,6 +722,7 @@ class Gesture:
                     f"{base_path}/{gesture}_Transcription_Pose.csv"
                 ),
             }
+        return base_gestures
 
     def get_base_gestures_accumulated(
         gestures: list[str],
@@ -729,19 +734,19 @@ class Gesture:
         base_gestures: dict[str, dict[str, np.array]] = {}
         for gesture in gestures:
             base_gestures[gesture] = {
-                "right_hand": Gesture._accumulate_hand(
+                "right_hand": acc_or_none(
                     load_base_gesture_from_npy(
                         f"{base_path}/{gesture}_Transcription_Right_Hand.npy"
                     ),
                     accumulate_hand_method,
                 ),
-                "left_hand": Gesture._accumulate_hand(
+                "left_hand": acc_or_none(
                     load_base_gesture_from_npy(
                         f"{base_path}/{gesture}_Transcription_Left_Hand.npy"
                     ),
                     accumulate_hand_method,
                 ),
-                "pose": Gesture._accumulate_hand(
+                "pose": acc_or_none(
                     load_base_gesture_from_npy(
                         f"{base_path}/{gesture}_Transcription_Pose.npy"
                     ),
@@ -768,6 +773,26 @@ def load_base_gesture_from_npy(path: str) -> np.array:
     try:
         return np.load(path)
     except FileNotFoundError:
+        return None
+
+
+def acc_or_none(array: list[np.array], method: str) -> np.array:
+    """
+    Accumulate a list of arrays or return None if the list is empty.
+
+    Parameters
+    ----------
+    array: list[np.array]
+        A list of arrays.
+
+    Returns
+    -------
+    accumulated_array: Optional[np.array]
+        The accumulated array if the list is not empty, otherwise None.
+    """
+    if array is not None:
+        return Gesture._accumulate_hand(array, method)
+    else:
         return None
 
 
@@ -874,14 +899,36 @@ def hand_frame_of_reference(coordinates: np.array) -> np.array:
         points_in_plane[1] - points_in_plane[0], points_in_plane[2] - points_in_plane[0]
     )
     # The z base vector is the normalized z vector
-    hand_frame[2] = z_vec / np.linalg.norm(z_vec)
+    # hand_frame[2] = z_vec / np.linalg.norm(z_vec)
+    hand_frame[2] = normalize_ignoring_zeros(z_vec)
     # The y vector is the vector formed by the points 0 and 5
     y_vec = points_in_plane[2] - points_in_plane[0]
     # The y base vector is the normalized y vector
-    hand_frame[1] = y_vec / np.linalg.norm(y_vec)
+    # hand_frame[1] = y_vec / np.linalg.norm(y_vec)
+    hand_frame[1] = normalize_ignoring_zeros(y_vec)
     # The x base vector is the cross product of the y and z base vectors
     hand_frame[0] = np.cross(hand_frame[2], hand_frame[1])
     return hand_frame.T
+
+
+def normalize_ignoring_zeros(array: np.array) -> np.array:
+    """
+    Normalize an array ignoring vector with no magnitude.
+
+    Parameters
+    ----------
+    array: np.array
+        The array to normalize.
+
+    Returns
+    -------
+    normalized_array: np.array
+        The normalized array.
+    """
+    if np.linalg.norm(array) > 0:
+        return array / np.linalg.norm(array)
+    else:
+        return array
 
 
 def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
