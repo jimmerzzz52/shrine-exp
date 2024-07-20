@@ -4,11 +4,12 @@
 import numpy as np
 from scipy.stats import pmean
 
-# from typing import Optional
-from datetime import datetime, timedelta
+from typing import Optional
+from datetime import datetime
 
 # from dataclasses import dataclass
 import json
+from collections import deque
 
 
 class Gesture:
@@ -16,6 +17,7 @@ class Gesture:
     def __init__(
         self,
         base_gestures: dict[str, dict[str, np.array]] = None,
+        base_acc_gestures: dict[str, dict[str, np.array]] = None,
     ):
         """
         Initialize the Gesture object.
@@ -35,8 +37,11 @@ class Gesture:
         base_gestures["one"]["left"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         base_gestures["one"]["body"] = np.array([[x1, y1, z1], [x2, y2, z2], ...])
         """
+        self.method_acc_hand: str = "power_mean"
+        # self.method_acc_hand: str = "sum"
         # Define the gestures.
         self.gestures: np.array[str] = Gesture.get_gestures_names()
+        self.gestures_mov_names: np.array[str] = Gesture.get_gestures_names_mov()
         # Define the gestures with movements.
         self.gestures_mov: dict[str, list[str]] = {
             "ten": ["ten_1", "ten_2", "ten_3"],
@@ -57,12 +62,20 @@ class Gesture:
             )
         else:
             self.base_gestures = base_gestures
+        if base_acc_gestures is None:
+            self.base_acc_gestures: dict[str, dict[str, np.array]] = (
+                Gesture.get_base_gestures_accumulated(
+                    self.gestures_mov_names, accumulate_hand_method=self.method_acc_hand
+                )
+            )
+        else:
+            self.base_acc_gestures = base_acc_gestures
 
-        #TODO: Implement the buffer
-        self.past_gestures = [] # This need to be a buffer.
-        self.buffer_hand: list[np.array] = [] # This need to be a buffer.
+        self.past_gestures: deque[str] = deque(maxlen=30)
+        self.buffer_hand: deque[np.array] = deque(maxlen=30)
+        self.buffer_hand.append(np.zeros((21, 3)))
         self.check_point: dict[str, int] = {gesture: 0 for gesture in self.gestures_mov}
-        self.check_point_time = datetime.now() - timedelta(seconds=60)
+        self.identified_mov_gestures: deque[str] = deque(maxlen=3)
         self.mmpose: bool = False
 
     def set_gestures(self, gestures: np.array) -> bool:
@@ -119,7 +132,7 @@ class Gesture:
         left = np.array(left_obj)
         body = np.array(body_obj)
 
-        static_gestures, mov_gestures, static_gestures_confidence = self._predict(
+        static_gestures, mov_gestures, static_gestures_confidence, _ = self._predict(
             right, left, body, top_most
         )
         static_gestures_confidence = []
@@ -162,7 +175,8 @@ class Gesture:
             The confidence of the static gestures.
         """
         # Reset the check points.
-        self._reset_check_points(wait_seconds=5)
+        self._reset_check_points()
+        # CHECKPOINTS ARE RESETED AFTER EVERY FRAME.
         # For The pose one, all we need is the right hand.
         static_gesture: str = "Nothing recognized"
 
@@ -189,18 +203,19 @@ class Gesture:
             self.buffer_hand.append(right)
             self.past_gestures.append(static_gestures)
             # Update the check points.
-            self._update_check_points(static_gesture)
+            # self._update_check_points(static_gesture)
             # Calculate the confidence of the top most gestures.
-
             # TODO: reimplement this.
             static_gestures_confidence: dict[str, float] = self._get_confidence(
                 static_gestures, errors_gesture
             )
         # Check if there is a movement in the buffer of identified static gestures.
         # mov_gestures: list[str] = self._identify_gestures_movement()
-        mov_gestures: list[str] = self._iden_gest_mov_acc(top_most)
+        mov_gestures: list[str] 
+        mov_gestures_confidence: dict[str, float]
+        mov_gestures, mov_gestures_confidence = self._iden_gest_mov_acc(top_most)
         # Keeping this light for now b/c of frontend.
-        return (static_gestures, mov_gestures, static_gestures_confidence)
+        return (static_gestures, mov_gestures, static_gestures_confidence, mov_gestures_confidence)
 
     def _is_pointed_finger(self, right: np.array) -> bool:
         """
@@ -403,10 +418,9 @@ class Gesture:
         Assumptions:
         5 - The speed of the movement is not important.
         4 - The number of check points is determined by the user, there can be as many as desired.
-        3 - As soon as the first check point is captured, a clock starts.
-            If the next check point is not captured within a certain time, it resets.
-        2 - See 3.
-        1 - See 3.
+        3 - All identified poses are added to a buffer of 120 gestures, i.e., 2 s @ 60fps.
+        2 - After a new gesture is identified, the buffer is analyzed to see if there is a movement.
+        which prevents having to wait for the clock to reset the buffer.
         """
         # Lets try the second approach first.
 
@@ -443,34 +457,25 @@ class Gesture:
                 and gesture
                 == self.gestures_mov[gesture_mov][self.check_point[gesture_mov]]
             ):
-                if np.sum([self.check_point[key] for key in self.check_point]) == 0:
-                    self.check_point_time = datetime.now()  # ?
                 self.check_point[gesture_mov] += 1
 
-    def _reset_check_points(self, wait_seconds: int = 5):
+    def _reset_check_points(self):
         """
         Reset the check points.
         """
-        # Reset the check point if it's been too long.
-        if datetime.now() - self.check_point_time > timedelta(seconds=wait_seconds):
-            self.check_point = {gesture: 0 for gesture in self.gestures_mov}
-            self.check_point_time = datetime.now() - timedelta(seconds=60)
-            self.past_gestures = []
+        # Reset the check points.
+        self.check_point = {gesture: 0 for gesture in self.gestures_mov}
 
-    def _identify_gestures_movement(self) -> str:
+    def _identify_gestures_movement(self) -> None:
         """
         Identify if there is a gesture in the buffer of identified static gestures.
 
-        Returns
-        -------
-        gesture_movement: str
-            The identified gesture.
+        Note: Updates the identified gestures buffer.
         """
-        identified_gestures: list[str] = []
         for gesture_mov in self.gestures_mov:
             if self.check_point[gesture_mov] == len(self.gestures_mov[gesture_mov]):
-                identified_gestures.append(gesture_mov)
-        return identified_gestures
+                if gesture_mov not in self.identified_mov_gestures:
+                    self.identified_mov_gestures.appendleft(gesture_mov)
 
     def _iden_gest_mov_acc(self, top_most: int) -> tuple[list[str], list[float]]:
         """
@@ -502,7 +507,10 @@ class Gesture:
         Sciences 12.20 (2022): 10542.
         """
         # Get the accumulated hand.
-        accumulated_hand = self._accumulate_hand()
+        accumulated_hand = self._accumulate_hand(
+            np.stack(self.buffer_hand, axis=2),
+            self.method_acc_hand,
+        )
         # Compare the accumulated hand with the base gestures.
         errors_gesture: dict[str, float] = {
             gesture: self._compare_hand(
@@ -511,39 +519,15 @@ class Gesture:
             for gesture in self.base_acc_gestures
         }
         # Get the top most closest gestures.
-        static_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
+        mov_gestures: list[str] = sorted(errors_gesture, key=errors_gesture.get)[
             :top_most
         ]
+        self.identified_mov_gestures.appendleft(mov_gestures[0])
         # Calculate the confidence of the top most gestures.
-        static_gestures_confidence: dict[str, float] = self._get_confidence(
-            static_gestures, errors_gesture
+        mov_gestures_confidence: dict[str, float] = self._get_confidence(
+            mov_gestures, errors_gesture
         )
-        return static_gestures, static_gestures_confidence
-
-    def _accumulate_hand(self, method: str = "power_mean") -> np.array:
-        """
-        Accumulate the hand.
-
-        Parameters
-        ----------
-        method: str
-            The method to accumulate the hand. Can be either power_mean or
-            sum.
-
-        Returns
-        -------
-        accumulated_hand: np.array
-            The accumulated hand.
-        """
-        # Get the accumulated hand.
-        match method:
-            case "power_mean":
-                accumulated_hand = power_mean_frames(self.buffer_hand)
-            case "sum":
-                accumulated_hand = sum_frames(self.buffer_hand)
-            case _:
-                raise ValueError("Invalid method.")
-        return accumulated_hand
+        return mov_gestures, mov_gestures_confidence
 
     def _get_confidence(
         self, static_gestures: list[str], errors_gesture: dict[str, float]
@@ -590,6 +574,34 @@ class Gesture:
     def set_model_search(ar_models: list[str]) -> bool:
         # set the models arr input.
         return True
+
+    @staticmethod
+    def _accumulate_hand(hand: np.array, method: str = "power_mean") -> np.array:
+        """
+        Accumulate the hand.
+
+        Parameters
+        ----------
+        hand: np.array
+            The hand to accumulate.
+        method: str
+            The method to accumulate the hand. Can be either power_mean or
+            sum.
+
+        Returns
+        -------
+        accumulated_hand: np.array
+            The accumulated hand.
+        """
+        # Get the accumulated hand.
+        match method:
+            case "power_mean":
+                accumulated_hand = power_mean_frames(hand[:, :3])
+            case "sum":
+                accumulated_hand = sum_frames(hand[:, :3])
+            case _:
+                raise ValueError("Invalid method.")
+        return accumulated_hand
 
     @staticmethod
     def get_gestures_names() -> np.array:
@@ -653,6 +665,54 @@ class Gesture:
         )
 
     @staticmethod
+    def get_gestures_names_mov() -> np.array:
+        """
+        Get the names of the gestures with movements.
+
+        Returns
+        -------
+        gestures: np.array
+            An array containing the names of the gestures with movements.
+        """
+        return np.array(
+            [
+                "TEN",
+                "ELEVEN",
+                "TWELVE",
+                "THIRTEEN",
+                "FOURTEEN",
+                "FIFTEEN",
+                "SIXTEEN",
+                "SEVENTEEN",
+                "EIGHTEEN",
+                "NINETEEN",
+                "TWENTY",
+                "TWENTY_ONE",
+                "TWENTY_TWO",
+                "TWENTY_THREE",
+                "TWENTY_FOUR",
+                "TWENTY_FIVE",
+                "TWENTY_SIX",
+                "TWENTY_SEVEN",
+                "TWENTY_EIGHT",
+                "TWENTY_NINE",
+                "THIRTY",
+                "THIRTY_ONE",
+                "THIRTY_TWO",
+                "THIRTY_THREE",
+                "THIRTY_FOUR",
+                "THIRTY_FIVE",
+                "THIRTY_SIX",
+                "THIRTY_SEVEN",
+                "THIRTY_EIGHT",
+                "THIRTY_NINE",
+                "FORTY",
+                "J",
+                "Z",
+            ]
+        )
+
+    @staticmethod
     def get_base_gestures(
         gestures: list[str],
         base_path: str = "./",
@@ -688,6 +748,77 @@ class Gesture:
                 ),
             }
         return base_gestures
+
+    def get_base_gestures_accumulated(
+        gestures: list[str],
+        base_path: str = "./",
+        accumulate_hand_method: str = "power_mean",
+    ) -> dict[str, dict[str, np.array]]:
+
+        # Load the base gestures from the database.
+        base_gestures: dict[str, dict[str, np.array]] = {}
+        for gesture in gestures:
+            base_gestures[gesture] = {
+                "right_hand": acc_or_none(
+                    load_base_gesture_from_npy(
+                        f"{base_path}/{gesture}_Transcription_Right_Hand.npy"
+                    ),
+                    accumulate_hand_method,
+                ),
+                "left_hand": acc_or_none(
+                    load_base_gesture_from_npy(
+                        f"{base_path}/{gesture}_Transcription_Left_Hand.npy"
+                    ),
+                    accumulate_hand_method,
+                ),
+                "pose": acc_or_none(
+                    load_base_gesture_from_npy(
+                        f"{base_path}/{gesture}_Transcription_Pose.npy"
+                    ),
+                    accumulate_hand_method,
+                ),
+            }
+        return base_gestures
+
+
+def load_base_gesture_from_npy(path: str) -> np.array:
+    """
+    Load the base gesture from a numpy file.
+
+    Parameters
+    ----------
+    path: str
+        The path to the file.
+
+    Returns
+    -------
+    base_gesture: Optional[np.array]
+        The base gesture if exists.
+    """
+    try:
+        return np.load(path)
+    except FileNotFoundError:
+        return None
+
+
+def acc_or_none(array: list[np.array], method: str) -> np.array:
+    """
+    Accumulate a list of arrays or return None if the list is empty.
+
+    Parameters
+    ----------
+    array: list[np.array]
+        A list of arrays.
+
+    Returns
+    -------
+    accumulated_array: Optional[np.array]
+        The accumulated array if the list is not empty, otherwise None.
+    """
+    if array is not None:
+        return Gesture._accumulate_hand(array, method)
+    else:
+        return None
 
 
 def concat_or_none(array: list[np.array]) -> np.array:
@@ -793,14 +924,36 @@ def hand_frame_of_reference(coordinates: np.array) -> np.array:
         points_in_plane[1] - points_in_plane[0], points_in_plane[2] - points_in_plane[0]
     )
     # The z base vector is the normalized z vector
-    hand_frame[2] = z_vec / np.linalg.norm(z_vec)
+    # hand_frame[2] = z_vec / np.linalg.norm(z_vec)
+    hand_frame[2] = normalize_ignoring_zeros(z_vec)
     # The y vector is the vector formed by the points 0 and 5
     y_vec = points_in_plane[2] - points_in_plane[0]
     # The y base vector is the normalized y vector
-    hand_frame[1] = y_vec / np.linalg.norm(y_vec)
+    # hand_frame[1] = y_vec / np.linalg.norm(y_vec)
+    hand_frame[1] = normalize_ignoring_zeros(y_vec)
     # The x base vector is the cross product of the y and z base vectors
     hand_frame[0] = np.cross(hand_frame[2], hand_frame[1])
     return hand_frame.T
+
+
+def normalize_ignoring_zeros(array: np.array) -> np.array:
+    """
+    Normalize an array ignoring vector with no magnitude.
+
+    Parameters
+    ----------
+    array: np.array
+        The array to normalize.
+
+    Returns
+    -------
+    normalized_array: np.array
+        The normalized array.
+    """
+    if np.linalg.norm(array) > 0:
+        return array / np.linalg.norm(array)
+    else:
+        return array
 
 
 def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
@@ -833,9 +986,9 @@ def to_hand_frame(coordinates: np.array, norm: bool = True) -> np.array:
     #     coordinates_hand_frame[i] = coordinates[i] - coordinates[0]
     if norm:
         # The coordinates are normalized by dividing them by the maximum absolute value of the coordinates.
-        coordinates_hand_frame = coordinates_hand_frame / np.abs(
-            coordinates_hand_frame
-        ).max(axis=0)
+        coord_maxs: np.array = np.abs(coordinates_hand_frame).max(axis=0)
+        coord_maxs = np.where(coord_maxs == 0, 1, coord_maxs)  # Avoid division by zero
+        coordinates_hand_frame = coordinates_hand_frame / coord_maxs
     return coordinates_hand_frame
 
 
@@ -930,6 +1083,27 @@ def sigmoid(x):
     return 2 / (1 + np.exp(-x)) - 1
 
 
+def norm_or_one(x: np.array) -> float:
+    """
+    Calculate the norm of the vector, returns one in case of zero normed vectros.
+
+    Parameters
+    ----------
+    x: np.array
+        The vector to normalize.
+
+    Returns
+    -------
+    norm: float
+        The norm of the vector.
+    """
+    norm = np.linalg.norm(x)
+    if norm == 0:
+        return 1
+    else:
+        return norm
+
+
 def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
     """
     Compute the cosine similarity between two vectors.
@@ -951,12 +1125,12 @@ def cosine_similarity(x: np.array, y: np.array, flatten: bool = False) -> float:
     if flatten:
         x = x.flatten()
         y = y.flatten()
-        return 1 - np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
+        return 1 - np.dot(x, y) / (norm_or_one(x) * norm_or_one(y))
     else:
         cos_sim = 0
         for x_el, y_el in zip(x, y):
             cos_sim += 1 - np.dot(x_el, y_el) / (
-                np.linalg.norm(x_el) * np.linalg.norm(y_el) + 1e-6
+                norm_or_one(x_el) * norm_or_one(y_el) + 1e-6
             )
         return cos_sim / len(x)
 

@@ -11,8 +11,13 @@ def main():
     base_path: str = "./gesture/base_poses_hf"
     gestures_names: np.array = Gesture.get_gestures_names()
     base_gestures = Gesture.get_base_gestures(gestures_names, base_path)
+    gestures_names_movements: np.array = Gesture.get_gestures_names_mov()
+    base_gestures_movements = Gesture.get_base_gestures_accumulated(
+        gestures_names_movements, base_path
+    )
     g = Gesture(
-        base_gestures=base_gestures
+        base_gestures=base_gestures,
+        base_acc_gestures=base_gestures_movements,
     )  # Load outside to prevent reloading base gestures from disk
 
     mp_drawing = mp.solutions.drawing_utils
@@ -102,7 +107,7 @@ def main():
                     [[value.x, value.y, value.z] for value in left_hand_raw]
                 )
 
-            static_gestures, movement_gestures, static_gestures_confidence = g._predict(
+            static_gestures, movement_gestures, static_gestures_confidence, movement_gestures_confidence = g._predict(
                 right_hand_data, left_hand_data, pose_data
             )
 
@@ -146,12 +151,26 @@ def main():
                 f"{i}, Conf: {static_gestures_confidence[i]:.3f}"
                 for i in static_gestures
             ]
+            rec_out_mov_print = [
+                f"{i}, Conf: {movement_gestures_confidence[i]:.3f}"
+                for i in movement_gestures
+            ]
 
             for i, rec in enumerate(rec_out_static_print):
                 cv2.putText(
                     frame,
                     rec,
                     (20, 170 + i * 30),
+                    cv2.FONT_HERSHEY_PLAIN,
+                    1,
+                    (0, 255, 0),
+                    2,
+                )
+            for i, rec in enumerate(rec_out_mov_print):
+                cv2.putText(
+                    frame,
+                    rec,
+                    (20, 170 + i * 30 + len(rec_out_static_print) * 30),
                     cv2.FONT_HERSHEY_PLAIN,
                     1,
                     (0, 255, 0),
@@ -169,7 +188,7 @@ def main():
 
             cv2.putText(
                 frame,
-                f"Movement: {movement_gestures}",
+                f"Movement: {movement_gestures[0]}",
                 (20, 110),
                 cv2.FONT_HERSHEY_PLAIN,
                 3,
