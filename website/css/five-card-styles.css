@@ -1,0 +1,232 @@
+/*-- -------------------------- -->
+<---          Services          -->
+<--- -------------------------- -*/
+
+/* Mobile - 360px */
+@media only screen and (min-width: 0rem) {
+  #services-1724 {
+    padding: var(--sectionPadding);
+    /* removing the side paddings to allow the cards to fit the whole page width */
+    padding-right: 0;
+    padding-left: 0;
+    position: relative;
+  }
+  #services-1724 .cs-container {
+    width: 100%;
+    max-width: 156.25rem;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* 48px - 64px */
+    gap: clamp(3rem, 6vw, 4rem);
+  }
+  #services-1724 .cs-content {
+    /* set text align to left if content needs to be left aligned */
+    text-align: center;
+    width: 100%;
+    max-width: 80rem;
+    box-sizing: border-box;
+    /* 16px - 40px */
+    padding: 0 clamp(1rem, 3.8vw, 2.5rem);
+    display: flex;
+    flex-direction: column;
+    /* centers content horizontally, set to flex-start to left align */
+    align-items: center;
+    gap: 1rem;
+  }
+  #services-1724 .cs-title {
+    max-width: 12ch;
+  }
+  #services-1724 .cs-text {
+    max-width: 39.5rem;
+  }
+  #services-1724 .cs-card-group {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+  }
+  #services-1724 .cs-item {
+    text-align: left;
+    list-style: none;
+    width: 100%;
+    /* 220px - 480px */
+    height: clamp(30.75rem, 32vw, 30rem);
+    margin: 0;
+    /* prevents padding and border from affecting height and width */
+    box-sizing: border-box;
+    padding: 0;
+    background-color: #000;
+    box-shadow: 0px 12px 80px 0px rgba(26, 26, 26, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    grid-column: span 12;
+    position: relative;
+    z-index: 1;
+  }
+  #services-1724 .cs-item:hover .cs-picture::after {
+    opacity: 0.6;
+  }
+  #services-1724 .cs-item:hover .cs-picture img {
+    transform: scale(1.2);
+  }
+  #services-1724 .cs-item:hover .cs-number {
+    opacity: 1;
+    /* 16px - 32px */
+    top: clamp(1rem, 2.3vw, 2rem);
+  }
+  #services-1724 .cs-item:hover .cs-h3 {
+    opacity: 1;
+    /* 16px - 32px */
+    bottom: clamp(1rem, 2.3vw, 2rem);
+  }
+  #services-1724 .cs-link {
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    /* 16px - 32px */
+    padding: clamp(1rem, 2.3vw, 2rem);
+    /* we use flexbox here to grow the link to fit the whole item, making it clickable everywhere, no matter the size */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 1;
+  }
+  #services-1724 .cs-link::after {
+    /* hover overlay */
+    content: "";
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: -1;
+    /* as we can't animate background gradients, we animate the change of opacity from 0 to 1 */
+    transition: opacity 0.3s;
+  }
+  #services-1724 .cs-number {
+    /* 49px - 84px */
+    font-size: clamp(3.0625rem, 6vw, 5.25rem);
+    font-weight: 900;
+    /* sets the fill of the number to be transparent */
+    color: rgba(0, 0, 0, 0);
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    /* 16px - 32px */
+    right: clamp(1rem, 2.3vw, 2rem);
+    transition: opacity 0.3s, top 0.3s;
+    /* provides a 1px white stroke to the text, outlining it */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: var(--bodyTextColorWhite);
+  }
+  #services-1724 .cs-h3 {
+    /* 20px - 31px */
+    font-size: clamp(1.25rem, 2vw, 1.9375rem);
+    font-weight: 900;
+    line-height: 1.2em;
+    white-space: nowrap;
+    /* width, overflow, text-overflow and white-space all provide the ellipsis when the h3 content is too long */
+    width: 80%;
+    margin: 0;
+    color: var(--bodyTextColorWhite);
+    overflow: hidden;
+    transition: opacity 0.3s, bottom 0.3s;
+  }
+  #services-1724 .cs-picture {
+    width: 100%;
+    height: 100%;
+    /* prevents the mouse from interacting with it */
+    pointer-events: none;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+  #services-1724 .cs-picture:before {
+    /* gradient overlay */
+    content: '';
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(102, 102, 102, 0) 0%, #000000 100%);
+    opacity: 1;
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+  }
+  #services-1724 .cs-picture:after {
+    /* background color overlay on hover */
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary);
+    opacity: 0;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: opacity 0.3s;
+  }
+  #services-1724 .cs-picture img {
+    width: 100%;
+    height: 100%;
+    /* Makes img tag act as a background image */
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: transform 0.7s;
+  }
+}
+/* Tablet - 768px */
+@media only screen and (min-width: 48rem) {
+  #services-1724 {
+    padding-bottom: 0;
+  }
+  #services-1724 .cs-content {
+    text-align: left;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2.5rem;
+  }
+  #services-1724 .cs-item {
+    grid-column: span 4;
+  }
+  #services-1724 .cs-item:nth-of-type(4),
+  #services-1724 .cs-item:nth-of-type(5) {
+    grid-column: span 6;
+  }
+  #services-1724 .cs-text {
+    width: 60%;
+  }
+  #services-1724 .cs-title {
+    margin: 0;
+  }
+}
+/* Desktop - 1300px */
+@media only screen and (min-width: 81.25rem) {
+  #services-1724 .cs-card-group {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  #services-1724 .cs-item {
+    grid-column: span 1;
+  }
+  #services-1724 .cs-item:nth-of-type(4),
+  #services-1724 .cs-item:nth-of-type(5) {
+    grid-column: span 1;
+  }
+}
+                                

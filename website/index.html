@@ -1,194 +1,753 @@
-<!DOCTYPE html>
-<html lang="en-US">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gesture - Making gesture recognition as easy as a wave of your hand.</title>
-    <link rel="stylesheet" type="text/css" href="css/components.css">
-    <link rel="stylesheet" type="text/css" href="css/icons.css">
-    <link rel="stylesheet" type="text/css" href="css/responsee.css">
-    <link rel="stylesheet" type="text/css" href="owl-carousel/owl.carousel.css">
-    <link rel="stylesheet" type="text/css" href="owl-carousel/owl.theme.css">
-    <link rel="stylesheet" type="text/css" href="css/lightcase.css">
-    <!-- CUSTOM STYLE -->      
-    <link rel="stylesheet" href="css/template-style.css">
-    <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,400,600,900&subset=latin-ext" rel="stylesheet"> 
-    <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
-    <meta charset="utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-  </head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GJ1F1KKQDF"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+<!doctype html>
+<html class="no-js" lang="en">
 
-    gtag('config', 'G-GJ1F1KKQDF');
-  </script>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/nav-styles.css">
+  <link rel="stylesheet" href="css/main-styles.css">
+  <link rel="stylesheet" href="css/core-styles.css">
+  <link rel="stylesheet" href="css/services-styles.css">
+  <link rel="stylesheet" href="css/three-card-styles.css">
+  <link rel="stylesheet" href="css/five-card-styles.css">
+  <link rel="stylesheet" href="css/four-stats-styles.css">
+  <link rel="stylesheet" href="css/faq-styles.css">
+  <link rel="stylesheet" href="css/video-styles.css">
+  <link rel="stylesheet" href="css/contact-styles.css">
+  <link rel="stylesheet" href="css/footer-styles.css">
+  <meta name="description" content="">
 
-  <body class="size-1140">
-    <div id="page-wrapper">
-      <!-- HEADER -->
-      <header role="banner" class="position-absolute margin-top-30 margin-m-top-0 margin-s-top-0">    
-        <!-- Top Navigation -->
-        <nav class="background-transparent background-transparent-hightlight full-width sticky">
-          <div class="s-8 l-2">
-            <a href="index.html" class="logo">
-              <!-- Logo version before sticky nav -->
-              <img class="logo-before" src="img/logo-dark.png" alt="">
-              <!-- Logo version after sticky nav -->
-              <img class="logo-after" src="img/logo-dark.png" alt="">
-            </a>
-          </div>
-          <div class="s-4 l-10">
-            <div class="top-nav right">
-              <p class="nav-text"></p>
-              <ul class="right chevron">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about-us.html">About Us</a></li>             
-                <li><a href="contact.html">Contact</a></li>
-              </ul>
+  <meta property="og:title" content="">
+  <meta property="og:type" content="">
+  <meta property="og:url" content="">
+  <meta property="og:image" content="">
+  <meta property="og:image:alt" content="">
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.png">
+
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#fafafa">
+  <title>State-of-the-Art Gesture Recognition Technology Solutions in Chicago, Illinois: Revolutionizing Hands-Free Interaction</title>
+</head>
+
+<body>
+
+  <!-- ============================================ -->
+  <!--                 Navigation                   -->
+  <!-- ============================================ -->
+
+  <header id="cs-navigation">
+    <div class="cs-container">
+        <!--Nav Logo-->
+        <a href="" class="cs-logo" aria-label="back to home">
+            <img src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Flogo-black.svg" alt="logo" width="210" height="29" aria-hidden="true" decoding="async">
+        </a>
+        <!--Navigation List-->
+        <nav class="cs-nav" role="navigation">
+            <!--Mobile Nav Toggle-->
+            <button class="cs-toggle" aria-label="mobile menu toggle">
+                <div class="cs-box" aria-hidden="true">
+                    <span class="cs-line cs-line1" aria-hidden="true"></span>
+                    <span class="cs-line cs-line2" aria-hidden="true"></span>
+                    <span class="cs-line cs-line3" aria-hidden="true"></span>
+                </div>
+            </button>
+            <!-- We need a wrapper div so we can set a fixed height on the cs-ul in case the nav list gets too long from too many dropdowns being opened and needs to have an overflow scroll. This wrapper acts as the background so it can go the full height of the screen and not cut off any overflowing nav items while the cs-ul stops short of the bottom of the screen, which keeps all nav items in view no matter how mnay there are-->
+            <div class="cs-ul-wrapper">
+                <ul id="cs-expanded" class="cs-ul" aria-expanded="false">
+                    <li class="cs-li">
+                        <a href="#hero-1619" class="cs-li-link cs-active">
+                            Home
+                        </a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#steps-889" class="cs-li-link">
+                            Our Process
+                        </a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#services-1724" class="cs-li-link">
+                            About Us
+                        </a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#services-1267" class="cs-li-link">
+                            Statistics
+                        </a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#sbsr-1575" class="cs-li-link">
+                            FAQ
+                        </a>
+                    </li>
+                </ul>
             </div>
-          </div>  
         </nav>
-      </header>
-      
-      <!-- MAIN -->
-      <main role="main">
-        <!-- Content -->
-        <article>
-          <header class="section background-white">
-            <div class="line text-center">        
-              <h1 class="text-dark text-s-size-30 text-m-size-40 text-l-size-headline text-thin text-line-height-1"><b>Gesture</b> is Gesture Recognition Technology.</h1>
-              <p class="margin-bottom-0 text-size-16 text-dark">
-                <br>
-                Founded in 2024, we have started building business to consumer and business to business applications.
-                Currently, we have sign language learning applications remotely teaching people the alphabet and 1-10<br>
-            </p>
-
-            </div>
-          </header>
-          <div class="background-white full-width"> 
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary"> 
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Speech to Text</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">This application listens to your speech, then gives you stats on it. It also looks for proverbs in your speech.</p>  
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/portfolio/thumb-01.jpg" alt=""/>
-
-              </a>	
-            </div>
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-poc" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary"> 
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet anywhere, anytime!</p>
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/ASL-Blur.png" alt=""/>
-              </a>	
-            </div>
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-a-z?asl_chars=ABCDEFHIQRSTUVWXY" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary"> 
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet A - F!</p>
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/ABC.png" alt="ABC ASL"/>
-              </a>	
-            </div>
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-a-z?asl_chars=0123456789" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary">
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet 0 - 9!</p>
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/0-9.png" alt="0123456789 ASL"/>
-              </a>	
-            </div>
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary"> 
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Exercise Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Go through a yoga flow. Remotely!</p>                  
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/under_construction.png" alt=""/>
-              </a>	
-            </div>
-          </div>  
-        </article>
-      </main>
-      
-      <!-- FOOTER -->
-      <footer>
-        <!-- Contact Us -->
-        <div class="background-dark padding text-center footer-social">
-          <a class="margin-right-10" target="_blank" href="https://www.facebook.com"><i class="icon-facebook_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">FACEBOOK</span></a>
-          <a class="margin-right-10" target="_blank" href="https://www.twitter.com"><i class="icon-twitter_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">TWITTER</span></a>
-          <a class="margin-right-10" target="_blank" href="https://www.instagram.com"><i class="icon-instagram_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">INSTAGRAM</span></a>
-          <a target="_blank" href="https://www.linkedin.com"><i class="icon-linked_in_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">LINKEDIN</span></a>                                                                         
-        </div>
-
-        <!-- Main Footer -->
-        <section class="section-small-padding text-center background-dark full-width">
-          <div class="line">
-            <div class="margin">
-              <!-- Collumn 1 -->              
-              <div class="s-12 m-12 l-4 margin-m-bottom-30">
-                <h3 class="text-size-16">222 W Merchandise Mart Plaza</h3>
-                <p class="text-size-14">
-                  #1212<br>
-                  Chicago, IL<br> 
-                  60654
-                </p>               
-              </div>
-              <!-- Collumn 2 -->
-              <div class="s-12 m-12 l-4 margin-m-bottom-30">
-                <h3 class="text-size-16">E-mail</h3>
-                <p class="text-size-14">
-                   jimmy@gesture.world<br>
-                   bella@gesture.world
-                </p>              
-              </div>
-              <!-- Collumn 3 -->
-              <div class="s-12 m-12 l-4 ">
-                <h3 class="text-size-16">Phone Numbers</h3>
-                <p class="text-size-14">
-                   415 455 6951<br>
-                </p>             
-              </div>
-            </div>
-          </div>  
-        </section>
-        <hr class="break margin-top-bottom-0" style="border-color: rgba(0, 0, 0, 0.80);">
-        
-        <!-- Bottom Footer -->
-        <section class="padding background-dark full-width">
-          <div class="text-center">
-            <p class="text-size-12"></p>
-            <p class="text-size-12"></p>
-          </div>
-        </section>
-      </footer>
+        <a href="#contact-984" class="cs-button-solid cs-nav-button">Contact Us</a>
+        <!--Dark Mode toggle, uncomment button code if you want to enable a dark mode toggle-->
+        <!-- <button id="dark-mode-toggle" aria-label="dark mode toggle">
+            <svg class="cs-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" style="enable-background:new 0 0 480 480" xml:space="preserve"><path d="M459.782 347.328c-4.288-5.28-11.488-7.232-17.824-4.96-17.76 6.368-37.024 9.632-57.312 9.632-97.056 0-176-78.976-176-176 0-58.4 28.832-112.768 77.12-145.472 5.472-3.712 8.096-10.4 6.624-16.832S285.638 2.4 279.078 1.44C271.59.352 264.134 0 256.646 0c-132.352 0-240 107.648-240 240s107.648 240 240 240c84 0 160.416-42.688 204.352-114.176 3.552-5.792 3.04-13.184-1.216-18.496z"/></svg>
+            <img class="cs-sun" aria-hidden="true" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Fsun.svg" decoding="async" alt="moon" width="15" height="15">
+        </button> -->
     </div>
-    <script type="text/javascript" src="js/responsee.js"></script>
-    <script type="text/javascript" src="js/jquery.events.touch.js"></script>
-    <script type="text/javascript" src="owl-carousel/owl.carousel.js"></script>
-    <script type="text/javascript" src="js/template-scripts.js"></script> 
-  </body>
+  </header>               
+
+  <section id="hero-1619">
+    <div class="cs-container">
+        <div class="cs-content">
+            <span class="cs-topper">
+                <svg class="cs-chevron" width="49" height="15" viewBox="0 0 49 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g opacity="0.7">
+                    <path d="M0.621948 7.49889L6.40262 15L10.343 15L4.56231 7.49889L10.343 -4.2492e-07L6.40262 -2.52681e-07L0.621948 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M7.62195 7.49889L13.4026 15L17.343 15L11.5623 7.49889L17.343 -4.2492e-07L13.4026 -2.52681e-07L7.62195 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M14.7789 7.49889L20.5596 15L24.5 15L18.7193 7.49889L24.5 -4.2492e-07L20.5596 -2.52681e-07L14.7789 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M22.7789 7.49889L28.5596 15L32.5 15L26.7193 7.49889L32.5 -4.2492e-07L28.5596 -2.52681e-07L22.7789 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M30.7789 7.49889L36.5596 15L40.5 15L34.7193 7.49889L40.5 -4.2492e-07L36.5596 -2.52681e-07L30.7789 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M38.7789 7.49889L44.5596 15L48.5 15L42.7193 7.49889L48.5 -4.2492e-07L44.5596 -2.52681e-07L38.7789 7.49889Z" fill="var(--chevronColor)"/>
+                    </g>
+                </svg>
+                Gesture into the Future
+                <svg class="cs-chevron" width="49" height="15" viewBox="0 0 49 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g opacity="0.7">
+                    <path d="M48.3781 7.49889L42.5974 15L38.657 15L44.4377 7.49889L38.657 -4.2492e-07L42.5974 -2.52681e-07L48.3781 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M41.3781 7.49889L35.5974 15L31.657 15L37.4377 7.49889L31.657 -4.2492e-07L35.5974 -2.52681e-07L41.3781 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M34.2211 7.49889L28.4404 15L24.5 15L30.2807 7.49889L24.5 -4.2492e-07L28.4404 -2.52681e-07L34.2211 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M26.2211 7.49889L20.4404 15L16.5 15L22.2807 7.49889L16.5 -4.2492e-07L20.4404 -2.52681e-07L26.2211 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M18.2211 7.49889L12.4404 15L8.50004 15L14.2807 7.49889L8.50004 -4.2492e-07L12.4404 -2.52681e-07L18.2211 7.49889Z" fill="var(--chevronColor)"/>
+                    <path d="M10.2211 7.49889L4.4404 15L0.500041 15L6.28071 7.49889L0.500042 -4.2492e-07L4.4404 -2.52681e-07L10.2211 7.49889Z" fill="var(--chevronColor)"/>
+                    </g>
+                </svg>
+            </span>
+            <h1 class="cs-title">Transform Your Space with Advanced Gesture Recognition Technology</h1>
+            <a href="#contact-984" class="cs-button-solid">Contact Us</a>
+        </div>
+        <ul class="cs-card-group">
+              <li class="cs-item">
+                <i class="fa-solid fa-hand"></i>
+                <h3 class="cs-h3">Hands-Free Convenience</h3>
+                <p class="cs-item-text">
+                  Effortlessly control devices and appliances with simple gestures, enhancing ease of use and accessibility.
+                </p>
+            </li>
+            <li class="cs-item">
+                <i class="fa-solid fa-code-merge"></i>
+                <h3 class="cs-h3">Seamless Integration</h3>
+                <p class="cs-item-text">
+                  Easily integrates with existing smart home systems and devices, providing a unified and intuitive user experience.
+                </p>
+            </li>
+            <li class="cs-item">
+                <i class="fa-solid fa-shield-heart"></i>
+                <h3 class="cs-h3">Enhanced Safety</h3>
+                <p class="cs-item-text">
+                  Reduces the need for physical contact, promoting a hygienic and safe environment, especially in public and shared spaces.
+                </p>
+            </li>
+            <li class="cs-item">
+                <i class="fa-solid fa-scissors"></i>
+                <h3 class="cs-h3">Cutting-Edge Innovation</h3>
+                <p class="cs-item-text">
+                  Utilizes the latest advancements in gesture recognition technology to offer precise and responsive control, setting new standards in smart technology.
+                </p>
+            </li>
+        </ul>
+    </div>
+  
+    <!-- Background Image, there's a background image in the CSS for the parallax effect you'll need to change as well if you swap out our images -->
+    <picture class="cs-background">
+        <source media="(max-width: 600px)" srcset="img/virtual-screen-system-gesture.jpg">
+        <source media="(min-width: 601px)" srcset="img/virtual-screen-system-gesture.jpg">
+        <img decoding="async" src="img/virtual-screen-system-gesture.jpg" alt="meeting" width="2250" height="1500" aria-hidden="true">
+    </picture>
+  </section>
+
+  <!-- ============================================ -->
+  <!--                   Steps                      -->
+  <!-- ============================================ -->
+
+  <section id="steps-889">
+    <div class="cs-container">
+        <div class="cs-content">
+            <span class="cs-topper">Our Process</span>
+            <h2 class="cs-title">How It Works</h2>
+            <p class="cs-text">
+              Getting started with our Gesture technology is simple and straightforward. Follow these three easy steps to transform your space.
+            </p>
+        </div>
+        <ul class="cs-card-group">
+            <li class="cs-item">
+                <picture class="cs-picture">
+                  <i class="fa-color fa-solid fa-computer-mouse"></i>
+                </picture>
+                <h3 class="cs-h3">Click "Get Started"</h3>
+                <p class="cs-item-p">
+                  Begin your journey by clicking the "Get Started" button to initiate the setup process.
+                </p>
+            </li>
+            <!--Arrow-->
+            <li class="cs-item cs-arrow" aria-hidden="true">
+              <img class="cs-arrow-img" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Farrow-curve-right.svg" alt="icon" width="80" height="76" loading="lazy" decoding="async" aria-hidden="true">
+            </li>
+            <li class="cs-item">
+                <picture class="cs-picture">
+                  <i class="fa-color fa-solid fa-desktop"></i>
+                </picture>
+                <h3 class="cs-h3">Configure Your Devices</h3>
+                <p class="cs-item-p">
+                  Easily configure the technology to your necessary devices using our intuitive web app.
+                </p>
+            </li>
+            <!--Arrow-->
+            <li class="cs-item cs-arrow" aria-hidden="true">
+                <img class="cs-arrow-img" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Farrow-curve-right.svg" alt="icon" width="80" height="76" loading="lazy" decoding="async" aria-hidden="true">
+            </li>
+            <li class="cs-item">
+                <picture class="cs-picture">
+                  <i class="fa-color fa-solid fa-comments"></i>
+                </picture>
+                <h3 class="cs-h3">Provide Feedback</h3>
+                <p class="cs-item-p">
+                  Share your experience and feedback to help us continually improve and enhance our technology.
+                </p>
+            </li>
+        </ul>
+        <a href="#contact-984" class="cs-button-solid">Get Started</a>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!--                  Services                    -->
+  <!-- ============================================ -->
+
+  <section id="services-1121">
+    <div class="cs-container">
+        <ul class="cs-card-group">
+            <li class="cs-item">
+                <div class="cs-image-group">
+                    <i class="fa-services-color fa-solid fa-house"></i>
+                    <!--If you want to remove this background shape, add a background color to the cs-image-group so it will look good. Otherwise remove the height an width from that group so there's no extra space around the icon-->
+                    <img class="cs-graphic" loading="lazy" decoding="async" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/grey-shape.svg" alt="shape" width="48" height="48">
+                </div>
+                <div class="cs-flex">
+                    <h2 class="cs-h2">Intuitive Home Automation</h2>
+                    <p class="cs-item-text">
+                      Control lights, appliances, and entertainment systems with simple hand gestures, making daily tasks more convenient and efficient.
+                    </p>
+                </div>
+            </li>
+            <li class="cs-item">
+                <div class="cs-image-group">
+                    <i class="fa-services-color fa-solid fa-screwdriver-wrench"></i>
+                    <img class="cs-graphic" loading="lazy" decoding="async" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/grey-shape.svg" alt="shape" width="48" height="48">
+                </div>
+                <div class="cs-flex">
+                    <h2 class="cs-h2">Accessible Learning Tools</h2>
+                    <p class="cs-item-text">
+                      Utilize our sign language gesture recognition app to easily learn and practice sign language, promoting inclusivity and communication.
+                    </p>
+                </div>
+            </li>
+            <li class="cs-item">
+                <div class="cs-image-group">
+                    <i class="fa-services-color fa-solid fa-fingerprint"></i>
+                    <img class="cs-graphic" loading="lazy" decoding="async" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/grey-shape.svg" alt="shape" width="48" height="48">
+                </div>
+                <div class="cs-flex">
+                    <h2 class="cs-h2">Touch-Free Health Solutions</h2>
+                    <p class="cs-item-text">
+                      Reduce the spread of germs by using gesture controls for common touchpoints like faucets, doors, and elevators, ensuring a healthier environment.
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--SVG Waves-->
+    <img class="cs-waves" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/charity-waves.svg" alt="waves" aria-hidden="true" loading="lazy" decoding="async" width="1920" height="616">
+  </section>
+
+  <!-- ============================================ -->
+  <!--               Video Section                  -->
+  <!-- ============================================ -->
+
+  <!-- The video -->
+  <video autoplay muted loop id="myVideo">
+    <source src="video/Gesture Demo Video.mp4" type="video/mp4">
+  </video>        
+  
+  <!-- ============================================ -->
+  <!--                    Services 2                 -->
+  <!-- ============================================ -->
+
+  <section id="services-1724">
+    <div class="cs-container">
+        <div class="cs-content">
+            <div class="cs-flex-group">
+                <span class="cs-topper">About Us</span>
+                <h2 class="cs-title">Revolutionizing Everyday Interactions</h2>
+            </div>
+            <p class="cs-text">
+              At Gesture, we are dedicated to transforming the way you interact with the world around you through innovative gesture recognition technology. Founded in 2024 and based in Chicago, Illinois, our mission is to develop business-to-consumer and business-to-business applications that make life simpler, safer, and more intuitive. Our team of experts works tirelessly to create state-of-the-art solutions that seamlessly integrate into your daily routine, from intuitive home automation systems that respond to your every gesture to accessible learning tools like our sign language recognition app. We believe in the power of hands-free technology to enhance convenience and improve accessibility, and we continuously push the boundaries of what's possible with gesture-based interactions. By listening to our users and incorporating their feedback, we ensure that our applications are not only cutting-edge but also practical and user-friendly. At Gesture, we are committed to building a future where technology effortlessly aligns with human intent, making everyday experiences more efficient and enjoyable.
+            </p>
+        </div>
+        <ul class="cs-card-group">
+            <li class="cs-item">
+                <a href="" class="cs-link">
+                    <span class="cs-number">01</span>
+                    <h3 class="cs-h3">Communication</h3>
+                </a>
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)"
+                            srcset="img/thumb-forefinger-gesture.jpg">
+                    <source media="(min-width: 601px)"
+                            srcset="img/thumb-forefinger-gesture.jpg">
+                    <img decoding="async"
+                            src="img/thumb-forefinger-gesture.jpg"
+                            alt="finance" width="413" height="374" aria-hidden="true" loading="lazy">
+                </picture>
+            </li>
+            <li class="cs-item">
+                <a href="" class="cs-link">
+                    <span class="cs-number">02</span>
+                    <h3 class="cs-h3">Inclusion</h3>
+                </a>
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)"
+                            srcset="img/palm-forward-pinky-down-gesture.jpg">
+                    <source media="(min-width: 601px)"
+                            srcset="img/palm-forward-pinky-down-gesture.jpg">
+                    <img decoding="async"
+                            src="img/palm-forward-pinky-down-gesture.jpg"
+                            alt="finance" width="413" height="374" aria-hidden="true" loading="lazy">
+                </picture>
+            </li>
+            <li class="cs-item">
+                <a href="" class="cs-link">
+                    <span class="cs-number">03</span>
+                    <h3 class="cs-h3">ASL Learning</h3>
+                </a>
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)"
+                            srcset="img/american-sign-language-practice.jpg">
+                    <source media="(min-width: 601px)"
+                            srcset="img/american-sign-language-practice.jpg">
+                    <img decoding="async"
+                            src="img/american-sign-language-practice.jpg"
+                            alt="finance" width="413" height="374" aria-hidden="true" loading="lazy">
+                </picture>
+            </li>
+            <li class="cs-item">
+                <a href="" class="cs-link">
+                    <span class="cs-number">04</span>
+                    <h3 class="cs-h3">Learning</h3>
+                </a>
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)"
+                            srcset="img/open-palm-gesture.jpg">
+                    <source media="(min-width: 601px)"
+                            srcset="img/open-palm-gesture.jpg">
+                    <img decoding="async"
+                            src="img/open-palm-gesture.jpg"
+                            alt="finance" width="413" height="374" aria-hidden="true" loading="lazy">
+                </picture>
+            </li>
+            <li class="cs-item">
+                <a href="" class="cs-link">
+                    <span class="cs-number">05</span>
+                    <h3 class="cs-h3">Accessibility</h3>
+                </a>
+                <picture class="cs-picture">
+                    <source media="(max-width: 600px)"
+                            srcset="img/thunb-point.jpg">
+                    <source media="(min-width: 601px)"
+                            srcset="img/thunb-point.jpg">
+                    <img decoding="async"
+                            src="img/thunb-point.jpg"
+                            alt="finance" width="413" height="374" aria-hidden="true" loading="lazy">
+                </picture>
+            </li>
+        </ul>
+    </div>
+  </section> 
+  
+  <!-- ============================================ -->
+  <!--                 Services 3                   -->
+  <!-- ============================================ -->
+
+  <section id="services-1267">
+    <div class="cs-container">
+        <div class="cs-content">
+            <span class="cs-topper">Statistics</span>
+            <h2 class="cs-title">Transforming the Future with Gesture Recognition Technology</h2>
+            <p class="cs-text">
+              At Gesture, we are at the forefront of revolutionizing how people interact with technology through advanced gesture recognition solutions. Our cutting-edge applications leverage the power of intuitive, touch-free interactions to enhance daily life, improve accessibility, and create seamless user experiences. With a growing market driven by increasing demand for smart home devices, automotive advancements, and innovative consumer electronics, Gesture is committed to delivering state-of-the-art technology that meets the evolving needs of our customers. Join us in shaping a hands-free future with our pioneering gesture recognition solutions.
+            </p>
+            <a href="#contact-984" class="cs-button-solid" aria-label="learn more about us">Learn More</a>
+        </div>
+        <div class="cs-wrapper">
+            <ul class="cs-card-group">
+                <li class="cs-item">
+                    <h3 class="cs-h3">
+                        <picture class="cs-picture">
+                          <i class="fa-statistics-color fa-solid fa-arrow-up-right-dots fa-small" style="margin-bottom: 0px;"></i>
+                        </picture>
+                        Market Growth
+                    </h3>
+                    <span class="cs-number">22.1%</span>
+                    <p class="cs-item-text">
+                      The global gesture recognition market is projected to grow from USD 8.74 billion in 2021 to USD 35.47 billion by 2028, showcasing a compound annual growth rate (CAGR) of 22.1%.
+                    </p>
+                </li>
+                <li class="cs-item">
+                    <h3 class="cs-h3">
+                        <picture class="cs-picture">
+                          <i class="fa-statistics-color fa-solid fa-car fa-small" style="margin-bottom: 0px;"></i>
+                        </picture>
+                        Automotive Industry Adoption
+                    </h3>
+                    <span class="cs-number">3 Safety Features</span>
+                    <p class="cs-item-text">
+                      Gesture recognition technology is increasingly adopted in the automotive industry, enhancing driver safety and convenience through touch-free controls for navigation, infotainment, and climate systems.
+                    </p>
+                </li>
+                <li class="cs-item">
+                    <h3 class="cs-h3">
+                        <picture class="cs-picture">
+                          <i class="fa-statistics-color fa-solid fa-lightbulb fa-small" style="margin-bottom: 0px;"></i>
+                        </picture>
+                        Consumer Electronics Integration
+                    </h3>
+                    <span class="cs-number">4 Device Types</span>
+                    <p class="cs-item-text">
+                      The consumer electronics segment holds a significant share in the gesture recognition market, driven by the integration of gesture controls in smartphones, tablets, gaming consoles, and smart TVs.
+                    </p>
+                </li>
+                <li class="cs-item">
+                    <h3 class="cs-h3">
+                        <picture class="cs-picture">
+                          <i class="fa-statistics-color fa-solid fa-house-signal fa-small" style="margin-bottom: 0px;"></i>
+                        </picture>
+                        Smart Home Expansion
+                    </h3>
+                    <span class="cs-number">3 Home Features</span>
+                    <p class="cs-item-text">
+                      The rising adoption of smart home devices is propelling the demand for gesture recognition technology, enabling users to control lighting, security systems, and household appliances with simple hand gestures.
+                    </p>
+                </li>
+            </ul>
+            <picture class="cs-background">
+                <img src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Services/orange-waves.png" alt="waves">
+            </picture>
+        </div>
+    </div>
+  </section>
+                              
+
+  <!-- ============================================ -->
+  <!--                   Stats                      -->
+  <!-- ============================================ -->
+
+  <section id="stats-1575">
+    <div class="cs-container">
+        <ul class="cs-card-group">
+            <li class="cs-item">
+                <img class="cs-icon" aria-hidden="true" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Icons/thumbs-up.svg" loading="lazy" decoding="async" alt="icon" width="48" height="48">
+                <span class="cs-number">99%</span>
+                <span class="cs-desc">Positive user feedback</span>
+            </li>
+            <li class="cs-item">
+                <i class="fa-statistics-color fa-solid fa-money-bill-trend-up fa-large"></i>
+                <span class="cs-number">$32.3</span>
+                <span class="cs-desc">Billion by 2025</span>
+            </li>
+            <li class="cs-item">
+                <i class="fa-statistics-color fa-solid fa-arrow-trend-up fa-large"></i>
+                <span class="cs-number">27.9%</span>
+                <span class="cs-desc">(CAGR) From 2021 to 2026</span>
+            </li>
+        </ul>
+    </div>
+    <picture class="cs-background">
+        <!--Mobile Image-->
+        <source media="(max-width: 600px)" srcset="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/waves-side.svg">
+        <!--Tablet and above Image-->
+        <source media="(min-width: 601px)" srcset="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/waves-side.svg">
+        <img loading="lazy" decoding="async" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Images/Graphics/waves-side.svg" alt="wave" width="1280" height="568">
+    </picture>
+  </section>               
+
+  <!-- ============================================ -->
+  <!--             Side By Side Reverse             -->
+  <!-- ============================================ -->
+
+  <section id="sbsr-1575">
+    <div class="cs-container">
+        <!-- Left Section -->
+        <div class="cs-image-group">
+            <div class="cs-row">
+                <picture class="cs-picture cs-picture1">
+                    <source media="(max-width: 600px)" srcset="img/stop-hand-gesture.jpg">
+                    <source media="(min-width: 601px)" srcset="img/stop-hand-gesture.jpg">
+                    <img loading="lazy" decoding="async" src="img/stop-hand-gesture.jpg" alt="man" width="305" height="410">
+                </picture>
+                <picture class="cs-picture cs-picture3">
+                    <source media="(max-width: 600px)" srcset="img/finger-point-gesture.jpg">
+                    <source media="(min-width: 601px)" srcset="img/finger-point-gesture.jpg">
+                    <img loading="lazy" decoding="async" src="img/finger-point-gesture.jpg" alt="man fishing" width="305" height="467">
+                </picture>
+            </div>
+            <div class="cs-row">
+                <picture class="cs-picture cs-picture2">
+                    <source media="(max-width: 600px)" srcset="img/air-swipe-gesture.jpg">
+                    <source media="(min-width: 601px)" srcset="img/air-swipe-gesture.jpg">
+                    <img loading="lazy" decoding="async" src="img/air-swipe-gesture.jpg" alt="man fishing" width="305" height="615">
+                </picture>
+                <picture class="cs-picture cs-picture4">
+                    <source media="(max-width: 600px)" srcset="img/happy-perfect-gesture.jpg">
+                    <source media="(min-width: 601px)" srcset="img/happy-perfect-gesture.jpg">
+                    <img loading="lazy" decoding="async" src="img/happy-perfect-gesture.jpg" alt="fish" width="305" height="277">
+                </picture>
+            </div>
+        </div>
+        <div class="cs-content">
+            <span class="cs-topper">Asked questions</span>
+            <h2 class="cs-title">Frequently Asked Questions</h2>
+            <ul class="cs-faq-group">
+                <!-- Active class added as default -->
+                <li class="cs-faq-item active">
+                    <button class="cs-button">
+                        <span class="cs-button-text">
+                          What are the challenges of gesture recognition?
+                        </span>
+                        <span class="cs-indicator" aria-hidden="true"></span>
+                    </button>
+                    <p class="cs-item-p">
+                      Answer: Gesture recognition technology faces several challenges, including accuracy in diverse lighting conditions, differentiating between intentional and accidental gestures, and the high computational power required for real-time processing.
+                    </p>
+                </li>
+                <li class="cs-faq-item">
+                    <button class="cs-button">
+                        <span class="cs-button-text">
+                          How effective is gesture recognition technology today?
+                        </span>
+                        <span class="cs-indicator" aria-hidden="true"></span>
+                    </button>
+                    </button>
+                    <p class="cs-item-p">
+                      Answer: Gesture recognition technology has made significant strides and is quite effective in controlled environments, but it still struggles with consistency and accuracy in complex real-world settings. 
+                    </p>
+                </li>
+                <li class="cs-faq-item">
+                    <button class="cs-button">
+                        <span class="cs-button-text">
+                          Why is gesture recognition important?
+                        </span>
+                        <span class="cs-indicator" aria-hidden="true"></span>
+                    </button>
+                    </button>
+                    <p class="cs-item-p">
+                      Answer: Gesture recognition is crucial for creating more intuitive and natural user interfaces, allowing users to interact with devices through simple movements, which can enhance accessibility and convenience. 
+                    </p>
+                </li>
+                <li class="cs-faq-item">
+                    <button class="cs-button">
+                        <span class="cs-button-text">
+                          What benefits and drawbacks come with gesture recognition?
+                        </span>
+                        <span class="cs-indicator" aria-hidden="true"></span>
+                    </button>
+                    </button>
+                    <p class="cs-item-p">
+                      Answer: Benefits of gesture recognition include hands-free control, enhanced accessibility, and innovative user experiences. Drawbacks include potential accuracy issues, high computational requirements, and limited adoption due to these challenges. 
+                    </p>
+                </li>
+                <li class="cs-faq-item">
+                    <button class="cs-button">
+                        <span class="cs-button-text">
+                          What are the limitations of gesture-based interfaces?
+                        </span>
+                        <span class="cs-indicator" aria-hidden="true"></span>
+                    </button>
+                    </button>
+                    <p class="cs-item-p">
+                      Answer: Gesture-based interfaces can be less accessible for individuals with certain disabilities, may require significant computational resources, and often struggle with recognizing gestures accurately in varied lighting and environmental conditions. 
+                    </p>
+                </li>
+                <li class="cs-faq-item">
+                    <button class="cs-button">
+                        <span class="cs-button-text">
+                          Is machine learning used in gesture recognition?
+                        </span>
+                        <span class="cs-indicator" aria-hidden="true"></span>
+                    </button>
+                    </button>
+                    <p class="cs-item-p">
+                      Answer: Yes, machine learning plays a crucial role in gesture recognition by enabling systems to learn and improve from data, enhancing their ability to accurately interpret and respond to complex gestures. 
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!--                   Contact                    -->
+  <!-- ============================================ -->
+
+  <section id="contact-984">
+    <div class="cs-container">
+        <picture class="cs-picture">
+            <!--Mobile Image-->
+            <source media="(max-width: 600px)" srcset="img/young-woman-making-gestures.jpg">
+            <!--Tablet and above Image-->
+            <source media="(min-width: 601px)" srcset="img/young-woman-making-gestures.jpg">
+            <img loading="lazy" decoding="async" src="img/young-woman-making-gestures.jpg" alt="friends" width="904" height="754">
+        </picture>
+        <div class="cs-right">
+            <div class="cs-content">
+                <span class="cs-topper">Contact Us</span>
+                <h2 class="cs-title">Get in Touch with Gesture</h2>
+            </div>
+            <!--Form-->
+            <form action="/submit" class="cs-form" id="cs-form-587-984" name="Contact Form" method="POST">
+                <label class="cs-label">
+                    Name
+                    <input class="cs-input" required type="text" id="name-587-984" name="name" placeholder="Name">
+                </label>
+                <label class="cs-label">
+                    Phone
+                    <input class="cs-input" required type="text" id="phone-587-984" name="phone" placeholder="Phone">
+                </label>
+                <label class="cs-label">
+                    Email
+                    <input class="cs-input" required type="email" id="email-587-984" name="email" placeholder="Email">
+                </label>
+                <label class="cs-label cs-message">
+                    Message
+                    <textarea class="cs-input cs-textarea" required name="message" id="message-587-984" placeholder="Write message..."></textarea>
+                </label>
+                <!-- <div class="g-recaptcha" data-sitekey="<?php echo getenv('RECAPTCHA_SITE_KEY'); ?>"></div> -->
+                <button class="cs-button-solid cs-submit" type="submit">Submit</button>
+                <div id="form-response"></div>
+            </form>
+            
+            <script>
+                document.getElementById('cs-form-587-984').addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent the form from submitting the traditional way
+                
+                    var form = event.target;
+                    var formData = new FormData(form);
+                    var xhr = new XMLHttpRequest();
+                
+                    xhr.open('POST', form.action, true);
+                    xhr.setRequestHeader('Accept', 'application/json');
+                
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            var response = document.getElementById('form-response');
+                            if (xhr.status === 200) {
+                                response.innerHTML = xhr.responseText;
+                                form.reset();
+                            } else {
+                                response.innerHTML = 'An error occurred. Please try again later.';
+                            }
+                        }
+                    };
+                
+                    var object = {};
+                    formData.forEach((value, key) => { object[key] = value });
+                    var json = JSON.stringify(object);
+                
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.send(json);
+                });
+            </script>                                            
+            
+            <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+
+        </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!--                  Footer                      -->
+  <!-- ============================================ -->
+
+  <footer id="footer-1147">
+    <div class="cs-container">
+        <div class="cs-top">
+            <a aria-label="go back to home" class="cs-logo" href="">
+                <img class="cs-logo-img" loading="lazy" decoding="async" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Logos/charity-logo.svg" alt="logo" width="168" height="48">
+            </a>
+            <ul class="cs-ul">
+                <li class="cs-li">
+                    <a href="#hero-1619" class="cs-link">Home</a>
+                </li>
+                <li class="cs-li">
+                    <a href="#steps-889" class="cs-link">Our Process</a>
+                </li>
+                <li class="cs-li">
+                    <a href="#services-1724" class="cs-link">About Us</a>
+                </li>
+                <li class="cs-li">
+                    <a href="#services-1267" class="cs-link">Statistics</a>
+                </li>
+                <li class="cs-li">
+                    <a href="#sbsr-1575" class="cs-link">FAQ</a>
+                </li>
+                <li class="cs-li">
+                    <a href="#contact-984" class="cs-link">Contact Us</a>
+                </li>
+            </ul>
+        </div>
+        <div class="cs-bottom">
+            <!--Social-->
+            <ul class="cs-social">
+                <li class="cs-social-li">
+                    <a href="" class="cs-social-link" aria-label="facebook" target="_blank" rel="noopener">
+                        <img class="cs-social-icon cs-default" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/facebook-white.svg" alt="icon" loading="lazy" decoding="async" width="12" height="12" aria-hidden="true">
+                    </a>
+                </li>
+                <li class="cs-social-li">
+                    <a href="" class="cs-social-link" aria-label="twitter" target="_blank" rel="noopener">
+                        <img class="cs-social-icon cs-default" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/twitter-white.svg" alt="icon" loading="lazy" decoding="async" width="12" height="12" aria-hidden="true">
+                    </a>
+                </li>
+                <li class="cs-social-li">
+                    <a href="" class="cs-social-link" aria-label="instagram" target="_blank" rel="noopener">
+                        <img class="cs-social-icon cs-default" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/instagram-transparent.svg" alt="icon" loading="lazy" decoding="async" width="12" height="12" aria-hidden="true">
+                    </a>
+                </li>
+                <li class="cs-social-li">
+                    <a href="" class="cs-social-link" aria-label="twitter" target="_blank" rel="noopener">
+                        <img class="cs-social-icon cs-default" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/youtube-transparent2.svg" alt="icon" loading="lazy" decoding="async" width="12" height="12" aria-hidden="true">
+                    </a>
+                </li>
+            </ul>
+            <span class="cs-copyright">
+                © Copyright <span id="cs-copyright-year">Year</span> 
+                - 
+                <a href="" class="cs-copyright-link">Gesture</a>
+            </span>
+        </div>
+    </div>
+    <!--Background-->
+    <picture class="cs-background">
+        <!--Mobile Image-->
+        <source media="(max-width: 600px)" srcset="img/count-till-five-cropped-shot-of-hands-isolated.jpg">
+        <!--Tablet and above Image-->
+        <source media="(min-width: 601px)" srcset="img/count-till-five-cropped-shot-of-hands-isolated.jpg">
+        <img loading="lazy" decoding="async" src="img/count-till-five-cropped-shot-of-hands-isolated.jpg" alt="kids" width="1280" height="568">
+    </picture>
+  </footer>
+                                                                                          
+  <script type="module" src="js/app.js"></script>
+  <script src="dist/bundle.js"></script>
+  <script src="https://kit.fontawesome.com/33a7a46513.js" crossorigin="anonymous"></script>
+
+</body>
+
 </html>
