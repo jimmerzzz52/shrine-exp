@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/nav-styles.css">
   <link rel="stylesheet" href="css/main-styles.css">
   <link rel="stylesheet" href="css/core-styles.css">
+  <link rel="stylesheet" href="css/choose-an-app.css">
   <link rel="stylesheet" href="css/services-styles.css">
   <link rel="stylesheet" href="css/three-card-styles.css">
   <link rel="stylesheet" href="css/five-card-styles.css">
@@ -34,6 +35,16 @@
   <title>State-of-the-Art Gesture Recognition Technology Solutions in Chicago, Illinois: Revolutionizing Hands-Free Interaction</title>
 </head>
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GJ1F1KKQDF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GJ1F1KKQDF');
+</script>
+
 <body>
 
   <!-- ============================================ -->
@@ -44,7 +55,7 @@
     <div class="cs-container">
         <!--Nav Logo-->
         <a href="" class="cs-logo" aria-label="back to home">
-            <img src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Flogo-black.svg" alt="logo" width="210" height="29" aria-hidden="true" decoding="async">
+            <img src="img/Gesture-G-Hand-Logo-With-Text.png" alt="logo" width="210" height="29" aria-hidden="true" decoding="async">
         </a>
         <!--Navigation List-->
         <nav class="cs-nav" role="navigation">
@@ -94,7 +105,8 @@
             <img class="cs-sun" aria-hidden="true" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Fsun.svg" decoding="async" alt="moon" width="15" height="15">
         </button> -->
     </div>
-  </header>               
+  </header>
+  <!-- End of Header -->            
 
   <section id="hero-1619">
     <div class="cs-container">
@@ -123,7 +135,7 @@
                 </svg>
             </span>
             <h1 class="cs-title">Transform Your Space with Advanced Gesture Recognition Technology</h1>
-            <a href="#contact-984" class="cs-button-solid">Contact Us</a>
+            <a href="#steps-889" class="cs-button-solid">How It Works</a>
         </div>
         <ul class="cs-card-group">
               <li class="cs-item">
@@ -185,7 +197,7 @@
                 </picture>
                 <h3 class="cs-h3">Click "Get Started"</h3>
                 <p class="cs-item-p">
-                  Begin your journey by clicking the "Get Started" button to initiate the setup process.
+                  Begin your journey by clicking the "Get Started" button and choose between three apps from the dropdown.
                 </p>
             </li>
             <!--Arrow-->
@@ -196,9 +208,9 @@
                 <picture class="cs-picture">
                   <i class="fa-color fa-solid fa-desktop"></i>
                 </picture>
-                <h3 class="cs-h3">Configure Your Devices</h3>
+                <h3 class="cs-h3">Follow the Steps</h3>
                 <p class="cs-item-p">
-                  Easily configure the technology to your necessary devices using our intuitive web app.
+                  You'll be redirected to a new page and follow the steps to begin using the app.
                 </p>
             </li>
             <!--Arrow-->
@@ -215,7 +227,61 @@
                 </p>
             </li>
         </ul>
-        <a href="#contact-984" class="cs-button-solid">Get Started</a>
+        <a href="#choose-an-app" id="toggle-app-button" class="cs-button-solid">Get Started</a>
+    </div>
+                              
+  </section>
+
+  <!-- ============================================ -->
+  <!--              Choose An App                   -->
+  <!-- ============================================ -->
+
+  <section id="choose-an-app" style="display: none;">
+    <div class="cs-container">
+        <ul class="cs-card-group">
+            <li class="cs-item">
+                <a href="/asl-a-z?asl_chars=ABCDEFHIQRSTUVWXY" class="cs-link">
+                  <span class="cs-number">01</span>
+                  <h3 class="cs-h3">ASL Alphabet</h3>
+                  <p class="cs-item-text">
+                    Click to begin learning the American Sign Language Alphabet with gesture recognition.
+                  </p>
+                </a>
+                <picture class="cs-picture">
+                  <source media="(max-width: 600px)" srcset="img/ABC.png">
+                  <source media="(min-width: 601px)" srcset="img/ABC.png">
+                  <img decoding="async" src="img/ABC.png" alt="finance" width="413" height="374" aria-hidden="true" loading="lazy">
+                </picture>
+            </li>
+            <li class="cs-item">
+                <a href="/asl-a-z?asl_chars=0123456789" class="cs-link">
+                  <span class="cs-number">02</span>
+                  <h3 class="cs-h3">ASL Numbers</h3>
+                  <p class="cs-item-text">
+                    Click to start mastering numbers in American Sign Language using our gesture recognition app.
+                  </p>
+                </a>
+                <picture class="cs-picture">
+                  <source media="(max-width: 600px)" srcset="img/0-9.png">
+                  <source media="(min-width: 601px)" srcset="img/0-9.png">
+                  <img decoding="async" src="img/0-9.png" alt="finance" width="413" height="374" aria-hidden="true" loading="lazy">
+                </picture>
+            </li>
+            <li class="cs-item">
+                <a href="/" class="cs-link">
+                  <span class="cs-number">03</span>
+                  <h3 class="cs-h3">Exercise Practice</h3>
+                  <p class="cs-item-text">
+                    Click to get moving with our Exercise Application that tracks and guides your workouts through gesture recognition.
+                  </p>
+                </a>
+                <picture class="cs-picture">
+                  <source media="(max-width: 600px)" srcset="img/under_construction.png">
+                  <source media="(min-width: 601px)" srcset="img/under_construction.png">
+                  <img decoding="async" src="img/under_construction.png" alt="finance" width="413" height="374" aria-hidden="true" loading="lazy">
+                </picture>
+            </li>
+        </ul>
     </div>
   </section>
 
@@ -680,7 +746,7 @@
     <div class="cs-container">
         <div class="cs-top">
             <a aria-label="go back to home" class="cs-logo" href="">
-                <img class="cs-logo-img" loading="lazy" decoding="async" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Logos/charity-logo.svg" alt="logo" width="168" height="48">
+                <img class="cs-logo-img" loading="lazy" decoding="async" src="img/Gesture-G-Hand-Logo-With-Text.png" alt="logo" width="168" height="48">
             </a>
             <ul class="cs-ul">
                 <li class="cs-li">
@@ -746,6 +812,10 @@
                                                                                           
   <script type="module" src="js/app.js"></script>
   <script src="dist/bundle.js"></script>
+  <script type="text/javascript" src="js/responsee.js"></script>
+  <script type="text/javascript" src="js/jquery.events.touch.js"></script>
+  <script type="text/javascript" src="owl-carousel/owl.carousel.js"></script>
+  <script type="text/javascript" src="js/template-scripts.js"></script> 
   <script src="https://kit.fontawesome.com/33a7a46513.js" crossorigin="anonymous"></script>
 
 </body>

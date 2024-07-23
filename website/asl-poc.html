@@ -6,10 +6,15 @@
     <title>Gesture - Making gesture recognition as easy as a wave of your hand.</title>
     <link rel="stylesheet" type="text/css" href="css/components.css">
     <link rel="stylesheet" type="text/css" href="css/icons.css">
-    <link rel="stylesheet" type="text/css" href="css/responsee.css">
+    <link rel="stylesheet" type="text/css" href="css/gesture-responsee.css">
     <link rel="stylesheet" type="text/css" href="owl-carousel/owl.carousel.css">
     <link rel="stylesheet" type="text/css" href="owl-carousel/owl.theme.css">
     <link rel="stylesheet" type="text/css" href="css/lightcase.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/nav-styles.css">
+    <link rel="stylesheet" type="text/css" href="css/main-styles.css">
+    <link rel="stylesheet" type="text/css" href="css/core-styles.css">
+    <link rel="stylesheet" type="text/css" href="css/footer-styles.css">
     <!-- CUSTOM STYLE -->      
     <link rel="stylesheet" href="css/template-style.css">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,400,600,900&subset=latin-ext" rel="stylesheet"> 
@@ -38,174 +43,189 @@
   </script>
 
   <body class="size-1140">
-    <div id="page-wrapper">
-      <!-- HEADER -->
-      <header role="banner" class="position-absolute margin-top-30 margin-m-top-0 margin-s-top-0">    
-        <!-- Top Navigation -->
-        <nav class="background-transparent background-transparent-hightlight full-width sticky">
-          <div class="s-12 l-2">
-            <a href="index.html" class="logo">
-              <!-- Logo version before sticky nav -->
-              <img class="logo-before" src="img/logo-dark.png" alt="">
-              <!-- Logo version after sticky nav -->
-              <img class="logo-after" src="img/logo-dark.png" alt="">
+      <!-- ============================================ -->
+      <!--                 Navigation                   -->
+      <!-- ============================================ -->
+    
+      <header id="cs-navigation">
+        <div class="cs-container">
+            <!--Nav Logo-->
+            <a href="" class="cs-logo" aria-label="back to home">
+                <img src="img/Gesture-G-Hand-Logo-With-Text.png" alt="logo" width="210" height="29" aria-hidden="true" decoding="async">
             </a>
-          </div>
-          <div class="s-12 l-10">
-            <div class="top-nav right">
-              <p class="nav-text"></p>
-              <ul class="right chevron">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about-us.html">About Us</a></li>             
-                <li><a href="contact.html">Contact</a></li>
-              </ul>
-            </div>
-          </div>  
-        </nav>
-      </header>
-      
-      <!-- MAIN -->
-      <main role="main">
-        <!-- Content -->
-        <article>
-          <!-- <header class="section background-white">
-            <div class="line text-center">        
-              <h1 class="text-dark text-s-size-30 text-m-size-40 text-l-size-headline text-thin text-line-height-1">Gesture Recognition Technology is the Future.</h1>
-              <p class="margin-bottom-0 text-size-16 text-dark">
-              Try experimenting below with gesture recognition.<br>
-              Below is a proof of concept of what we are creating. It can recognize poses, and teach you the sign language number system, 1 through 10.<br>
-              So start interacting and learning sign language today!<br>
-            </p>
-
-            </div>
-          </header> -->
-          <div id="demo">
-            <div class="container">
-              <div id="gesture_display" style="margin: 60px; border-radius: 25px; font-family: 'Inter,sans-serif'; background-color: grey; opacity: 0.5; color: white; font-size: 5em; position: absolute;">
-                Raise your hand to the camera!
-              </div>
-              <video style="display: none" class="input_video"></video>
-              <!-- TODO: Make full screen -->
-              <canvas class="output_canvas" style="height: 100%; width: 100%; display: block;"></canvas>
-            </div>
-          </div>
-          <div class="background-white full-width">
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary"> 
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Speech to Text</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">This application listens to your speech, then gives you stats on it. It also looks for proverbs in your speech.</p>  
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/portfolio/thumb-01.jpg" alt=""/>
-
-              </a>	
-            </div>
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-poc.html" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary"> 
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet anywhere, anytime!</p>
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/ASL-Blur.png" alt=""/>
-              </a>	
-            </div>
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-a-z?asl_chars=ABCDEF" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary"> 
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet A - F!</p>
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/ABC.png" alt="ABC ASL"/>
-              </a>	
-            </div>
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/asl-a-z?asl_chars=0123456789" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary">
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Sign Language Learning Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Learn the sign language alphabet 0 - 9!</p>
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/0-9.png" alt="0123456789 ASL"/>
-              </a>	
-            </div>
-            <div class="s-12 m-6 l-five">
-              <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
-                <div class="image-hover-overlay background-primary"> 
-                  <div class="image-hover-overlay-content text-center padding-2x">
-                    <h3 class="text-white text-size-20 margin-bottom-10">Exercise Application</h3>
-                    <p class="text-white text-size-14 margin-bottom-20">Go through a yoga flow. Remotely!</p>                  
-                  </div> 
-                </div> 
-                <img class="full-img" src="img/under_construction.png" alt=""/>
-              </a>	
-            </div>
-          </div>  
-        </article>
-      </main>
-      
-      <!-- FOOTER -->
-      <footer>
-        <!-- Contact Us -->
-        <div class="background-dark padding text-center footer-social">
-          <a class="margin-right-10" target="_blank" href="https://www.facebook.com"><i class="icon-facebook_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">FACEBOOK</span></a>
-          <a class="margin-right-10" target="_blank" href="https://www.twitter.com"><i class="icon-twitter_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">TWITTER</span></a>
-          <a class="margin-right-10" target="_blank" href="https://www.instagram.com"><i class="icon-instagram_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">INSTAGRAM</span></a>
-          <a target="_blank" href="https://www.linkedin.com"><i class="icon-linked_in_circle text-size-30"></i> <span class="text-strong text-white hide-s hide-m">LINKEDIN</span></a>                                                                         
+            <!--Navigation List-->
+            <nav class="cs-nav" role="navigation">
+                <!--Mobile Nav Toggle-->
+                <button class="cs-toggle" aria-label="mobile menu toggle">
+                    <div class="cs-box" aria-hidden="true">
+                        <span class="cs-line cs-line1" aria-hidden="true"></span>
+                        <span class="cs-line cs-line2" aria-hidden="true"></span>
+                        <span class="cs-line cs-line3" aria-hidden="true"></span>
+                    </div>
+                </button>
+                <!-- We need a wrapper div so we can set a fixed height on the cs-ul in case the nav list gets too long from too many dropdowns being opened and needs to have an overflow scroll. This wrapper acts as the background so it can go the full height of the screen and not cut off any overflowing nav items while the cs-ul stops short of the bottom of the screen, which keeps all nav items in view no matter how mnay there are-->
+                <div class="cs-ul-wrapper">
+                    <ul id="cs-expanded" class="cs-ul" aria-expanded="false">
+                        <li class="cs-li">
+                            <a href="#hero-1619" class="cs-li-link cs-active">
+                                Home
+                            </a>
+                        </li>
+                        <li class="cs-li">
+                            <a href="#steps-889" class="cs-li-link">
+                                Our Process
+                            </a>
+                        </li>
+                        <li class="cs-li">
+                            <a href="#services-1724" class="cs-li-link">
+                                About Us
+                            </a>
+                        </li>
+                        <li class="cs-li">
+                            <a href="#services-1267" class="cs-li-link">
+                                Statistics
+                            </a>
+                        </li>
+                        <li class="cs-li">
+                            <a href="#sbsr-1575" class="cs-li-link">
+                                FAQ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <a href="#contact-984" class="cs-button-solid cs-nav-button">Contact Us</a>
+            <!--Dark Mode toggle, uncomment button code if you want to enable a dark mode toggle-->
+            <!-- <button id="dark-mode-toggle" aria-label="dark mode toggle">
+                <svg class="cs-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" style="enable-background:new 0 0 480 480" xml:space="preserve"><path d="M459.782 347.328c-4.288-5.28-11.488-7.232-17.824-4.96-17.76 6.368-37.024 9.632-57.312 9.632-97.056 0-176-78.976-176-176 0-58.4 28.832-112.768 77.12-145.472 5.472-3.712 8.096-10.4 6.624-16.832S285.638 2.4 279.078 1.44C271.59.352 264.134 0 256.646 0c-132.352 0-240 107.648-240 240s107.648 240 240 240c84 0 160.416-42.688 204.352-114.176 3.552-5.792 3.04-13.184-1.216-18.496z"/></svg>
+                <img class="cs-sun" aria-hidden="true" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons%2Fsun.svg" decoding="async" alt="moon" width="15" height="15">
+            </button> -->
         </div>
+      </header>
+      <!-- End of Header -->
 
-        <!-- Main Footer -->
-        <section class="section-small-padding text-center background-dark full-width">
-          <div class="line">
-            <div class="margin">
-              <!-- Collumn 1 -->              
-              <div class="s-12 m-12 l-4 margin-m-bottom-30">
-                <h3 class="text-size-16">222 W Merchandise Mart Plaza</h3>
-                <p class="text-size-14">
-                  #1212<br>
-                  Chicago, IL<br> 
-                  60654
-                </p>               
+      <div id="page-wrapper">          
+        <!-- MAIN -->
+        <main role="main">
+          <!-- Content -->
+          <article>
+            <!-- <header class="section background-white">
+              <div class="line text-center">        
+                <h1 class="text-dark text-s-size-30 text-m-size-40 text-l-size-headline text-thin text-line-height-1">Gesture Recognition Technology is the Future.</h1>
+                <p class="margin-bottom-0 text-size-16 text-dark">
+                Try experimenting below with gesture recognition.<br>
+                Below is a proof of concept of what we are creating. It can recognize poses, and teach you the sign language number system, 1 through 10.<br>
+                So start interacting and learning sign language today!<br>
+              </p>
+
               </div>
-              <!-- Collumn 2 -->
-              <div class="s-12 m-12 l-4 margin-m-bottom-30">
-                <h3 class="text-size-16">E-mail</h3>
-                <p class="text-size-14">
-                   jimmy@gesture.world<br>
-                   bella@gesture.world
-                </p>              
-              </div>
-              <!-- Collumn 3 -->
-              <div class="s-12 m-12 l-4 ">
-                <h3 class="text-size-16">Phone Numbers</h3>
-                <p class="text-size-14">
-                   415 455 6951<br>
-                </p>             
+            </header> -->
+            <div id="demo">
+              <div class="container">
+                <div id="gesture_display" style="margin: 60px; border-radius: 25px; font-family: 'Inter,sans-serif'; background-color: grey; opacity: 0.5; color: white; font-size: 5em; position: absolute;">
+                  Raise your hand to the camera!
+                </div>
+                <video style="display: none" class="input_video"></video>
+                <!-- TODO: Make full screen -->
+                <canvas class="output_canvas" style="height: 100%; width: 100%; display: block;"></canvas>
               </div>
             </div>
-          </div>  
-        </section>
-        <hr class="break margin-top-bottom-0" style="border-color: rgba(0, 0, 0, 0.80);">
-        
-        <!-- Bottom Footer -->
-        <section class="padding background-dark full-width">
-          <div class="text-center">
-            <p class="text-size-12"></p>
-            <p class="text-size-12"></p>
-          </div>
-        </section>
+            <div class="background-white full-width">
+              <div class="s-12 m-6 l-five">
+                <a class="image-with-hover-overlay image-hover-zoom" href="/" title="Portfolio Image">
+                  <div class="image-hover-overlay background-primary"> 
+                    <div class="image-hover-overlay-content text-center padding-2x">
+                      <h3 class="text-white text-size-20 margin-bottom-10">Speech to Text</h3>
+                      <p class="text-white text-size-14 margin-bottom-20">This application listens to your speech, then gives you stats on it. It also looks for proverbs in your speech.</p>  
+                    </div> 
+                  </div> 
+                  <img class="full-img" src="img/portfolio/thumb-01.jpg" alt=""/>
+
+                </a>	
+              </div>
+            </div>  
+          </article>
+        </main>
+      </div>
+
+      <!-- ============================================ -->
+      <!--                  Footer                      -->
+      <!-- ============================================ -->
+    
+      <footer id="footer-1147">
+        <div class="cs-container">
+            <div class="cs-top">
+                <a aria-label="go back to home" class="cs-logo" href="">
+                    <img class="cs-logo-img" loading="lazy" decoding="async" src="img/Gesture-G-Hand-Logo-With-Text.png" alt="logo" width="168" height="48">
+                </a>
+                <ul class="cs-ul">
+                    <li class="cs-li">
+                        <a href="#hero-1619" class="cs-link">Home</a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#steps-889" class="cs-link">Our Process</a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#services-1724" class="cs-link">About Us</a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#services-1267" class="cs-link">Statistics</a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#sbsr-1575" class="cs-link">FAQ</a>
+                    </li>
+                    <li class="cs-li">
+                        <a href="#contact-984" class="cs-link">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="cs-bottom">
+                <!--Social-->
+                <ul class="cs-social">
+                    <li class="cs-social-li">
+                        <a href="" class="cs-social-link" aria-label="facebook" target="_blank" rel="noopener">
+                            <img class="cs-social-icon cs-default" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/facebook-white.svg" alt="icon" loading="lazy" decoding="async" width="12" height="12" aria-hidden="true">
+                        </a>
+                    </li>
+                    <li class="cs-social-li">
+                        <a href="" class="cs-social-link" aria-label="twitter" target="_blank" rel="noopener">
+                            <img class="cs-social-icon cs-default" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/twitter-white.svg" alt="icon" loading="lazy" decoding="async" width="12" height="12" aria-hidden="true">
+                        </a>
+                    </li>
+                    <li class="cs-social-li">
+                        <a href="" class="cs-social-link" aria-label="instagram" target="_blank" rel="noopener">
+                            <img class="cs-social-icon cs-default" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/instagram-transparent.svg" alt="icon" loading="lazy" decoding="async" width="12" height="12" aria-hidden="true">
+                        </a>
+                    </li>
+                    <li class="cs-social-li">
+                        <a href="" class="cs-social-link" aria-label="twitter" target="_blank" rel="noopener">
+                            <img class="cs-social-icon cs-default" src="https://csimg.nyc3.cdn.digitaloceanspaces.com/Icons/youtube-transparent2.svg" alt="icon" loading="lazy" decoding="async" width="12" height="12" aria-hidden="true">
+                        </a>
+                    </li>
+                </ul>
+                <span class="cs-copyright">
+                    © Copyright <span id="cs-copyright-year">Year</span> 
+                    - 
+                    <a href="" class="cs-copyright-link">Gesture</a>
+                </span>
+            </div>
+        </div>
+        <!--Background-->
+        <picture class="cs-background">
+            <!--Mobile Image-->
+            <source media="(max-width: 600px)" srcset="img/count-till-five-cropped-shot-of-hands-isolated.jpg">
+            <!--Tablet and above Image-->
+            <source media="(min-width: 601px)" srcset="img/count-till-five-cropped-shot-of-hands-isolated.jpg">
+            <img loading="lazy" decoding="async" src="img/count-till-five-cropped-shot-of-hands-isolated.jpg" alt="kids" width="1280" height="568">
+        </picture>
       </footer>
-    </div>
+    <!-- End of Footer -->
+
     <script type="text/javascript" src="js/responsee.js"></script>
     <script type="text/javascript" src="js/jquery.events.touch.js"></script>
     <script type="text/javascript" src="owl-carousel/owl.carousel.js"></script>
-    <script type="text/javascript" src="js/template-scripts.js"></script> 
+    <script type="text/javascript" src="js/template-scripts.js"></script>
+    <script type="text/javascript" src="https://kit.fontawesome.com/33a7a46513.js" crossorigin="anonymous"></script> 
     <script type="text/javascript">
       const module = {};
     </script>

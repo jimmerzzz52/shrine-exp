@@ -46,23 +46,6 @@ for (const item of faqItems) {
     item.addEventListener('click', onClick);
 }
 
-// Get the video
-var video = document.getElementById("myVideo");
-
-// Get the button
-var btn = document.getElementById("myBtn");
-
-// Pause and play the video, and change the button text
-function myFunction() {
-  if (video.paused) {
-    video.play();
-    btn.innerHTML = "Pause";
-  } else {
-    video.pause();
-    btn.innerHTML = "Play";
-  }
-}
-
 // Copyright Current Year
 // Wait until the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function() {
@@ -76,5 +59,15 @@ document.addEventListener("DOMContentLoaded", function() {
     if (copyrightYearElement) {
         // Set the text content to the current year
         copyrightYearElement.textContent = currentYear;
+    }
+});
+
+// Toggle Gesture Recognition Apps
+document.getElementById("toggle-app-button").addEventListener("click", function() {
+    var x = document.getElementById("choose-an-app");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
     }
 });
