@@ -71,34 +71,34 @@
             <div class="cs-ul-wrapper">
                 <ul id="cs-expanded" class="cs-ul" aria-expanded="false">
                     <li class="cs-li">
-                        <a href="#hero-1619" class="cs-li-link cs-active">
+                        <a href="https://gesture.technology/#hero-1619" class="cs-li-link cs-active">
                             Home
                         </a>
                     </li>
                     <li class="cs-li">
-                        <a href="#steps-889" class="cs-li-link">
+                        <a href="https://gesture.technology/#steps-889" class="cs-li-link">
                             Our Process
                         </a>
                     </li>
                     <li class="cs-li">
-                        <a href="#services-1724" class="cs-li-link">
+                        <a href="https://gesture.technology/#services-1724" class="cs-li-link">
                             About Us
                         </a>
                     </li>
                     <li class="cs-li">
-                        <a href="#services-1267" class="cs-li-link">
+                        <a href="https://gesture.technology/#services-1267" class="cs-li-link">
                             Statistics
                         </a>
                     </li>
                     <li class="cs-li">
-                        <a href="#sbsr-1575" class="cs-li-link">
+                        <a href="https://gesture.technology/#sbsr-1575" class="cs-li-link">
                             FAQ
                         </a>
                     </li>
                 </ul>
             </div>
         </nav>
-        <a href="#contact-984" class="cs-button-solid cs-nav-button">Contact Us</a>
+        <a href="https://gesture.technology/#contact-984" class="cs-button-solid cs-nav-button">Contact Us</a>
         <!--Dark Mode toggle, uncomment button code if you want to enable a dark mode toggle-->
         <!-- <button id="dark-mode-toggle" aria-label="dark mode toggle">
             <svg class="cs-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" style="enable-background:new 0 0 480 480" xml:space="preserve"><path d="M459.782 347.328c-4.288-5.28-11.488-7.232-17.824-4.96-17.76 6.368-37.024 9.632-57.312 9.632-97.056 0-176-78.976-176-176 0-58.4 28.832-112.768 77.12-145.472 5.472-3.712 8.096-10.4 6.624-16.832S285.638 2.4 279.078 1.44C271.59.352 264.134 0 256.646 0c-132.352 0-240 107.648-240 240s107.648 240 240 240c84 0 160.416-42.688 204.352-114.176 3.552-5.792 3.04-13.184-1.216-18.496z"/></svg>
@@ -674,66 +674,70 @@
         </picture>
         <div class="cs-right">
             <div class="cs-content">
-                <span class="cs-topper">Contact Us</span>
-                <h2 class="cs-title">Get in Touch with Gesture</h2>
+              <span class="cs-topper">Contact Us</span>
+              <h2 class="cs-title">Get in Touch with Gesture</h2>
             </div>
-            <!--Form-->
+            <!-- Form -->
             <form action="/submit" class="cs-form" id="cs-form-587-984" name="Contact Form" method="POST">
-                <label class="cs-label">
-                    Name
-                    <input class="cs-input" required type="text" id="name-587-984" name="name" placeholder="Name">
-                </label>
-                <label class="cs-label">
-                    Phone
-                    <input class="cs-input" required type="text" id="phone-587-984" name="phone" placeholder="Phone">
-                </label>
-                <label class="cs-label">
-                    Email
-                    <input class="cs-input" required type="email" id="email-587-984" name="email" placeholder="Email">
-                </label>
-                <label class="cs-label cs-message">
-                    Message
-                    <textarea class="cs-input cs-textarea" required name="message" id="message-587-984" placeholder="Write message..."></textarea>
-                </label>
-                <!-- <div class="g-recaptcha" data-sitekey="<?php echo getenv('RECAPTCHA_SITE_KEY'); ?>"></div> -->
-                <button class="cs-button-solid cs-submit" type="submit">Submit</button>
-                <div id="form-response"></div>
+              <label class="cs-label">
+                Name
+                <input class="cs-input" required type="text" id="name-587-984" name="name" placeholder="Name">
+              </label>
+              <label class="cs-label">
+                Phone
+                <input class="cs-input" required type="text" id="phone-587-984" name="phone" placeholder="Phone">
+              </label>
+              <label class="cs-label">
+                Email
+                <input class="cs-input" required type="email" id="email-587-984" name="email" placeholder="Email">
+              </label>
+              <label class="cs-label cs-message">
+                Message
+                <textarea class="cs-input cs-textarea" required name="message" id="message-587-984" placeholder="Write message..."></textarea>
+              </label>
+              <input type="hidden" id="recaptcha-token" name="recaptcha-token">
+              <button class="cs-button-solid cs-submit" type="submit">Submit</button>
+              <div id="form-response"></div>
             </form>
             
+            <script src="https://www.google.com/recaptcha/api.js?render=${{RECAPTCHA_SITE_KEY}}"></script>
             <script>
-                document.getElementById('cs-form-587-984').addEventListener('submit', function(event) {
-                    event.preventDefault(); // Prevent the form from submitting the traditional way
-                
-                    var form = event.target;
-                    var formData = new FormData(form);
-                    var xhr = new XMLHttpRequest();
-                
-                    xhr.open('POST', form.action, true);
-                    xhr.setRequestHeader('Accept', 'application/json');
-                
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === XMLHttpRequest.DONE) {
-                            var response = document.getElementById('form-response');
-                            if (xhr.status === 200) {
-                                response.innerHTML = xhr.responseText;
-                                form.reset();
-                            } else {
-                                response.innerHTML = 'An error occurred. Please try again later.';
-                            }
-                        }
-                    };
-                
-                    var object = {};
-                    formData.forEach((value, key) => { object[key] = value });
-                    var json = JSON.stringify(object);
-                
-                    xhr.setRequestHeader('Content-Type', 'application/json');
-                    xhr.send(json);
+              grecaptcha.ready(function() {
+                grecaptcha.execute('${{RECAPTCHA_SITE_KEY}}', {action: 'submit'}).then(function(token) {
+                  document.getElementById('recaptcha-token').value = token;
                 });
-            </script>                                            
-            
-            <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
-
+              });
+          
+              document.getElementById('cs-form-587-984').addEventListener('submit', function(event) {
+                event.preventDefault();
+          
+                var form = event.target;
+                var formData = new FormData(form);
+                var xhr = new XMLHttpRequest();
+          
+                xhr.open('POST', form.action, true);
+                xhr.setRequestHeader('Accept', 'application/json');
+          
+                xhr.onreadystatechange = function() {
+                  if (xhr.readyState === XMLHttpRequest.DONE) {
+                    var response = document.getElementById('form-response');
+                    if (xhr.status === 200) {
+                      response.innerHTML = xhr.responseText;
+                      form.reset();
+                    } else {
+                      response.innerHTML = 'An error occurred. Please try again later.';
+                    }
+                  }
+                };
+          
+                var object = {};
+                formData.forEach((value, key) => { object[key] = value });
+                var json = JSON.stringify(object);
+          
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(json);
+              });
+            </script>
         </div>
     </div>
   </section>
@@ -750,22 +754,22 @@
             </a>
             <ul class="cs-ul">
                 <li class="cs-li">
-                    <a href="#hero-1619" class="cs-link">Home</a>
+                    <a href="https://gesture.technology/#hero-1619" class="cs-link">Home</a>
                 </li>
                 <li class="cs-li">
-                    <a href="#steps-889" class="cs-link">Our Process</a>
+                    <a href="https://gesture.technology/#steps-889" class="cs-link">Our Process</a>
                 </li>
                 <li class="cs-li">
-                    <a href="#services-1724" class="cs-link">About Us</a>
+                    <a href="https://gesture.technology/#services-1724" class="cs-link">About Us</a>
                 </li>
                 <li class="cs-li">
-                    <a href="#services-1267" class="cs-link">Statistics</a>
+                    <a href="https://gesture.technology/#services-1267" class="cs-link">Statistics</a>
                 </li>
                 <li class="cs-li">
-                    <a href="#sbsr-1575" class="cs-link">FAQ</a>
+                    <a href="https://gesture.technology/#sbsr-1575" class="cs-link">FAQ</a>
                 </li>
                 <li class="cs-li">
-                    <a href="#contact-984" class="cs-link">Contact Us</a>
+                    <a href="https://gesture.technology/#contact-984" class="cs-link">Contact Us</a>
                 </li>
             </ul>
         </div>
