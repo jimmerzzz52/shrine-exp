@@ -1,0 +1,3 @@
+[submodule "website/shrine-exp"]
+	path = website/shrine-exp
+	url = https://github.com/jimmerzzz52/shrine-exp.git
