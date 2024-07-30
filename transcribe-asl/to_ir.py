@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 import glob
 from matplotlib import pyplot as plt
-from gesture.base import Gesture
+
+# from gesture.base import Gesture
 import mediapipe as mp
 import os
 
@@ -10,17 +11,18 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
-base_path: str = "./gesture/base_poses_hf"
-gestures_names: np.array = Gesture.get_gestures_names()
-base_gestures = Gesture.get_base_gestures(gestures_names, base_path)
-gestures_names_movements: np.array = Gesture.get_gestures_names_mov()
-base_gestures_movements = Gesture.get_base_gestures_accumulated(
-    gestures_names_movements, base_path
-)
-g = Gesture(
-    base_gestures=base_gestures,
-    base_acc_gestures=base_gestures_movements,
-)
+# base_path: str = "./gesture/base_poses_hf"
+# gestures_names: np.array = Gesture.get_gestures_names()
+# base_gestures = Gesture.get_base_gestures(gestures_names, base_path)
+# gestures_names_movements: np.array = Gesture.get_gestures_names_mov()
+# base_gestures_movements = Gesture.get_base_gestures_accumulated(
+#     gestures_names_movements, base_path
+# )
+# g = Gesture(
+#     base_gestures=base_gestures,
+#     base_acc_gestures=base_gestures_movements,
+# )
+
 
 def unsharp_mask(image, kernel_size=(5, 5), sigma=1.0, amount=1.0, threshold=0):
     """Return a sharpened version of the image, using an unsharp mask."""
@@ -72,11 +74,11 @@ def draw_hand_from_kps(right_hand_data_f, image_shape):
             plt.plot((x1, x2), (y1, y2), "r")
 
 
-images_names = glob.glob("image_of_gestures/ir/*.jpg")
+if not os.path.exists("input"):
+    os.makedirs("input")
+    print("Please put an image in the recently created input folder")
 
-image = load_image_as_IR(images_names[0])
-img_shape = (1080, 720)
-image = cv2.resize(image, img_shape)
+images_names = glob.glob("input/*.jpg")
 
 with mp_holistic.Holistic(
     model_complexity=1,
@@ -88,14 +90,21 @@ with mp_holistic.Holistic(
     static_image_mode=False,
 ) as holistic:
 
-    results = holistic.process(image)
+    for image_name in images_names:
+        image = load_image_as_IR(image_name)
+        img_shape = (1080, 720)
+        image = cv2.resize(image, img_shape)
 
-    right_hand_data = np.array(
-        [[el.x, el.y, el.z] for el in results.right_hand_landmarks.landmark]
-    )
+        results = holistic.process(image)
 
-draw_hand_from_kps(right_hand_data, image.shape)
-plt.imshow(image, cmap="gray")
-if not os.path.exists("output"):
-    os.makedirs("output")
-plt.savefig("output/test.jpg")
+        right_hand_data = np.array(
+            [[el.x, el.y, el.z] for el in results.right_hand_landmarks.landmark]
+        )
+
+        plt.figure()
+        draw_hand_from_kps(right_hand_data, image.shape)
+        plt.imshow(image, cmap="gray")
+        if not os.path.exists("output"):
+            os.makedirs("output")
+        file_name = os.path.basename(image_name)
+        plt.savefig(f"output/{file_name}")
