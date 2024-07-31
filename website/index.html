@@ -702,12 +702,6 @@
             </form>
             
             <script>
-              grecaptcha.ready(function() {
-                grecaptcha.execute('${{RECAPTCHA_SITE_KEY}}', {action: 'submit'}).then(function(token) {
-                  document.getElementById('recaptcha-token').value = token;
-                });
-              });
-          
               document.getElementById('cs-form-587-984').addEventListener('submit', function(event) {
                 event.preventDefault();
           
