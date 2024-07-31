@@ -38,13 +38,13 @@ for (const item of dropDowns) {
     item.addEventListener('click', onClick);
 }
 
-const faqItems = Array.from(document.querySelectorAll('.cs-faq-item'));
-for (const item of faqItems) {
-    const onClick = () => {
-        item.classList.toggle('active');
-    };
-    item.addEventListener('click', onClick);
-}
+// const faqItems = Array.from(document.querySelectorAll('.cs-faq-item'));
+// for (const item of faqItems) {
+//     const onClick = () => {
+//         item.classList.toggle('active');
+//     };
+//     item.addEventListener('click', onClick);
+// }
 
 // Copyright Current Year
 // Wait until the DOM is fully loaded
