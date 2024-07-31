@@ -701,7 +701,6 @@
               <div id="form-response" style="display: none"></div>
             </form>
             
-            <script src="https://www.google.com/recaptcha/api.js?render=${{RECAPTCHA_SITE_KEY}}"></script>
             <script>
               grecaptcha.ready(function() {
                 grecaptcha.execute('${{RECAPTCHA_SITE_KEY}}', {action: 'submit'}).then(function(token) {
