@@ -97,6 +97,7 @@ def main():
                 )
 
             output: Output = g.predict(right_hand_data, left_hand_data, pose_data)
+            print(output)
 
             draw_rotated_left_hand(
                 frame,
@@ -133,11 +134,14 @@ def main():
             #     mp_drawing_styles.get_default_pose_landmarks_style(),
             #     scale=1,
             # )
-
-            rec_out_static_print = [
-                f"{i}, Conf: {output.static_gestures_confidence[i]:.3f}"
-                for i in output.static_gestures
-            ]
+            rec_out_static_print = ['Nothing']
+            try:
+                rec_out_static_print = [
+                    f"{i}, Conf: {output.static_gestures_confidence[i]:.3f}"
+                    for i in output.static_gestures
+                ]
+            except:
+                print("Something went wrong")
 
             for i, rec in enumerate(rec_out_static_print):
                 cv2.putText(

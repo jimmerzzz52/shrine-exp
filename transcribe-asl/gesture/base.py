@@ -1,4 +1,4 @@
-from pyscript import window
+# from pyscript import window
 # import pandas as pd
 import numpy as np
 # from typing import Optional
@@ -139,8 +139,8 @@ class Gesture:
     
     def predict(
         self,
-        obj_in
-    ) -> tuple[str, list[str]]:
+        right, left, body
+    ):
         top_most = 3
         """
         Predict the gesture.
@@ -167,13 +167,13 @@ class Gesture:
         """
         
         # TODO: move into other function.
-        right_obj = json.loads(obj_in.right)
-        left_obj = json.loads(obj_in.left)
-        body_obj = json.loads(obj_in.body)
+        # right_obj = json.loads(obj_in.right)
+        # left_obj = json.loads(obj_in.left)
+        # body_obj = json.loads(obj_in.body)
 
-        right = np.array(right_obj)
-        left = np.array(left_obj)
-        body = np.array(body_obj)
+        # right = np.array(right_obj)
+        # left = np.array(left_obj)
+        # body = np.array(body_obj)
         # Reset the check points.
         self._reset_check_points(wait_seconds=5)
         # For The pose one, all we need is the right hand.
@@ -212,12 +212,17 @@ class Gesture:
         mov_gestures: list[str] = self._identify_gestures_movement()
         
         # This may break with local. Sorry...
-        window.static_gesture = static_gesture
-        window.movement_gesture = mov_gestures
+        # window.static_gesture = static_gesture
+        # window.movement_gesture = mov_gestures
         # window.static_gestures_confidence = static_gestures_confidence
         
         # Keeping this light for now b/c of frontend.
-        return (static_gestures, mov_gestures, static_gestures_confidence)
+        out = Output(static_gestures, mov_gestures, static_gestures_confidence)
+        # out.static_gestures = static_gestures
+        # out.mov_gestures = mov_gestures
+        # out.static_gestures_confidence = static_gestures_confidence
+
+        return out
 
     def _is_pointed_finger(self, right: np.array) -> bool:
         """
@@ -542,7 +547,8 @@ class Gesture:
             A dictionary containing the base gestures.
         """
         # Define the base gestures path
-        self.base_path: str = "./"
+        # self.base_path: str = "./"
+        base_path = "./gesture_data_sign_language"
         # Load the base gestures from the database.
         base_gestures: dict[str, dict[str, np.array]] = {}
         
@@ -804,22 +810,22 @@ def sigmoid(x):
     """
     return 2 / (1 + np.exp(-x)) - 1
 
-# @dataclass
-# class Output:
-#     """
-#     The output of the model.
+@dataclass
+class Output:
+    """
+    The output of the model.
 
-#     Attributes
-#     ----------
-#     static_gestures: list[str]
-#         The top most static gestures.
-#     movement_gestures: list[str]
-#         The movement gesture.
-#     static_gestures_confidence: dict[str, float]
-#         The confidence of the static gestures.
-#     """
+    Attributes
+    ----------
+    static_gestures: list[str]
+        The top most static gestures.
+    movement_gestures: list[str]
+        The movement gesture.
+    static_gestures_confidence: dict[str, float]
+        The confidence of the static gestures.
+    """
 
-#     static_gestures: list[str]
-#     movement_gestures: list[str]
-#     static_gestures_confidence: dict[str, float]
-window.gesture = Gesture()
+    static_gestures: list[str]
+    movement_gestures: list[str]
+    static_gestures_confidence: dict[str, float]
+# window.gesture = Gesture()

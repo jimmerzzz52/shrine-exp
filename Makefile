@@ -14,6 +14,8 @@ website-build: pyscript-config
 website-test:
 	cd ./website && serve
 
+# Must run in dir that we want....
 dev-local:
 	python -m venv venv
-	source venv/bin/activate
+	source ./venv/bin/activate
+	pip ./transcribe-asl/requirements.txt
