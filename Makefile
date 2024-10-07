@@ -13,3 +13,7 @@ website-build: pyscript-config
 
 website-test:
 	cd ./website && serve
+
+dev-local:
+	python -m venv venv
+	source venv/bin/activate
