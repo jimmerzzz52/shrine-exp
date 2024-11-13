@@ -50,25 +50,25 @@ def main():
             #     mp_holistic.POSE_CONNECTIONS,
             #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
             # )
-            mp_drawing.draw_landmarks(
-                frame,
-                results.left_hand_landmarks,
-                mp_holistic.HAND_CONNECTIONS,
-                landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
-            )
+            # mp_drawing.draw_landmarks(
+            #     frame,
+            #     results.left_hand_landmarks,
+            #     mp_holistic.HAND_CONNECTIONS,
+            #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
+            # )
 
-            mp_drawing.draw_landmarks(
-                frame,
-                results.right_hand_landmarks,
-                mp_holistic.HAND_CONNECTIONS,
-                landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
-            )
+            # mp_drawing.draw_landmarks(
+            #     frame,
+            #     results.right_hand_landmarks,
+            #     mp_holistic.HAND_CONNECTIONS,
+            #     landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
+            # )
 
-            mp_drawing.draw_axis(
-                frame,
-                np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]]),
-                np.array([0.089, -0.089, 0]),
-            )
+            # mp_drawing.draw_axis(
+            #     frame,
+            #     np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]]),
+            #     np.array([0.089, -0.089, 0]),
+            # )
 
             # This is important, it draws the axis of the camera.
 
@@ -99,24 +99,24 @@ def main():
             output: Output = g.predict(right_hand_data, left_hand_data, pose_data)
             print(output)
 
-            draw_rotated_left_hand(
-                frame,
-                left_hand_data,
-                mp_drawing,
-                results.left_hand_landmarks,
-                mp_holistic.HAND_CONNECTIONS,
-                mp_drawing_styles.get_default_pose_landmarks_style(),
-            )
+            # draw_rotated_left_hand(
+            #     frame,
+            #     left_hand_data,
+            #     mp_drawing,
+            #     results.left_hand_landmarks,
+            #     mp_holistic.HAND_CONNECTIONS,
+            #     mp_drawing_styles.get_default_pose_landmarks_style(),
+            # )
 
-            draw_rotated_right_hand(
-                frame,
-                right_hand_data,
-                mp_drawing,
-                results.right_hand_landmarks,
-                mp_holistic.HAND_CONNECTIONS,
-                mp_drawing_styles.get_default_pose_landmarks_style(),
-                # scale=1,
-            )
+            # draw_rotated_right_hand(
+            #     frame,
+            #     right_hand_data,
+            #     mp_drawing,
+            #     results.right_hand_landmarks,
+            #     mp_holistic.HAND_CONNECTIONS,
+            #     mp_drawing_styles.get_default_pose_landmarks_style(),
+            #     # scale=1,
+            # )
 
             # base_points_in_hand_frame: np.array = to_hand_frame(
             #     np.genfromtxt(
@@ -143,35 +143,35 @@ def main():
             except:
                 print("Something went wrong")
 
-            for i, rec in enumerate(rec_out_static_print):
-                cv2.putText(
-                    frame,
-                    rec,
-                    (20, 170 + i * 30),
-                    cv2.FONT_HERSHEY_PLAIN,
-                    1,
-                    (0, 255, 0),
-                    2,
-                )
-            cv2.putText(
-                frame,
-                f"FPS: {int(fps)}   Static: {output.static_gestures[0]}",
-                (20, 70),
-                cv2.FONT_HERSHEY_PLAIN,
-                3,
-                (0, 255, 0),
-                2,
-            )
+            # for i, rec in enumerate(rec_out_static_print):
+            #     cv2.putText(
+            #         frame,
+            #         rec,
+            #         (20, 170 + i * 30),
+            #         cv2.FONT_HERSHEY_PLAIN,
+            #         1,
+            #         (0, 255, 0),
+            #         2,
+            #     )
+            # cv2.putText(
+            #     frame,
+            #     f"FPS: {int(fps)}   Static: {output.static_gestures[0]}",
+            #     (20, 70),
+            #     cv2.FONT_HERSHEY_PLAIN,
+            #     3,
+            #     (0, 255, 0),
+            #     2,
+            # )
 
-            cv2.putText(
-                frame,
-                f"Movement: {output.movement_gestures}",
-                (20, 110),
-                cv2.FONT_HERSHEY_PLAIN,
-                3,
-                (0, 255, 0),
-                2,
-            )
+            # cv2.putText(
+            #     frame,
+            #     f"Movement: {output.movement_gestures}",
+            #     (20, 110),
+            #     cv2.FONT_HERSHEY_PLAIN,
+            #     3,
+            #     (0, 255, 0),
+            #     2,
+            # )
 
             # cv2.putText(
             #     frame,
@@ -183,7 +183,7 @@ def main():
             #     2,
             # )
 
-            cv2.imshow("MediaPipe Holistic", frame)
+            # cv2.imshow("MediaPipe Holistic", frame)
 
     #         print(fps)
     # release everything
