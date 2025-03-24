@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swipe Dollar Effect</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        #counter {
+            font-size: 24px;
+            margin: 20px;
+        }
+        #dollar {
+            width: 200px;
+            transition: background-color 0.3s;
+            display: inline-block;
+            padding: 20px;
+            background-color: green;
+            color: white;
+            font-size: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Swipe to Change the Dollar</h1>
+    <div id="counter">Swipes: 0</div>
+    <div id="dollar">💵</div>
+    <audio id="sound1" src="https://www.fesliyanstudios.com/play-mp3/342"></audio>
+    <audio id="sound2" src="https://www.fesliyanstudios.com/play-mp3/343"></audio>
+    <audio id="sound3" src="https://www.fesliyanstudios.com/play-mp3/344"></audio>
+    
+    <script>
+        let swipeCounter = 0;
+        let colors = ['green', 'blue', 'red', 'purple', 'gold'];
+        let currentColorIndex = 0;
+        let touchStartY = 0;
+        let touchStartX = 0;
+        let sounds = ["sound1", "sound2", "sound3"];
+
+        document.addEventListener("touchstart", function(event) {
+            touchStartY = event.touches[0].clientY;
+            touchStartX = event.touches[0].clientX;
+        });
+
+        document.addEventListener("touchend", function(event) {
+            let touchEndY = event.changedTouches[0].clientY;
+            let touchEndX = event.changedTouches[0].clientX;
+            
+            if (touchStartY - touchEndY > 50 || Math.abs(touchStartX - touchEndX) > 50) { // Swipe up or left/right
+                swipeCounter++;
+                document.getElementById("counter").innerText = "Swipes: " + swipeCounter;
+                
+                // Change color
+                currentColorIndex = (currentColorIndex + 1) % colors.length;
+                document.getElementById("dollar").style.backgroundColor = colors[currentColorIndex];
+                
+                // Play random sound
+                let randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+                document.getElementById(randomSound).play();
+            }
+        });
+    </script>
+</body>
+</html>
