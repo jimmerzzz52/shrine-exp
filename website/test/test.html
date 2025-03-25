@@ -8,39 +8,59 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+        }
+        #title {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
         }
         #counter {
             font-size: 24px;
-            margin: 20px;
-        }
-        #dollar {
-            width: 200px;
-            transition: background-color 0.3s;
-            display: inline-block;
-            padding: 20px;
-            background-color: green;
             color: white;
-            font-size: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
             border-radius: 10px;
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        #dollarContainer {
+            width: 100vw;
+            height: 100vh;
+            background: url('./799px-US_one_dollar_bill,_obverse,_series_2009.jpg') no-repeat center center/cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.5s ease-out;
         }
     </style>
 </head>
 <body>
-    <h1>Swipe to Change the Dollar</h1>
+    <h1 id="title">Swipe to Slide the Dollar</h1>
     <div id="counter">Swipes: 0</div>
-    <div id="dollar">💵</div>
-    <audio id="sound1" src="https://www.fesliyanstudios.com/play-mp3/342"></audio>
-    <audio id="sound2" src="https://www.fesliyanstudios.com/play-mp3/343"></audio>
-    <audio id="sound3" src="https://www.fesliyanstudios.com/play-mp3/344"></audio>
+    <div id="dollarContainer"></div>
+    <audio id="sound1" src="https://www.fesliyanstudios.com/play-mp3/4380"></audio>
+    <audio id="sound2" src="https://www.fesliyanstudios.com/play-mp3/4381"></audio>
+    <audio id="sound3" src="https://www.fesliyanstudios.com/play-mp3/4382"></audio>
     
     <script>
         let swipeCounter = 0;
-        let colors = ['green', 'blue', 'red', 'purple', 'gold'];
-        let currentColorIndex = 0;
         let touchStartY = 0;
         let touchStartX = 0;
         let sounds = ["sound1", "sound2", "sound3"];
+        let dollarContainer = document.getElementById("dollarContainer");
 
         document.addEventListener("touchstart", function(event) {
             touchStartY = event.touches[0].clientY;
@@ -51,18 +71,33 @@
             let touchEndY = event.changedTouches[0].clientY;
             let touchEndX = event.changedTouches[0].clientX;
             
-            if (touchStartY - touchEndY > 50 || Math.abs(touchStartX - touchEndX) > 50) { // Swipe up or left/right
+            if (touchStartY - touchEndY > 50) { // Swipe up
+                dollarContainer.style.transform = "translateY(-100%)";
+            } else if (touchStartX - touchEndX > 50) { // Swipe left
+                dollarContainer.style.transform = "translateX(-100%)";
+            } else if (touchEndX - touchStartX > 50) { // Swipe right
+                dollarContainer.style.transform = "translateX(100%)";
+            }
+            
+            setTimeout(() => {
                 swipeCounter++;
                 document.getElementById("counter").innerText = "Swipes: " + swipeCounter;
-                
-                // Change color
-                currentColorIndex = (currentColorIndex + 1) % colors.length;
-                document.getElementById("dollar").style.backgroundColor = colors[currentColorIndex];
-                
-                // Play random sound
-                let randomSound = sounds[Math.floor(Math.random() * sounds.length)];
-                document.getElementById(randomSound).play();
+                dollarContainer.style.transform = "translate(0, 0)";
+            }, 500);
+            
+            let randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+            document.getElementById(randomSound).play();
+        });
+
+        window.addEventListener("keydown", function(e) {
+            if (e.key === "Backspace" || e.key === "F5") {
+                e.preventDefault();
             }
+        });
+
+        window.addEventListener("beforeunload", function(e) {
+            e.preventDefault();
+            e.returnValue = "";
         });
     </script>
 </body>
