@@ -11,7 +11,7 @@
             overflow: hidden;
             height: 100vh;
             margin: 0;
-            background-color: black;
+            background: url('./799px-US_one_dollar_bill,_obverse,_series_2009.jpg') no-repeat center center/cover;
         }
         #title {
             color: white;
@@ -43,7 +43,7 @@
             position: absolute;
             top: 0;
             left: 0;
-            transition: transform 0.5s ease-out;
+            transition: transform 0.2s ease-out;
         }
     </style>
 </head>
@@ -71,11 +71,11 @@
             let touchEndY = event.changedTouches[0].clientY;
             let touchEndX = event.changedTouches[0].clientX;
             
-            if (touchStartY - touchEndY > 50) { // Swipe up
+            if (touchStartY - touchEndY > 30) { // Swipe up
                 dollarContainer.style.transform = "translateY(-100%)";
-            } else if (touchStartX - touchEndX > 50) { // Swipe left
+            } else if (touchStartX - touchEndX > 30) { // Swipe left
                 dollarContainer.style.transform = "translateX(-100%)";
-            } else if (touchEndX - touchStartX > 50) { // Swipe right
+            } else if (touchEndX - touchStartX > 30) { // Swipe right
                 dollarContainer.style.transform = "translateX(100%)";
             }
             
@@ -83,7 +83,7 @@
                 swipeCounter++;
                 document.getElementById("counter").innerText = "Swipes: " + swipeCounter;
                 dollarContainer.style.transform = "translate(0, 0)";
-            }, 500);
+            }, 200);
             
             let randomSound = sounds[Math.floor(Math.random() * sounds.length)];
             document.getElementById(randomSound).play();
